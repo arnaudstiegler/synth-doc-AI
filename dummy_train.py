@@ -27,7 +27,7 @@ for _ in range(100):
     )
     labels = torch.concat(
         [
-            torch.tensor([-100] * inputs_tokens["input_ids"].shape[1]).unsqueeze(0),
+            torch.tensor([-100] * inputs_tokens["input_ids"].shape[1], device=device).unsqueeze(0),
             answer_tokens["input_ids"],
         ],
         dim=-1,
