@@ -27,6 +27,9 @@ logger = get_logger(__name__, log_level="INFO")
 set_verbosity_error()
 
 
+# TODO: use Flash Attention
+
+
 class CustomTrainer(Trainer):
     def compute_loss(self, model, inputs, return_outputs=False):
         labels = inputs.pop("labels")

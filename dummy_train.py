@@ -14,20 +14,25 @@ train_dataset = dataset["train"]
 optimizer = AdamW(model.parameters())
 
 
-for sample in train_dataset:
-    inputs = tokenizer(sample["question"], return_tensors="pt")
-    answer = tokenizer(
-        sample["question"] + sample["answers"]["text"][0], return_tensors="pt"
+# TODO: overfitting on a single sample for now
+for sample in [train_dataset[0]]:
+    optimizer.zero_grad()
+    inputs_tokens = tokenizer(sample["question"], return_tensors="pt")
+    answer_tokens = tokenizer(sample["answers"]["text"][0], return_tensors="pt")
+
+    input_ids = torch.concat(
+        [inputs_tokens["input_ids"], answer_tokens["input_ids"]], dim=-1
     )
     labels = torch.concat(
         [
-            torch.tensor([-100] * inputs["input_ids"].shape[1]).unsqueeze(0),
-            answer["input_ids"],
+            torch.tensor([-100] * inputs_tokens["input_ids"].shape[1]).unsqueeze(0),
+            answer_tokens["input_ids"],
         ],
         dim=-1,
     )
 
-    output = model(input_ids=inputs["input_ids"], labels=labels)
-    import ipdb
-
-    ipdb.set_trace()
+    output = model(input_ids=input_ids, labels=labels)
+    loss = output.loss
+    print(loss)
+    loss.backward()
+    optimizer.step()
