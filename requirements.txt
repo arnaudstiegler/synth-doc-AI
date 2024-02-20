@@ -1,0 +1,10 @@
+numpy
+torch
+transformers
+pillow
+ipdb
+accelerate
+wandb
+torchmetrics
+ruff
+datasets
