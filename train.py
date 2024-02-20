@@ -5,6 +5,7 @@ import torch
 import torch.nn.functional as F
 from accelerate.logging import get_logger
 from accelerate.utils import DummyOptim, DummyScheduler
+from accelerate import Accelerator
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from torch.optim import AdamW
 from torch.utils.data import DataLoader
@@ -17,7 +18,7 @@ from transformers import (
     get_scheduler,
 )
 from transformers.utils.logging import set_verbosity_error
-from accelerate import Accelerator
+
 from utils import read_deepspeed_config
 from datasets import load_dataset
 
