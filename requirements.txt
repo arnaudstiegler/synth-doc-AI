@@ -1,6 +1,6 @@
 numpy
 torch
-transformers
+git+https://github.com/huggingface/transformers
 pillow
 ipdb
 accelerate
