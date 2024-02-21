@@ -9,6 +9,9 @@ import torch.nn.functional as F
 from datasets import load_dataset
 from accelerate import Accelerator
 from dataset import SquadDataset
+from accelerate.logging import get_logger
+import accelerate
+from accelerate.utils import DummyOptim
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 # model = AutoModelForCausalLM.from_pretrained(
@@ -19,6 +22,8 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 # ).to(device)
 # tokenizer = AutoTokenizer.from_pretrained("microsoft/phi-2", trust_remote_code=True)
 
+logger = get_logger(__name__)
+logger.setLevel(accelerate.logging.INFO)
 config = read_deepspeed_config()
 accelerator = Accelerator()
 
@@ -30,7 +35,7 @@ dataset = SquadDataset(tokenizer, 'train')
 
 
 data = torch.utils.data.DataLoader(dataset, shuffle=True, batch_size=1)
-optimizer = AdamW(model.parameters())
+optimizer = DummyOptim(model.parameters())
 model, optimizer, data = accelerator.prepare(model, optimizer, data)
 
 model.train()
@@ -40,5 +45,6 @@ for epoch in range(10):
 
         output = model(batch['input_ids'], labels=batch['labels'])
         loss = output.loss
+        logger.info(f'Loss: {loss.item()}', main_process_only=True)
         accelerator.backward(loss)
         optimizer.step()

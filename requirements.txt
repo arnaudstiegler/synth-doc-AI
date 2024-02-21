@@ -8,3 +8,4 @@ wandb
 torchmetrics
 ruff
 datasets
+deepspeed
