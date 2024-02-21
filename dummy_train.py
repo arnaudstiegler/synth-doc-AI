@@ -35,7 +35,12 @@ dataset = SquadDataset(tokenizer, 'train')
 
 
 data = torch.utils.data.DataLoader(dataset, shuffle=True, batch_size=1)
-optimizer = DummyOptim(model.parameters())
+
+optimizer_cls = (AdamW
+        if accelerator.state.deepspeed_plugin is None
+        or "optimizer" not in accelerator.state.deepspeed_plugin.deepspeed_config
+        else DummyOptim)
+optimizer = optimizer_cls(model.parameters())
 model, optimizer, data = accelerator.prepare(model, optimizer, data)
 
 model.train()
