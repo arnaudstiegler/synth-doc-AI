@@ -15,7 +15,10 @@ def truncate_or_pad_tensor_right(tensor, max_width, pad_value=0):
 
     if padding_needed > 0:
         # Pad only on the right side
-        padding = (0, padding_needed)  # For a 2D tensor, the padding tuple is (left, right)
+        padding = (
+            0,
+            padding_needed,
+        )  # For a 2D tensor, the padding tuple is (left, right)
         padded_tensor = F.pad(tensor, padding, "constant", value=pad_value)
     elif current_width > max_width:
         # Truncate the tensor from the right
@@ -28,25 +31,36 @@ def truncate_or_pad_tensor_right(tensor, max_width, pad_value=0):
 
 
 def collate_fn(samples: List[Dict[str, torch.Tensor]]):
-    input_ids = torch.concat([truncate_or_pad_tensor_right(elem['input_ids'].unsqueeze(0), 100, -1) for elem in samples])
+    input_ids = torch.concat(
+        [
+            truncate_or_pad_tensor_right(elem["input_ids"].unsqueeze(0), 100, -1)
+            for elem in samples
+        ]
+    )
     labels = torch.concat(
-        [truncate_or_pad_tensor_right(elem['labels'].unsqueeze(0), 100, -1) for elem in samples])
-    return {'input_ids': input_ids, 'labels': labels}
+        [
+            truncate_or_pad_tensor_right(elem["labels"].unsqueeze(0), MAX_LENGTH, -1)
+            for elem in samples
+        ]
+    )
+    return {"input_ids": input_ids, "labels": labels}
 
 
 class SquadDataset(Dataset):
     def __init__(self, tokenizer: AutoTokenizer, split: str):
         # Upfront the cost of loading the entire dataset (not that big anyway)
-        self.samples = list(load_dataset('squad')[split])
+        self.samples = list(load_dataset("squad")[split])
         self.tokenizer = tokenizer
 
     def __len__(self):
         return len(self.samples)
 
-    def __getitem__(self, idx: int)-> Dict[str, torch.Tensor]:
+    def __getitem__(self, idx: int) -> Dict[str, torch.Tensor]:
         sample = self.samples[idx]
-        inputs_tokens = self.tokenizer(sample['question'], return_tensors='pt')
-        answer_tokens = self.tokenizer(sample['answers']['text'][0], return_tensors='pt')
+        inputs_tokens = self.tokenizer(sample["question"], return_tensors="pt")
+        answer_tokens = self.tokenizer(
+            sample["answers"]["text"][0], return_tensors="pt"
+        )
 
         # Concatenate the question and the answer
         input_ids = torch.concat(
@@ -55,18 +69,21 @@ class SquadDataset(Dataset):
         # Mask out the tokens from the question
         labels = torch.concat(
             [
-                torch.tensor([-100] * inputs_tokens["input_ids"].shape[1]).unsqueeze(
-                    0),
+                torch.tensor([-100] * inputs_tokens["input_ids"].shape[1]).unsqueeze(0),
                 answer_tokens["input_ids"],
             ],
             dim=-1,
         )
-        return {'input_ids': input_ids.squeeze(0), 'labels': labels.squeeze(0)}
+        return {"input_ids": input_ids.squeeze(0), "labels": labels.squeeze(0)}
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     tokenizer = AutoTokenizer.from_pretrained("microsoft/phi-1_5")
-    dataset = SquadDataset(tokenizer, 'train')
-    data = torch.utils.data.DataLoader(dataset, shuffle=True, batch_size=2, collate_fn=collate_fn)
+    dataset = SquadDataset(tokenizer, "train")
+    data = torch.utils.data.DataLoader(
+        dataset, shuffle=True, batch_size=2, collate_fn=collate_fn
+    )
     sample = next(iter(data))
-    import ipdb; ipdb.set_trace()
+    import ipdb
+
+    ipdb.set_trace()

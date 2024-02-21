@@ -39,10 +39,10 @@
     "num_processes": 1,
     "num_epochs": 100,
     "gradient_clipping": 1.0,
-    "gradient_accumulation_steps": "auto",
+    "gradient_accumulation_steps": false,
     "steps_per_print": 2000,
-    "train_micro_batch_size_per_gpu": 2,
-    "val_micro_batch_size_per_gpu": 2,
+    "train_micro_batch_size_per_gpu": 1,
+    "val_micro_batch_size_per_gpu": 1,
     "train_batch_size": "auto",
     "wall_clock_breakdown": false,
     "log_grads_every": 1000

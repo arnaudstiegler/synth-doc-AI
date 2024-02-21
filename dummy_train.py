@@ -13,7 +13,8 @@ from accelerate.logging import get_logger
 import accelerate
 from accelerate.utils import DummyOptim
 import logging
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
 # model = AutoModelForCausalLM.from_pretrained(
 #     "microsoft/phi-2", torch_dtype='auto' if torch.cuda.is_available() else torch.float32,
 #     trust_remote_code=True,
@@ -27,19 +28,24 @@ logger.setLevel(logging.INFO)
 config = read_deepspeed_config()
 accelerator = Accelerator()
 
-model = AutoModelForCausalLM.from_pretrained("microsoft/phi-1_5", torch_dtype=torch.float16,
-                                       attn_implementation="flash_attention_2").to(device)
+model = AutoModelForCausalLM.from_pretrained(
+    "microsoft/phi-1_5",
+    torch_dtype=torch.float16,
+    attn_implementation="flash_attention_2",
+).to(device)
 tokenizer = AutoTokenizer.from_pretrained("microsoft/phi-1_5")
 
-dataset = SquadDataset(tokenizer, 'train')
+dataset = SquadDataset(tokenizer, "train")
 
 
 data = torch.utils.data.DataLoader(dataset, shuffle=True, batch_size=1)
 
-optimizer_cls = (AdamW
-        if accelerator.state.deepspeed_plugin is None
-        or "optimizer" not in accelerator.state.deepspeed_plugin.deepspeed_config
-        else DummyOptim)
+optimizer_cls = (
+    AdamW
+    if accelerator.state.deepspeed_plugin is None
+    or "optimizer" not in accelerator.state.deepspeed_plugin.deepspeed_config
+    else DummyOptim
+)
 optimizer = optimizer_cls(model.parameters())
 model, optimizer, data = accelerator.prepare(model, optimizer, data)
 
@@ -48,8 +54,8 @@ for epoch in range(10):
     for batch in data:
         optimizer.zero_grad()
 
-        output = model(batch['input_ids'], labels=batch['labels'])
+        output = model(batch["input_ids"], labels=batch["labels"])
         loss = output.loss
-        logger.info(f'Loss: {loss.item()}', main_process_only=True)
+        logger.info(f"Loss: {loss.item()}", main_process_only=True)
         accelerator.backward(loss)
         optimizer.step()
