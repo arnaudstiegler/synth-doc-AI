@@ -12,7 +12,7 @@ from dataset import SquadDataset
 from accelerate.logging import get_logger
 import accelerate
 from accelerate.utils import DummyOptim
-
+import logging
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 # model = AutoModelForCausalLM.from_pretrained(
 #     "microsoft/phi-2", torch_dtype='auto' if torch.cuda.is_available() else torch.float32,
@@ -23,7 +23,7 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 # tokenizer = AutoTokenizer.from_pretrained("microsoft/phi-2", trust_remote_code=True)
 
 logger = get_logger(__name__)
-logger.setLevel(accelerate.logging.INFO)
+logger.setLevel(logging.INFO)
 config = read_deepspeed_config()
 accelerator = Accelerator()
 
