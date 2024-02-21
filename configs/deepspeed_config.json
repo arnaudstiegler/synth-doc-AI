@@ -30,7 +30,7 @@
       "type": "WarmupLR",
       "params": {
       "warmup_min_lr": 0,
-      "warmup_max_lr": "auto",
+      "warmup_max_lr": 1e-3,
       "warmup_num_steps": "auto",
       "warmup_type": "cosine"
       }
