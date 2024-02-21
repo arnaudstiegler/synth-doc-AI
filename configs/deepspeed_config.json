@@ -1,6 +1,6 @@
 {
     "bf16": {
-            "enabled": "auto"
+            "enabled": true
         },
     "zero_optimization": {
         "stage": 3,
