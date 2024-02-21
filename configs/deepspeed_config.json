@@ -31,12 +31,12 @@
       "params": {
       "warmup_min_lr": 0,
       "warmup_max_lr": 1e-3,
-      "warmup_num_steps": "auto",
+      "warmup_num_steps": 1000,
       "warmup_type": "cosine"
       }
     },
     "num_machines": 1,
-    "num_processes": 2,
+    "num_processes": 1,
     "num_epochs": 100,
     "gradient_clipping": 1.0,
     "gradient_accumulation_steps": "auto",
