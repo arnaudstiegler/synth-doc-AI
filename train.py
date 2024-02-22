@@ -213,48 +213,48 @@ def training_loop_accelerate(
             enumerate(train_dataloader), disable=not accelerator.is_local_main_process
         ):
             with accelerator.accumulate(model):
-                # TODO: autocast should not be added here
-                with torch.cuda.amp.autocast():
-                    model.train()
-                    output = model(batch["input_ids"], labels=batch["labels"])
-                    loss = output.loss
+                # # TODO: autocast should not be added here
+                # with torch.cuda.amp.autocast():
+                model.train()
+                output = model(batch["input_ids"], labels=batch["labels"])
+                loss = output.loss
 
-                    # gather loss before backprop in case of gradient accumulation
-                    loss_values = accelerator.gather_for_metrics(
-                        {"loss": loss.detach().float()}
-                    )
-                    train_loss.update(loss_values["loss"])
+                # gather loss before backprop in case of gradient accumulation
+                loss_values = accelerator.gather_for_metrics(
+                    {"loss": loss.detach().float()}
+                )
+                train_loss.update(loss_values["loss"])
 
-                    accelerator.backward(loss)
+                accelerator.backward(loss)
 
-                    optimizer.step()
-                    scheduler.step()
-                    optimizer.zero_grad()
+                optimizer.step()
+                scheduler.step()
+                optimizer.zero_grad()
 
-                    log_train = {"train_loss": train_loss.compute()}
+                log_train = {"train_loss": train_loss.compute()}
 
-                    curr_step = step + epoch * len(train_dataloader)
+                curr_step = step + epoch * len(train_dataloader)
 
-                    if step > 0 and step % 100 == 0:
-                        if config["wandb"]:
-                            accelerator.log(
-                                {"lr": scheduler.get_last_lr()[0]}, step=curr_step
-                            )
-                            accelerator.log({**log_train}, step=curr_step)
+                if step > 0 and step % 100 == 0:
+                    if config["wandb"]:
+                        accelerator.log(
+                            {"lr": scheduler.get_last_lr()[0]}, step=curr_step
+                        )
+                        accelerator.log({**log_train}, step=curr_step)
 
-                    # if (step + 1) % config["eval_every"] == 0:
-                    #     model.eval()
-                    #     evaluate_model(
-                    #         accelerator,
-                    #         model,
-                    #         val_dataloader,
-                    #         processor,
-                    #         config,
-                    #         curr_step,
-                    #     )
-                    #     model.train()
+                # if (step + 1) % config["eval_every"] == 0:
+                #     model.eval()
+                #     evaluate_model(
+                #         accelerator,
+                #         model,
+                #         val_dataloader,
+                #         processor,
+                #         config,
+                #         curr_step,
+                #     )
+                #     model.train()
 
-                    train_loss.reset()
+                train_loss.reset()
 
         accelerator.wait_for_everyone()
         unwrapped_model = accelerator.unwrap_model(model)
