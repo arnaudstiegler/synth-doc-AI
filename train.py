@@ -272,7 +272,6 @@ def train(run_name: str, no_log: bool):
         torch_dtype="auto" if torch.cuda.is_available() else torch.float32,
         trust_remote_code=True,
         attn_implementation="flash_attention_2",
-        # code_revision="main",
     ).to(device)
     tokenizer = AutoTokenizer.from_pretrained("microsoft/phi-2", trust_remote_code=True)
     # BEWARE !!!
@@ -289,7 +288,7 @@ def train(run_name: str, no_log: bool):
 
 @click.command()
 @click.option("--run_name", default=datetime.now().strftime("%Y-%m-%d_%H-%M-%S.txt"))
-@click.option("--no_log", is_flag=True, default=True)
+@click.option("--no_log", is_flag=True, default=False)
 def main(run_name: str, no_log: bool):
     train(run_name, no_log)
 
