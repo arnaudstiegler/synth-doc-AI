@@ -3,6 +3,6 @@
     "lr": 3e-5,
     "min_lr": 0.0,
     "weight_decay": 0.01,
-    "eval_every": 50,
+    "eval_every": 500,
     "output_dir": "saved_ckpts"
 }
