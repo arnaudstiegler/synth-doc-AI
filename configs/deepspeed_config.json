@@ -41,8 +41,8 @@
     "gradient_clipping": 1.0,
     "gradient_accumulation_steps": 1,
     "steps_per_print": 2000,
-    "train_micro_batch_size_per_gpu": 1,
-    "val_micro_batch_size_per_gpu": 1,
+    "train_micro_batch_size_per_gpu": "auto",
+    "val_micro_batch_size_per_gpu": "auto",
     "train_batch_size": 4,
     "wall_clock_breakdown": false,
     "log_grads_every": 1000
