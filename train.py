@@ -213,8 +213,6 @@ def training_loop_accelerate(
             enumerate(train_dataloader), disable=not accelerator.is_local_main_process
         ):
             with accelerator.accumulate(model):
-                # # TODO: autocast should not be added here
-                # with torch.cuda.amp.autocast():
                 model.train()
                 output = model(batch["input_ids"], labels=batch["labels"])
                 loss = output.loss
@@ -274,7 +272,7 @@ def train(run_name: str, no_log: bool):
         "microsoft/phi-2",
         torch_dtype="auto" if torch.cuda.is_available() else torch.float32,
         trust_remote_code=True,
-        # attn_implementation="flash_attention_2",
+        attn_implementation="flash_attention_2",
         # code_revision="main",
     ).to(device)
     tokenizer = AutoTokenizer.from_pretrained("microsoft/phi-2", trust_remote_code=True)
