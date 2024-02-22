@@ -25,3 +25,10 @@ Using a more realistic max length of 512
 | Model   | Batch Size | GPU Ram (GB) |
 |---------|------------|--------------|
 | Phi-2   | 4          | 21       |
+
+
+When using LORA:
+- GPU RAM usage is very close (~1gb gap)
+- CPU usage is <<<
+- training step is about 3 times faster
+This can be explained by the optimizer state CPU offloading: we reduce the size of the optimizer state that is lopcated on the CPU. So there's little impact on the GPU ram usage
