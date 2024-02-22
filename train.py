@@ -60,7 +60,7 @@ def pad_tensors_to_left(tensors, pad_value):
     return torch.stack(padded_tensors, dim=0)
 
 
-def evaluate_model(accelerator, model, val_dataloader, processor, config, curr_step):
+def evaluate_model(accelerator, model, val_dataloader, config, curr_step):
     val_loss = MeanMetric(nan_strategy="error").to(model.device)
     similarity = MeanMetric(nan_strategy="error").to(model.device)
 
@@ -240,17 +240,16 @@ def training_loop_accelerate(
                         )
                         accelerator.log({**log_train}, step=curr_step)
 
-                # if (step + 1) % config["eval_every"] == 0:
-                #     model.eval()
-                #     evaluate_model(
-                #         accelerator,
-                #         model,
-                #         val_dataloader,
-                #         processor,
-                #         config,
-                #         curr_step,
-                #     )
-                #     model.train()
+                if (step + 1) % config["eval_every"] == 0:
+                    model.eval()
+                    evaluate_model(
+                        accelerator,
+                        model,
+                        val_dataloader,
+                        config,
+                        curr_step,
+                    )
+                    model.train()
 
                 train_loss.reset()
 
@@ -280,7 +279,6 @@ def train(run_name: str, no_log: bool):
     tokenizer.add_tokens(["<|im_start|>", "<PAD>"])
     tokenizer.pad_token = "<PAD>"
 
-    dataset = load_dataset("squad")
     train_dataset = SquadDataset(tokenizer, "train")
     val_dataset = SquadDataset(tokenizer, "train")
 
