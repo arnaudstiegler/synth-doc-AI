@@ -38,7 +38,7 @@ accelerator = Accelerator()
 dataset = SquadDataset(tokenizer, "train")
 
 
-data = torch.utils.data.DataLoader(dataset, shuffle=True, batch_size=1)
+data = torch.utils.data.DataLoader(dataset, shuffle=True, batch_size=config["train_micro_batch_size_per_gpu"])
 
 optimizer_cls = (
     AdamW
