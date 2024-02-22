@@ -10,3 +10,4 @@ ruff
 datasets
 deepspeed
 flash-attn
+packaging

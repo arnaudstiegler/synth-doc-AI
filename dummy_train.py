@@ -1,46 +1,45 @@
-from transformers import AutoModelForCausalLM, AutoTokenizer
-import torch
-from datasets import load_dataset
-from torch.optim import AdamW
-from utils import read_deepspeed_config
-from torch.utils.data import DataLoader
-import torch
-import torch.nn.functional as F
-from datasets import load_dataset
-from accelerate import Accelerator
-from dataset import SquadDataset
-from accelerate.logging import get_logger
-import accelerate
-from accelerate.utils import DummyOptim
 import logging
-from dataset import collate_fn
+from functools import partial
 
+import torch
+from accelerate import Accelerator
+from accelerate.logging import get_logger
+from accelerate.utils import DummyOptim
+from torch.optim import AdamW
+from torch.utils.data import DataLoader
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+from dataset import SquadDataset
+from dataset import collate_fn
+from utils import read_deepspeed_config
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model = AutoModelForCausalLM.from_pretrained(
-    "microsoft/phi-2", torch_dtype='auto' if torch.cuda.is_available() else torch.float32,
+    "microsoft/phi-2",
+    torch_dtype="auto" if torch.cuda.is_available() else torch.float32,
     trust_remote_code=True,
     attn_implementation="flash_attention_2",
-    code_revision='main'
+    code_revision="main",
 ).to(device)
 tokenizer = AutoTokenizer.from_pretrained("microsoft/phi-2", trust_remote_code=True)
+# BEWARE !!!
+tokenizer.add_tokens(["<|im_start|>", "<PAD>"])
+tokenizer.pad_token = "<PAD>"
 
 logger = get_logger(__name__)
 logger.setLevel(logging.INFO)
 config = read_deepspeed_config()
 accelerator = Accelerator()
 
-# model = AutoModelForCausalLM.from_pretrained(
-#     "microsoft/phi-1_5",
-#     torch_dtype=torch.float16,
-#     attn_implementation="flash_attention_2",
-# ).to(device)
-# tokenizer = AutoTokenizer.from_pretrained("microsoft/phi-1_5")
-
 dataset = SquadDataset(tokenizer, "train")
 
-
-data = torch.utils.data.DataLoader(dataset, shuffle=True, batch_size=config["train_micro_batch_size_per_gpu"], collate_fn=collate_fn)
+collate = partial(collate_fn, tokenizer.pad_token_id)
+data = torch.utils.data.DataLoader(
+    dataset,
+    shuffle=True,
+    batch_size=config["train_micro_batch_size_per_gpu"],
+    collate_fn=collate,
+)
 
 optimizer_cls = (
     AdamW

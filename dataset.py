@@ -9,7 +9,7 @@ import torch.nn.functional as F
 MAX_LENGTH = 100
 
 
-def truncate_or_pad_tensor_right(tensor, max_width, pad_value=0):
+def truncate_or_pad_tensor_right(tensor, max_width, pad_value):
     current_width = tensor.size(1)
     padding_needed = max_width - current_width
 
@@ -30,16 +30,18 @@ def truncate_or_pad_tensor_right(tensor, max_width, pad_value=0):
     return padded_tensor
 
 
-def collate_fn(samples: List[Dict[str, torch.Tensor]]):
+def collate_fn(pad_token_id: int, samples: List[Dict[str, torch.Tensor]]):
     input_ids = torch.concat(
         [
-            truncate_or_pad_tensor_right(elem["input_ids"].unsqueeze(0), 100, -1)
+            truncate_or_pad_tensor_right(
+                elem["input_ids"].unsqueeze(0), MAX_LENGTH, pad_token_id
+            )
             for elem in samples
         ]
     )
     labels = torch.concat(
         [
-            truncate_or_pad_tensor_right(elem["labels"].unsqueeze(0), MAX_LENGTH, -1)
+            truncate_or_pad_tensor_right(elem["labels"].unsqueeze(0), MAX_LENGTH, -100)
             for elem in samples
         ]
     )
