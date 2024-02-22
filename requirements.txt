@@ -11,3 +11,4 @@ datasets
 deepspeed
 flash-attn
 packaging
+peft

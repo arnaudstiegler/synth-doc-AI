@@ -7,7 +7,7 @@ import torch.nn.functional as F
 from accelerate import Accelerator
 from accelerate.logging import get_logger
 from accelerate.utils import DummyOptim, DummyScheduler
-from datasets import load_dataset
+from peft import get_peft_config, get_peft_model, LoraConfig, TaskType
 from dataset import SquadDataset
 from torch.optim import AdamW
 from torch.utils.data import DataLoader
@@ -137,6 +137,14 @@ def training_loop_accelerate(
         )
     else:
         accelerator = Accelerator()
+
+    if config['enable_peft']:
+        peft_config = LoraConfig(
+            task_type=TaskType.CAUSAL_LM, inference_mode=False, r=8, lora_alpha=32, lora_dropout=0.1
+        )
+
+        model = get_peft_model(model, peft_config)
+        model.print_trainable_parameters()
 
     with accelerator.main_process_first():
         partial_collate_func = partial(collate_fn, tokenizer.pad_token_id)
@@ -271,7 +279,7 @@ def train(run_name: str, no_log: bool):
         "microsoft/phi-2",
         torch_dtype="auto" if torch.cuda.is_available() else torch.float32,
         trust_remote_code=True,
-        attn_implementation="flash_attention_2",
+        # attn_implementation="flash_attention_2",
     ).to(device)
     tokenizer = AutoTokenizer.from_pretrained("microsoft/phi-2", trust_remote_code=True)
     # BEWARE !!!
