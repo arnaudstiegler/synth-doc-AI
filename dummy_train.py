@@ -15,25 +15,25 @@ from accelerate.utils import DummyOptim
 import logging
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
-# model = AutoModelForCausalLM.from_pretrained(
-#     "microsoft/phi-2", torch_dtype='auto' if torch.cuda.is_available() else torch.float32,
-#     trust_remote_code=True,
-#     attn_implementation="flash_attention_2",
-#     code_revision='main'
-# ).to(device)
-# tokenizer = AutoTokenizer.from_pretrained("microsoft/phi-2", trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained(
+    "microsoft/phi-2", torch_dtype='auto' if torch.cuda.is_available() else torch.float32,
+    trust_remote_code=True,
+    attn_implementation="flash_attention_2",
+    code_revision='main'
+).to(device)
+tokenizer = AutoTokenizer.from_pretrained("microsoft/phi-2", trust_remote_code=True)
 
 logger = get_logger(__name__)
 logger.setLevel(logging.INFO)
 config = read_deepspeed_config()
 accelerator = Accelerator()
 
-model = AutoModelForCausalLM.from_pretrained(
-    "microsoft/phi-1_5",
-    torch_dtype=torch.float16,
-    attn_implementation="flash_attention_2",
-).to(device)
-tokenizer = AutoTokenizer.from_pretrained("microsoft/phi-1_5")
+# model = AutoModelForCausalLM.from_pretrained(
+#     "microsoft/phi-1_5",
+#     torch_dtype=torch.float16,
+#     attn_implementation="flash_attention_2",
+# ).to(device)
+# tokenizer = AutoTokenizer.from_pretrained("microsoft/phi-1_5")
 
 dataset = SquadDataset(tokenizer, "train")
 
