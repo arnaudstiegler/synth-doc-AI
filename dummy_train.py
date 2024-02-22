@@ -56,6 +56,7 @@ for epoch in range(10):
 
         output = model(batch["input_ids"], labels=batch["labels"])
         loss = output.loss
+        print(f"Loss: {loss.item()}")
         logger.info(f"Loss: {loss.item()}", main_process_only=True)
         accelerator.backward(loss)
         optimizer.step()
