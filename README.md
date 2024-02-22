@@ -9,10 +9,19 @@ But don't really understand the logic
 
 ## benchmarks
 
-With deepspeed Zero3
+With deepspeed Zero3.
 
-| Model   | Batch Size | GPU Ram         |
-|---------|------------|-----------------|
-| Phi-1.5 | 1          | 6k              |
-| Phi-2   | 1          | 9k              |
-| Phi-2   | 4          | |
+All the numbers below are with max length 100
+
+| Model   | Batch Size | GPU Ram (GB) |
+|---------|------------|--------------|
+| Phi-1.5 | 1          | 6            |
+| Phi-2   | 1          | 9            |
+| Phi-2   | 8          | 13           |
+| Phi-2   | 16         | 18           |
+
+Using a more realistic max length of 512
+
+| Model   | Batch Size | GPU Ram (GB) |
+|---------|------------|--------------|
+| Phi-2   | 4          | 21       |
