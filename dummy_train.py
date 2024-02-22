@@ -13,6 +13,8 @@ from accelerate.logging import get_logger
 import accelerate
 from accelerate.utils import DummyOptim
 import logging
+from dataset import collate_fn
+
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model = AutoModelForCausalLM.from_pretrained(
@@ -38,7 +40,7 @@ accelerator = Accelerator()
 dataset = SquadDataset(tokenizer, "train")
 
 
-data = torch.utils.data.DataLoader(dataset, shuffle=True, batch_size=config["train_micro_batch_size_per_gpu"])
+data = torch.utils.data.DataLoader(dataset, shuffle=True, batch_size=config["train_micro_batch_size_per_gpu"], collate_fn=collate_fn)
 
 optimizer_cls = (
     AdamW
