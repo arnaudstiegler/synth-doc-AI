@@ -131,9 +131,9 @@ def training_loop_accelerate(
     if config.get("wandb"):
         accelerator = Accelerator(log_with="wandb")
         accelerator.init_trackers(
-            project_name=config["wandb"]["wandb_project_name"],
+            project_name=config["wandb"]["project"],
             config=config,
-            init_kwargs={"wandb": {"entity": config["wandb"]["wandb_entity"]}},
+            init_kwargs={"wandb": {"entity": config["wandb"]["entity"]}},
         )
     else:
         accelerator = Accelerator()
