@@ -22,8 +22,8 @@ def read_deepspeed_config(load_wandb_config: bool = True):
     config.update(read_json("configs/base_config.json"))
 
     # Reading the wandb config as well
-    # if os.path.exists("configs/wandb_config.json") and load_wandb_config:
-    #     wandb_config = read_json("configs/wandb_config.json")
-    # config["wandb"] = wandb_config
+    if os.path.exists("configs/wandb_config.json") and load_wandb_config:
+        wandb_config = read_json("configs/wandb_config.json")
+        config["wandb"] = wandb_config
 
     return config
