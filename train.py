@@ -1,34 +1,30 @@
 from datetime import datetime
+from functools import partial
 
 import click
 import torch
 import torch.nn.functional as F
+from accelerate import Accelerator
 from accelerate.logging import get_logger
 from accelerate.utils import DummyOptim, DummyScheduler
-from accelerate import Accelerator
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from datasets import load_dataset
+from dataset import SquadDataset
 from torch.optim import AdamW
 from torch.utils.data import DataLoader
 from torchmetrics import MeanMetric
 from tqdm.auto import tqdm
+from transformers import AutoModelForCausalLM, AutoTokenizer
 from transformers import (
-    AutoProcessor,
-    Pix2StructForConditionalGeneration,
     Trainer,
     get_scheduler,
 )
 from transformers.utils.logging import set_verbosity_error
-
+from dataset import collate_fn
 from utils import read_deepspeed_config
-from datasets import load_dataset
-
 
 logger = get_logger(__name__, log_level="INFO")
 # Required to suppress the warning during .generate
 set_verbosity_error()
-
-
-# TODO: use Flash Attention
 
 
 class CustomTrainer(Trainer):
@@ -76,12 +72,8 @@ def evaluate_model(accelerator, model, val_dataloader, processor, config, curr_s
         for batch in tqdm(
             val_dataloader, disable=not accelerator.is_local_main_process
         ):
-            outputs = model(
-                batch["pixel_values"],
-                decoder_input_ids=batch["input_ids"][:, :-1],
-                labels=batch["labels"].squeeze(1)[:, 1:],
-            )
-            loss = outputs.loss
+            output = model(batch["input_ids"], labels=batch["labels"])
+            loss = output.loss
             # decoder_prompts = [input_id[: end_idx + 1] for input_id, end_idx in zip(batch['input_ids'], batch['answer_start_position'])]
             # decoder_prompts = pad_tensors_to_left(decoder_prompts, pad_value=processor.tokenizer.pad_token_id)
             # predictions = model.generate(batch['pixel_values'], decoder_input_ids=decoder_prompts, max_length=128, early_stopping=True, pad_token_id=processor.tokenizer.pad_token_id,eos_token_id=processor.tokenizer.eos_token_id,use_cache=True,num_beams=1,bad_words_ids=[[processor.tokenizer.unk_token_id]], synced_gpus=True)
@@ -124,8 +116,8 @@ def evaluate_model(accelerator, model, val_dataloader, processor, config, curr_s
 
 
 def training_loop_accelerate(
-    model: Pix2StructForConditionalGeneration,
-    processor: AutoProcessor,
+    model: AutoModelForCausalLM,
+    tokenizer: AutoTokenizer,
     train_dataset,
     val_dataset,
     run_name: str,
@@ -147,19 +139,18 @@ def training_loop_accelerate(
         accelerator = Accelerator()
 
     with accelerator.main_process_first():
-        # partial_collate_func = partial(collator, processor)
-        # For Donut, we truncate to max length and can use the default collate
+        partial_collate_func = partial(collate_fn, tokenizer.pad_token_id)
         train_dataloader = DataLoader(
             train_dataset,
             shuffle=True,
             batch_size=config["train_micro_batch_size_per_gpu"],
-            # collate_fn=partial_collate_func
+            collate_fn=partial_collate_func,
         )
         val_dataloader = DataLoader(
             val_dataset,
             shuffle=False,
             batch_size=config["val_micro_batch_size_per_gpu"],
-            # collate_fn=partial_collate_func
+            collate_fn=partial_collate_func,
         )
 
     optimizer_cls = (
@@ -225,13 +216,8 @@ def training_loop_accelerate(
                 # TODO: autocast should not be added here
                 with torch.cuda.amp.autocast():
                     model.train()
-                    outputs = model(
-                        batch["pixel_values"],
-                        decoder_input_ids=batch["input_ids"][:, :-1],
-                        labels=batch["labels"].squeeze(1)[:, 1:],
-                    )
-
-                    loss = outputs.loss
+                    output = model(batch["input_ids"], labels=batch["labels"])
+                    loss = output.loss
 
                     # gather loss before backprop in case of gradient accumulation
                     loss_values = accelerator.gather_for_metrics(
@@ -288,12 +274,17 @@ def train(run_name: str, no_log: bool):
         "microsoft/phi-2",
         torch_dtype="auto" if torch.cuda.is_available() else torch.float32,
         trust_remote_code=True,
-    )
+        # attn_implementation="flash_attention_2",
+        # code_revision="main",
+    ).to(device)
     tokenizer = AutoTokenizer.from_pretrained("microsoft/phi-2", trust_remote_code=True)
-    model.to("cuda")
+    # BEWARE !!!
+    tokenizer.add_tokens(["<|im_start|>", "<PAD>"])
+    tokenizer.pad_token = "<PAD>"
+
     dataset = load_dataset("squad")
-    train_dataset = dataset["train"]
-    val_dataset = dataset["validation"]
+    train_dataset = SquadDataset(tokenizer, "train")
+    val_dataset = SquadDataset(tokenizer, "train")
 
     training_loop_accelerate(
         model, tokenizer, train_dataset, val_dataset, run_name, no_log

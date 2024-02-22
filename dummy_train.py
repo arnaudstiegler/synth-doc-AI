@@ -54,7 +54,7 @@ model.train()
 for epoch in range(10):
     for batch in data:
         optimizer.zero_grad()
-        print(batch['input_ids'].shape)
+        print(batch["input_ids"].shape)
         output = model(batch["input_ids"], labels=batch["labels"])
         loss = output.loss
         print(f"Loss: {loss.item()}")
