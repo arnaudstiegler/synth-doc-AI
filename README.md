@@ -32,3 +32,8 @@ When using LORA:
 - CPU usage is <<<
 - training step is about 3 times faster
 This can be explained by the optimizer state CPU offloading: we reduce the size of the optimizer state that is lopcated on the CPU. So there's little impact on the GPU ram usage
+
+With 4bit quantization: 7.5GB of GPU Ram usage
+
+
+Deepspeed Accelerate and quantization: 1.3s per step

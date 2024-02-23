@@ -19,7 +19,6 @@ from transformers import (
     get_scheduler,
 )
 from transformers.utils.logging import set_verbosity_error
-from dataset import collate_fn
 from utils import read_deepspeed_config
 
 logger = get_logger(__name__, log_level="INFO")
@@ -138,16 +137,20 @@ def training_loop_accelerate(
     else:
         accelerator = Accelerator()
 
-    if config['enable_peft']:
+    if config["enable_peft"]:
         peft_config = LoraConfig(
-            task_type=TaskType.CAUSAL_LM, inference_mode=False, r=8, lora_alpha=32, lora_dropout=0.1
+            task_type=TaskType.CAUSAL_LM,
+            inference_mode=False,
+            r=8,
+            lora_alpha=32,
+            lora_dropout=0.1,
         )
 
         model = get_peft_model(model, peft_config)
         model.print_trainable_parameters()
 
     with accelerator.main_process_first():
-        partial_collate_func = partial(collate_fn, tokenizer.pad_token_id)
+        partial_collate_func = partial(SquadDataset.collate_fn, tokenizer.pad_token_id)
         train_dataloader = DataLoader(
             train_dataset,
             shuffle=True,
