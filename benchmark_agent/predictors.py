@@ -3,9 +3,8 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig
 
 device = "cuda" if torch.cuda.is_available() else 'cpu'
 
-
 # TODO: should we force it to return a json dict?
-SYS_PROMPT = "You are an AI agent used for automation. Do not act like a chatbot"
+SYS_PROMPT = "You are an AI agent used for automation. Do not act like a chatbot. Return a json file as the output"
 
 
 class Predictor:
@@ -19,7 +18,7 @@ class MistralOpenOrcaPredictor(Predictor):
             "Open-Orca/Mistral-7B-OpenOrca",
             torch_dtype=torch.float16,
             attn_implementation="flash_attention_2",
-            ).to(device)
+        ).to(device)
         self.tokenizer = AutoTokenizer.from_pretrained(
             "Open-Orca/Mistral-7B-OpenOrca")
 
@@ -37,13 +36,15 @@ class MistralOpenOrcaPredictor(Predictor):
             eos_token_id=self.tokenizer.eos_token_id, pad_token_id=self.tokenizer.eos_token_id,
         )
 
-        inputs = self.tokenizer(input_text, return_tensors="pt", return_attention_mask=True).to(device)
+        inputs = self.tokenizer(input_text, return_tensors="pt", return_attention_mask=True).to(
+            device)
         outputs = self.model.generate(**inputs, generation_config=generation_config)
 
         return self.post_process_output(outputs)
 
     def post_process_output(self, outputs):
-        start_index = torch.where(outputs == torch.tensor(self.tokenizer.encode('assistant', add_special_tokens=False)).to(device))[1]
+        start_index = torch.where(outputs == torch.tensor(
+            self.tokenizer.encode('assistant', add_special_tokens=False)).to(device))[1]
         return self.tokenizer.decode(outputs[0, start_index + 1:], skip_special_tokens=True).strip()
 
 
