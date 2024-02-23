@@ -7,13 +7,13 @@ import torch.nn.functional as F
 from accelerate import Accelerator
 from accelerate.logging import get_logger
 from accelerate.utils import DummyOptim, DummyScheduler
-from peft import get_peft_config, get_peft_model, LoraConfig, TaskType
+from peft import get_peft_model, LoraConfig, TaskType
 from dataset import SquadDataset
 from torch.optim import AdamW
 from torch.utils.data import DataLoader
 from torchmetrics import MeanMetric
 from tqdm.auto import tqdm
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from transformers import (
     Trainer,
     get_scheduler,
@@ -279,7 +279,12 @@ def train(run_name: str, no_log: bool):
         "microsoft/phi-2",
         torch_dtype="auto" if torch.cuda.is_available() else torch.float32,
         trust_remote_code=True,
-        # attn_implementation="flash_attention_2",
+        quantization_config=BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_compute_dtype=torch.bfloat16,
+            bnb_4bit_quant_type="nf4",
+        ),
+        attn_implementation="flash_attention_2",
     ).to(device)
     tokenizer = AutoTokenizer.from_pretrained("microsoft/phi-2", trust_remote_code=True)
     # BEWARE !!!

@@ -12,3 +12,4 @@ deepspeed
 flash-attn
 packaging
 peft
+bitsandbytes
