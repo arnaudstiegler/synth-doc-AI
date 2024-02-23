@@ -3,7 +3,7 @@ import os
 from benchmark_agent.predictors import MistralOpenOrcaPredictor
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
-samples = json.load(open(os.path.join(dir_path, 'tasks.json')))
+samples = json.load(open(os.path.join(dir_path, 'tasks.json')))['samples']
 
 model_predictor = MistralOpenOrcaPredictor()
 
