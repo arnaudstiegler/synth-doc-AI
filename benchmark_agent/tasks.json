@@ -1,0 +1,48 @@
+{
+  "samples": [
+    {
+      "task_definition": "Calculate the total expenses for the month.",
+      "task_input": "List of expenses: Rent: $1200, Utilities: $300, Office Supplies: $150, Internet: $80, Maintenance: $200",
+      "expected_output": {
+        "total_expenses": "$1930"
+      }
+    },
+    {
+      "task_definition": "Generate a report of sales by product.",
+      "task_input": "Sales data: Product A: 120 units, Product B: 90 units, Product C: 150 units",
+      "expected_output": {
+        "sales_report": {
+          "Product A": "120 units",
+          "Product B": "90 units",
+          "Product C": "150 units"
+        }
+      }
+    },
+    {
+      "task_definition": "Calculate employee bonus based on sales performance.",
+      "task_input": "Employee sales: John Smith: $20000, Jane Doe: $25000, Employee bonus rate: 5%",
+      "expected_output": {
+        "employee_bonus": {
+          "John Smith": "$1000",
+          "Jane Doe": "$1250"
+        }
+      }
+    },
+    {
+      "task_definition": "Generate a list of overdue invoices.",
+      "task_input": "Invoices: Invoice 001: Due date 2023-01-15, Paid: No; Invoice 002: Due date 2023-01-20, Paid: Yes; Today's date: 2023-02-01",
+      "expected_output": {
+        "overdue_invoices": [
+          "Invoice 001"
+        ]
+      }
+    },
+    {
+      "task_definition": "Automate email responses for common customer inquiries.",
+      "task_input": "Customer inquiry: 'What are your business hours?'",
+      "expected_output": {
+        "email_response": "Thank you for reaching out. Our business hours are Monday to Friday, 9 AM to 5 PM."
+      }
+    }
+  ]
+}
