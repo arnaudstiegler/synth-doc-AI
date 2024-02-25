@@ -5,24 +5,41 @@ from benchmark_agent.predictors import (
     MistralInstructPredictor,
     Sample,
 )
+import click
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 samples = json.load(open(os.path.join(dir_path, "tasks_manual.json")))["samples"]
 
-model_predictor = MistralInstructPredictor()
+MODEL_CHOICES = {
+    'mistral-orca': MistralOpenOrcaPredictor,
+    'mistral-instruct': MistralInstructPredictor
+}
 
-valid_json = []
-for sample in samples:
-    prompt = sample["task_definition"] + " " + sample["task_input"]
-    expected_answer = sample["expected_output"]
-    generated_answer = model_predictor.generate_answer(Sample(**sample))
+@click.command()
+@click.option('--model', type=click.Choice(list(MODEL_CHOICES.keys())), default='mistral-instruct')
+def run_eval(model:str) -> None:
+    model_predictor_cls = MODEL_CHOICES[model]
+    model_predictor = model_predictor_cls()
 
-    # TODO: compute 1) is json?, 2) is right keys?, 3) is right answer?
+    valid_json = []
+    for sample in samples:
+        generated_answer = model_predictor.generate_answer(sample=Sample(**sample))
+        try:
+            json_answer = json.loads(generated_answer)
+            valid_json.append(1)
+        except:
+            valid_json.append(0)
 
-    try:
-        json_answer = json.loads(generated_answer)
-        valid_json.append(1)
-    except:
-        valid_json.append(0)
+        '''
+        Use jsonformer to force json output
+        For eval:
+        if json_expected: try json.loads first. If not working, try retrieve a json from the output and load it
+        Verify the keys
+        if not json_expected: try to match only the output, else try to find the answer in the output
+        '''
 
-print(sum(valid_json) / len(valid_json))
+    print(sum(valid_json) / len(valid_json))
+
+
+if __name__ == '__main__':
+    run_eval()
