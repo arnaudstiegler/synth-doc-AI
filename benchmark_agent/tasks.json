@@ -8,6 +8,13 @@
       }
     },
     {
+      "task_definition": "Find the highest expense for the month",
+      "task_input": "List of expenses: Rent: $1200, Utilities: $300, Office Supplies: $150, Internet: $80, Maintenance: $200",
+      "expected_output": {
+        "total_expenses": "$1930"
+      }
+    },
+    {
       "task_definition": "Generate a report of sales by product.",
       "task_input": "Sales data: Product A: 120 units, Product B: 90 units, Product C: 150 units",
       "expected_output": {

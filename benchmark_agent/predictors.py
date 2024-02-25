@@ -1,13 +1,31 @@
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig
+from dataclasses import dataclass
 
 device = "cuda" if torch.cuda.is_available() else 'cpu'
+# None means we use regular attention
+ATTN_TO_USE = "flash_attention_2" if torch.cuda.is_available() else None
 
 # TODO: should we force it to return a json dict?
-SYS_PROMPT = "You are an AI agent used for automation. Do not act like a chatbot. Return a json file as the output"
+SYS_PROMPT = ("You are an AI agent used for automation. Do not act like a chatbot. Execute the task and"
+              "follow the instructions for the formatting of the output")
+
+
+@dataclass
+class Sample:
+    id: int
+    type: str
+    task_definition: str
+    task_input: str
+    json_expected: bool
+    task_output_format: str
+    expected_output: str
 
 
 class Predictor:
+    def format_sample_into_prompt(self, sample: Sample) -> str:
+        return sample.task_definition + ' ' + sample.task_output_format +'\n Input: \n' + sample.task_input
+
     def generate_answer(self, prompt: str):
         raise NotImplementedError
 
@@ -17,7 +35,7 @@ class MistralOpenOrcaPredictor(Predictor):
         self.model = AutoModelForCausalLM.from_pretrained(
             "Open-Orca/Mistral-7B-OpenOrca",
             torch_dtype=torch.float16,
-            attn_implementation="flash_attention_2" if torch.cuda.is_available() else None,
+            attn_implementation=ATTN_TO_USE,
         ).to(device)
         self.tokenizer = AutoTokenizer.from_pretrained(
             "Open-Orca/Mistral-7B-OpenOrca")
@@ -51,9 +69,27 @@ class MistralOpenOrcaPredictor(Predictor):
 class MistralInstructPredictor(Predictor):
     def __init__(self):
         self.model = AutoModelForCausalLM.from_pretrained(
-            "mistralai/Mistral-7B-v0.1",
-            torch_dtype=torch.float16,
-            attn_implementation="flash_attention_2",
+            "mistralai/Mistral-7B-Instruct-v0.2",
+            torch_dtype=torch.float16 if device == 'cuda' else torch.float32,
+            attn_implementation=ATTN_TO_USE,
         ).to(device)
         self.tokenizer = AutoTokenizer.from_pretrained(
-            "mistralai/Mistral-7B-v0.1")
+            "mistralai/Mistral-7B-Instruct-v0.2")
+
+    def generate_answer(self, sample: Sample):
+        prompt = self.format_sample_into_prompt(sample)
+
+        generation_config = GenerationConfig(
+            max_length=256, temperature=1.1, top_p=0.95, repetition_penalty=1.0,
+            do_sample=True, use_cache=True,
+            eos_token_id=self.tokenizer.eos_token_id, pad_token_id=self.tokenizer.eos_token_id,
+        )
+
+        messages = [
+            {"role": "user", "content": prompt},
+        ]
+
+        encodeds = self.tokenizer.apply_chat_template(messages, return_tensors="pt")
+        import ipdb;ipdb.set_trace()
+        generated_ids = self.model.generate(encodeds, max_new_tokens=1000, do_sample=True, use_cache=True)
+        decoded = self.tokenizer.batch_decode(generated_ids)
