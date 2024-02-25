@@ -129,5 +129,6 @@ class MistralInstructPredictor(Predictor):
         return answer
 
     def post_process_output(self, outputs: torch.Tensor) -> str:
-        decoded = self.tokenizer.batch_decode(outputs)
+        decoded = self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
+        print(decoded, decoded[0].split('[/INST]')[1].strip())
         return decoded[0].split('[/INST]')[1].strip()

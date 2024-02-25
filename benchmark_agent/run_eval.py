@@ -16,7 +16,6 @@ for sample in samples:
     prompt = sample["task_definition"] + " " + sample["task_input"]
     expected_answer = sample["expected_output"]
     generated_answer = model_predictor.generate_answer(Sample(**sample))
-    print(generated_answer, expected_answer)
 
     # TODO: compute 1) is json?, 2) is right keys?, 3) is right answer?
 
