@@ -125,20 +125,9 @@ class MistralInstructPredictor(Predictor):
         generated_ids = self.model.generate(
             encodeds, max_new_tokens=1000, do_sample=True, use_cache=True
         )
-        decoded = self.tokenizer.batch_decode(generated_ids)
-        import ipdb
-
-        ipdb.set_trace()
         answer = self.post_process_output(generated_ids)
         return answer
 
     def post_process_output(self, outputs: torch.Tensor) -> str:
-        start_index = torch.where(
-            outputs
-            == torch.tensor(
-                self.tokenizer.encode("[/INST]", add_special_tokens=False)
-            ).to(device)
-        )[1]
-        return self.tokenizer.decode(
-            outputs[0, start_index + 1 :], skip_special_tokens=True
-        ).strip()
+        decoded = self.tokenizer.batch_decode(outputs)
+        return decoded[0].split('[/INST]')[1].strip()
