@@ -13,3 +13,4 @@ flash-attn
 packaging
 peft
 bitsandbytes
+sentencepiece

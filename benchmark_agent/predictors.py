@@ -17,7 +17,7 @@ class MistralOpenOrcaPredictor(Predictor):
         self.model = AutoModelForCausalLM.from_pretrained(
             "Open-Orca/Mistral-7B-OpenOrca",
             torch_dtype=torch.float16,
-            attn_implementation="flash_attention_2",
+            attn_implementation="flash_attention_2" if torch.cuda.is_available() else None,
         ).to(device)
         self.tokenizer = AutoTokenizer.from_pretrained(
             "Open-Orca/Mistral-7B-OpenOrca")
