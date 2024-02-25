@@ -8,6 +8,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 ATTN_TO_USE = "flash_attention_2" if torch.cuda.is_available() else None
 
 # TODO: should we force it to return a json dict?
+# TODO: unify generation config
 SYS_PROMPT = (
     "You are an AI agent used for automation. Do not act like a chatbot. Execute the task and"
     "follow the instructions for the formatting of the output"
@@ -62,7 +63,7 @@ class MistralOpenOrcaPredictor(Predictor):
         input_text = sys_format + user_format + assistant_format
 
         generation_config = GenerationConfig(
-            max_length=256,
+            max_new_tokens=256,
             # temperature=1.1,
             # top_p=0.95,
             # repetition_penalty=1.0,
