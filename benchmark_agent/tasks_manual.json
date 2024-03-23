@@ -6,7 +6,7 @@
       "task_definition": "Find the highest expense for the month",
       "task_input": "List of expenses: Rent: $1200, Utilities: $300, Office Supplies: $150, Internet: $80, Maintenance: $200",
       "json_expected": false,
-      "task_output_format": "The output should be a single string representing the total expenses in the format \"$XXXX\", where XXXX is the total amount calculated from the provided list of expenses.",
+      "task_output_format": "The output should be a single string representing the highest in the format \"$XXXX\"",
       "expected_output": "$1200"
     },
     {

@@ -4,59 +4,70 @@ from functools import partial
 import torch
 from accelerate import Accelerator
 from accelerate.logging import get_logger
-from accelerate.utils import DummyOptim
 from torch.optim import AdamW
 from torch.utils.data import DataLoader
+from datasets import load_dataset
+from transformers import AutoModelForCausalLM, AutoProcessor, BitsAndBytesConfig
+from torch.utils.data import default_collate
+import bitsandbytes as bnb
+import torch
 
-from dataset import TextVQADataset
-from utils import read_deepspeed_config
-from transformers import LlavaForConditionalGeneration, AutoProcessor
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_use_double_quant=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.bfloat16,
+)
+
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 # Load model directly
-model = LlavaForConditionalGeneration.from_pretrained(
-    "llava-hf/llava-1.5-7b-hf",
+model = AutoModelForCausalLM.from_pretrained(
+    "adept/fuyu-8b",
     torch_dtype="auto" if torch.cuda.is_available() else torch.float32,
-    trust_remote_code=True,
+    quantization_config=bnb_config,
+    low_cpu_mem_usage=True,
     # attn_implementation="flash_attention_2",
     # code_revision="main",
 )
-processor = AutoProcessor.from_pretrained("llava-hf/llava-1.5-7b-hf")
+processor = AutoProcessor.from_pretrained(
+    "adept/fuyu-8b", padding="max_length", max_length=128
+)
 
 logger = get_logger(__name__)
 logger.setLevel(logging.INFO)
-config = read_deepspeed_config()
+# config = read_deepspeed_config()
 accelerator = Accelerator()
 
-dataset = TextVQADataset(processor, "train")
+dataset = load_dataset("textvqa")
+sample = dataset["train"][0]
 
-collate = partial(TextVQADataset.collate_fn, processor.tokenizer.pad_token_id)
+# collate = partial(TextVQADataset.collate_fn, processor.tokenizer.pad_token_id)
 data = torch.utils.data.DataLoader(
     dataset,
     shuffle=True,
-    batch_size=config["train_micro_batch_size_per_gpu"],
-    collate_fn=collate,
+    batch_size=1,
+    collate_fn=default_collate,
 )
 
-optimizer_cls = (
-    AdamW
-    if accelerator.state.deepspeed_plugin is None
-    or "optimizer" not in accelerator.state.deepspeed_plugin.deepspeed_config
-    else DummyOptim
-)
-optimizer = optimizer_cls(model.parameters())
+optimizer = bnb.optim.Adam8bit(model.parameters(), lr=0.01)
 model, optimizer, data = accelerator.prepare(model, optimizer, data)
+model.gradient_checkpointing_enable()
 
+sample = dataset["train"][0]
 model.train()
 for epoch in range(10):
-    for batch in data:
+    for k in range(100):
         optimizer.zero_grad()
-        print(batch["input_ids"].shape)
-        output = model(
-            pixel_values=batch["pixel_values"],
-            input_ids=batch["input_ids"],
-            labels=batch["labels"],
+        text = sample["question"] + " " + sample["answers"][0]
+        maxsize = (512, 512)
+        sample["image"].thumbnail(maxsize, PIL.Image.LANCZOS)
+        inputs = processor(text=text, images=sample["image"], return_tensors="pt").to(
+            "cuda:0"
         )
+        # print(inputs['image_patches'][0])
+        inputs["labels"] = inputs["input_ids"].clone()
+        output = model(**inputs)
         loss = output.loss
         print(f"Loss: {loss.item()}")
         logger.info(f"Loss: {loss.item()}", main_process_only=True)

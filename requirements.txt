@@ -9,8 +9,10 @@ torchmetrics
 ruff
 datasets
 deepspeed
-flash-attn
 packaging
 peft
 bitsandbytes
 sentencepiece
+matplotlib
+faker
+ipdb

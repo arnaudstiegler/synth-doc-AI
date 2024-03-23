@@ -30,11 +30,11 @@ class Predictor:
     @staticmethod
     def format_sample_into_prompt(sample: Sample) -> str:
         return (
-                sample.task_definition
-                + " "
-                + sample.task_output_format
-                + "\n Input: \n"
-                + sample.task_input
+            sample.task_definition
+            + " "
+            + sample.task_output_format
+            + "\n Input: \n"
+            + sample.task_input
         )
 
     def generate_answer(self, sample: Sample) -> str:
@@ -81,16 +81,12 @@ class MistralOpenOrcaPredictor(Predictor):
         return self.post_process_output(outputs)
 
     def post_process_output(self, outputs: torch.Tensor) -> str:
-        start_index = torch.where(
-            outputs
-            == torch.tensor(
-                self.tokenizer.encode("assistant", add_special_tokens=False)
-            ).to(device)
-        )[1]
-        import ipdb; ipdb.set_trace()
-        return self.tokenizer.decode(
-            outputs[0, start_index + 1:], skip_special_tokens=True
-        ).strip()
+        # Assuming the output will not contain "assistant" more than once
+        return (
+            self.tokenizer.batch_decode(outputs, skip_special_tokens=True)[0]
+            .split("assistant")[1]
+            .strip()
+        )
 
 
 class MistralInstructPredictor(Predictor):
@@ -111,9 +107,9 @@ class MistralInstructPredictor(Predictor):
         messages = [
             {"role": "user", "content": prompt},
         ]
-        encodeds = self.tokenizer.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt").to(
-            device
-        )
+        encodeds = self.tokenizer.apply_chat_template(
+            messages, add_generation_prompt=True, return_tensors="pt"
+        ).to(device)
 
         generated_ids = self.model.generate(
             encodeds, max_new_tokens=1000, do_sample=True, use_cache=True
@@ -123,5 +119,5 @@ class MistralInstructPredictor(Predictor):
 
     def post_process_output(self, outputs: torch.Tensor) -> str:
         decoded = self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
-        print(decoded, decoded[0].split('[/INST]')[1].strip())
-        return decoded[0].split('[/INST]')[1].strip()
+        print(decoded, decoded[0].split("[/INST]")[1].strip())
+        return decoded[0].split("[/INST]")[1].strip()

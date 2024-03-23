@@ -14,15 +14,15 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 samples = json.load(open(os.path.join(dir_path, "tasks_manual.json")))["samples"]
 
 MODEL_CHOICES = {
-    'mistral-orca': MistralOpenOrcaPredictor,
-    'mistral-instruct': MistralInstructPredictor
+    "mistral-orca": MistralOpenOrcaPredictor,
+    "mistral-instruct": MistralInstructPredictor,
 }
 
 
 def find_and_parse_json(s):
     # Regular expression pattern to find a JSON object
     # This pattern assumes the JSON does not contain nested objects or arrays
-    pattern = r'\{[^{}]*\}'
+    pattern = r"\{[^{}]*\}"
 
     # Search for JSON string within the input
     match = re.search(pattern, s)
@@ -39,7 +39,9 @@ def find_and_parse_json(s):
 
 
 @click.command()
-@click.option('--model', type=click.Choice(list(MODEL_CHOICES.keys())), default='mistral-instruct')
+@click.option(
+    "--model", type=click.Choice(list(MODEL_CHOICES.keys())), default="mistral-instruct"
+)
 def run_eval(model: str) -> None:
     model_predictor_cls = MODEL_CHOICES[model]
     model_predictor = model_predictor_cls()
@@ -70,17 +72,16 @@ def run_eval(model: str) -> None:
             else:
                 valid_plain.append(0)
 
-
-        '''
+        """
         Use jsonformer to force json output
         For eval:
         if json_expected: try json.loads first. If not working, try retrieve a json from the output and load it
         Verify the keys
         if not json_expected: try to match only the output, else try to find the answer in the output
-        '''
+        """
 
     print(sum(valid_json) / len(valid_json))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run_eval()
