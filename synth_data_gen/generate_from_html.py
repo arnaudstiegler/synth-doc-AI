@@ -2,12 +2,12 @@ import imgkit
 import numpy as np
 from PIL import Image
 import io
-from jinja2 import Template
 from augraphy import *
 import cv2
 import matplotlib.pyplot as plt
 from faker import Faker
-from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, Template
+import random
 
 
 pipeline = default_augraphy_pipeline()
@@ -47,7 +47,7 @@ height = 3508
 for i in range(5):
     # np_augmented = pipeline(np_img)
     # pil_augmented = Image.fromarray(np_augmented)
-    template = env.get_template('test_variation.html')  # Replace 'test.html' with your actual template name
+    template = env.get_template('test.html')  # Replace 'test.html' with your actual template name
     data = {
     'customerName': fake.first_name() + ' ' + fake.last_name(),
     'accountNumber': fake.numerify(text='INV-#####'),
@@ -57,13 +57,13 @@ for i in range(5):
     # TODO should update that logic
     'gasDeliveryCharge': str(fake.random_number(digits=3)) + '.00',
     'gasSupplyCharge': str(fake.random_number(digits=3)) + '.00',
-    'totalCurrentCharges': str(fake.random_number(digits=3)) + '.00',
+    # 'totalCurrentCharges': str(fake.random_number(digits=3)) + '.00',
     'importantMessages': fake.words()
     }
+
+    num_items = random.randint(0,10)
     charges = [
-        {"description": fake.name(), "amount": fake.random_number(digits=5), "class": "gasDeliveryCharge", "metatype": "Number"},
-        {"description": fake.name(), "amount": fake.random_number(digits=5), "class": "gasSupplyCharge", "metatype": "Number"},
-        # Add more charges as needed
+        {"description": f'Item {i}', "amount": 10} for i in range(num_items)
     ]
 
     # Render the template with data

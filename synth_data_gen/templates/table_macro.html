@@ -1,4 +1,4 @@
-{% macro charges_table(charges, totalCurrentCharges) %}
+{% macro charges_table(charges) %}
 <table>
     <tr>
         <th>Description</th>
@@ -9,9 +9,7 @@
         {% set totalCurrentCharges = totalCurrentCharges + charge.amount %}
         <tr>
             <td>{{ charge.description }}</td>
-            <td>{{ charge.amount }}</td>
-            <td>{{ charge.class }}</td>
-            <td>{{ charge.metatype }}</td>
+            <td>${{ charge.amount }}</td>
         </tr>
     {% endfor %}
     <tr>
