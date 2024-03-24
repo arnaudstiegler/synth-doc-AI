@@ -1,50 +1,52 @@
+{% from "table_macro.html" import charges_table %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bill</title>
+    <title>Invoice</title>
     <style>
-        /* Add styles here for formatting the bill */
-        body { font-family: 'Arial', sans-serif; font-size: 3em; }
+        /* Add styles here for formatting the invoice */
+        body { font-family: 'Arial', sans-serif; font-size: 2em; }
         .header, .footer { text-align: center; }
-        .content { margin: 20px; }
+        .content, .billing-info, .payment-instructions { margin: 20px; }
         table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 8px; font-size: 3em; }
+        th, td { border: 1px solid #ddd; padding: 8px; font-size: 2em; }
+        .billing-info h3, .payment-instructions h3 { font-size: 2.2em; }
     </style>
 </head>
 <body>
     <div class="header">
-        <h2>Bill for {{ customerName }}</h2>
+        <h2>Invoice for <span class="customerName" data-metatype="String">{{ customerName }}</span></h2>
+    </div>
+    <div class="billing-info">
+        <h3>Billing Information</h3>
+        <p><strong>Name:</strong> <span class="billingName" data-metatype="String">{{ billingName }}</span></p>
+        <p><strong>Address:</strong> <span class="billingAddress" data-metatype="String">{{ billingAddress }}</span></p>
+        <p><strong>Email:</strong> <span class="billingEmail" data-metatype="String">{{ billingEmail }}</span></p>
     </div>
     <div class="content">
-        <p><strong>Account Number:</strong> {{ accountNumber }}</p>
-        <p><strong>Bill Date:</strong> {{ billDate }}</p>
-        <p><strong>Service Period:</strong> {{ serviceStart }} to {{ serviceEnd }}</p>
+        <p><strong>Account Number:</strong> <span class="accountNumber" data-metatype="String">{{ accountNumber }}</span></p>
+        <p><strong>Invoice Date:</strong> <span class="billDate" data-metatype="Date">{{ billDate }}</span></p>
+        <p><strong>Service Period:</strong> <span class="serviceStart" data-metatype="Date">{{ serviceStart }}</span> to <span class="serviceEnd" data-metatype="Date">{{ serviceEnd }}</span></p>
 
         <h3>Summary of Charges</h3>
-        <table>
-            <tr>
-                <th>Description</th>
-                <th>Amount</th>
-            </tr>
-            <tr>
-                <td>GAS DELIVERY CHARGE</td>
-                <td>${{ gasDeliveryCharge }}</td>
-            </tr>
-            <tr>
-                <td>GAS SUPPLY CHARGE</td>
-                <td>${{ gasSupplyCharge }}</td>
-            </tr>
-            <!-- Add more rows as needed -->
-            <tr>
-                <td><strong>Total Current Charges</strong></td>
-                <td><strong>${{ totalCurrentCharges }}</strong></td>
-            </tr>
-        </table>
 
-        <h3>Important Messages</h3>
-        <p>{{ importantMessages }}</p>
+        <!-- Other HTML content -->
+        
+        {{ charges_table(charges, totalCurrentCharges) }}
+        
+        <!-- More HTML content -->
+        
+    </div>
+    <div class="payment-instructions">
+        <h3>Payment Instructions</h3>
+        <p>Please make your payment to the following account:</p>
+        <p><strong>Bank:</strong> <span class="bankName" data-metatype="String">{{ bankName }}</span></p>
+        <p><strong>Account Number:</strong> <span class="bankAccountNumber" data-metatype="String">{{ bankAccountNumber }}</span></p>
+        <p><strong>Sort Code:</strong> <span class="sortCode" data-metatype="String">{{ sortCode }}</span></p>
+        <p>Payment is due within 30 days of receiving this invoice.</p>
     </div>
     <div class="footer">
         <p>Thank you for your business!</p>
