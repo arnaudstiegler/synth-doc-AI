@@ -11,11 +11,20 @@ data_gen = RealisticDataGenerator()
 
 
 class KeyValueBox:
-    def generate(height: int, width: int):
-        font_box_ratio = 0.3
+    MIN_HEIGHT = 100
+    MAX_HEIGHT = 400
+    MIN_WIDTH = 100
+    MAX_WIDTH = 1e9 # No max width
+    TEXT_BOX_RATIO = 0.1
+
+    def is_viable(self, height: int, width: int):
+        if (self.MIN_HEIGHT <= height <= self.MAX_HEIGHT) and (self.MIN_WIDTH <= width <= self.MAX_WIDTH):
+            return True
+        return False
+
+    def generate(self, height: int, width: int):
 
         text_image_size = (width, height)
-        font_size = width * font_box_ratio
         text_image = Image.new(
             "RGBA", text_image_size, (255, 255, 255, 255)
         )
@@ -29,11 +38,11 @@ class KeyValueBox:
 
         font = ImageFont.truetype(
             PRINTED_FONT_PATH,
-            size=30,
+            size=width*self.TEXT_BOX_RATIO,
         )
         second_font = ImageFont.truetype(
             HANDWRITTEN_FONT_PATH,
-            size=30,
+            size=width*self.TEXT_BOX_RATIO,
         )
 
         # Draw the text (without specifying font will use default)

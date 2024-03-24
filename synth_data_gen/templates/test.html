@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill</title>
+    <style>
+        /* Add styles here for formatting the bill */
+        body { font-family: 'Arial', sans-serif; font-size: 3em; }
+        .header, .footer { text-align: center; }
+        .content { margin: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; font-size: 3em; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Bill for {{ customerName }}</h2>
+    </div>
+    <div class="content">
+        <p><strong>Account Number:</strong> {{ accountNumber }}</p>
+        <p><strong>Bill Date:</strong> {{ billDate }}</p>
+        <p><strong>Service Period:</strong> {{ serviceStart }} to {{ serviceEnd }}</p>
+
+        <h3>Summary of Charges</h3>
+        <table>
+            <tr>
+                <th>Description</th>
+                <th>Amount</th>
+            </tr>
+            <tr>
+                <td>GAS DELIVERY CHARGE</td>
+                <td>${{ gasDeliveryCharge }}</td>
+            </tr>
+            <tr>
+                <td>GAS SUPPLY CHARGE</td>
+                <td>${{ gasSupplyCharge }}</td>
+            </tr>
+            <!-- Add more rows as needed -->
+            <tr>
+                <td><strong>Total Current Charges</strong></td>
+                <td><strong>${{ totalCurrentCharges }}</strong></td>
+            </tr>
+        </table>
+
+        <h3>Important Messages</h3>
+        <p>{{ importantMessages }}</p>
+    </div>
+    <div class="footer">
+        <p>Thank you for your business!</p>
+    </div>
+</body>
+</html>
