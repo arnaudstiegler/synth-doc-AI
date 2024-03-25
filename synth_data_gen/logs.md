@@ -1,4 +1,18 @@
+## Entry 03/25
+### TODO:
+- [x] Fix the jinja macro issue for the table
+- [x] Try creating a paragraph component
+- [] Try adding more "visual" elements to the page (randomizing the styling of the page?)
+- [] Fix the bug on getting style.css
+
 ## Entry 03/24
+
+## TODO:
+- Adjust box/text ratio
+- Set max size for a box
+- Add min/max size for a given component
+- Try out paragraph
+- Try out header
 
 HTML format is much better for anything that's printed semi-structured and unstructured documents. Variability will have to come from modularizing different pieces from the 
 

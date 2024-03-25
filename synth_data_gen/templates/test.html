@@ -5,8 +5,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/style.css"/>
     <title>Invoice</title>
-    <style>
+    <!-- <style>
         /* Add styles here for formatting the invoice */
         body { font-family: 'Arial', sans-serif; font-size: 2em; }
         .header, .footer { text-align: center; }
@@ -14,7 +15,7 @@
         table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid #ddd; padding: 8px; font-size: 2em; }
         .billing-info h3, .payment-instructions h3 { font-size: 2.2em; }
-    </style>
+    </style> -->
 </head>
 <body>
     <div class="header">
@@ -47,6 +48,12 @@
         <p><strong>Account Number:</strong> <span class="bankAccountNumber" data-metatype="String">{{ bankAccountNumber }}</span></p>
         <p><strong>Sort Code:</strong> <span class="sortCode" data-metatype="String">{{ sortCode }}</span></p>
         <p>Payment is due within 30 days of receiving this invoice.</p>
+    </div>
+    <div class="terms">
+        {% set random_number = range(2) | random %}
+        {% if random_number == 1 %}
+            {{ terms }}
+        {% endif %}
     </div>
     <div class="footer">
         <p>Thank you for your business!</p>

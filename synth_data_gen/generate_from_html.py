@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from faker import Faker
 from jinja2 import Environment, FileSystemLoader, Template
 import random
+from synth_data_gen.utils import read_file
 
 
 pipeline = default_augraphy_pipeline()
@@ -44,7 +45,7 @@ height = 3508
 
 
 
-for i in range(5):
+for i in range(1):
     # np_augmented = pipeline(np_img)
     # pil_augmented = Image.fromarray(np_augmented)
     template = env.get_template('test.html')  # Replace 'test.html' with your actual template name
@@ -66,8 +67,10 @@ for i in range(5):
         {"description": f'Item {i}', "amount": 10} for i in range(num_items)
     ]
 
+    terms = read_file('/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/text_samples/terms.txt')
+
     # Render the template with data
-    output = template.render(charges=charges)    
+    output = template.render(charges=charges, terms=terms)    
 
     # Convert the HTML template to an image
     img = imgkit.from_string(output, None, options={'format': 'png', 'width': width, 'height': height})
