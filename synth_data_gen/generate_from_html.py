@@ -69,8 +69,11 @@ for i in range(1):
 
     terms = read_file('/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/text_samples/terms.txt')
 
+    # Read CSS content
+    with open('/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/templates/static/style.css', 'r') as css_file:
+        css_content = css_file.read()
     # Render the template with data
-    output = template.render(charges=charges, terms=terms)    
+    output = template.render(css=css_content, charges=charges, terms=terms)    
 
     # Convert the HTML template to an image
     img = imgkit.from_string(output, None, options={'format': 'png', 'width': width, 'height': height})
