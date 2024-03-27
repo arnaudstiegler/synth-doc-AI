@@ -9,6 +9,8 @@ from faker import Faker
 from jinja2 import Environment, FileSystemLoader, Template
 import random
 from synth_data_gen.utils import read_file
+import os
+import pdfkit
 
 
 pipeline = default_augraphy_pipeline()
@@ -28,8 +30,9 @@ fake = Faker()
 # Set the path to your HTML file
 # html_file_path = '/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/templates/test.html'
 
-template_dir = '/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/templates/'
-env = Environment(loader=FileSystemLoader(template_dir))
+template_folder = 'synth_data_gen/templates/'
+templates = [file for file in os.listdir(template_folder) if file.endswith('.html')]
+env = Environment(loader=FileSystemLoader(template_folder))
 
 
 
@@ -44,21 +47,19 @@ width = 2480
 height = 3508
 
 
-
-for i in range(1):
-    # np_augmented = pipeline(np_img)
-    # pil_augmented = Image.fromarray(np_augmented)
-    template = env.get_template('test.html')  # Replace 'test.html' with your actual template name
+for i in range(5):
+    # TODO: vary the template
+    # NB: the env already has the template folder
+    chosen = random.choice(templates)
+    print(chosen)
+    template = env.get_template(chosen)
+    import ipdb; ipdb.set_trace()
     data = {
     'customerName': fake.first_name() + ' ' + fake.last_name(),
     'accountNumber': fake.numerify(text='INV-#####'),
     'billDate': fake.date(),
     'serviceStart': '2022-01-01',
     'serviceEnd': '2022-01-31',
-    # TODO should update that logic
-    'gasDeliveryCharge': str(fake.random_number(digits=3)) + '.00',
-    'gasSupplyCharge': str(fake.random_number(digits=3)) + '.00',
-    # 'totalCurrentCharges': str(fake.random_number(digits=3)) + '.00',
     'importantMessages': fake.words()
     }
 
@@ -70,17 +71,23 @@ for i in range(1):
     terms = read_file('/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/text_samples/terms.txt')
 
     # Read CSS content
-    with open('/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/templates/static/style.css', 'r') as css_file:
+    style_folder_path = 'synth_data_gen/templates/static/'
+    style_files = os.listdir(style_folder_path)
+
+    chosen_style_file = random.choice(style_files)
+    print(chosen_style_file)
+    with open(os.path.join(style_folder_path, chosen_style_file), 'r') as css_file:
         css_content = css_file.read()
     # Render the template with data
     output = template.render(css=css_content, charges=charges, terms=terms)    
 
     # Convert the HTML template to an image
-    img = imgkit.from_string(output, None, options={'format': 'png', 'width': width, 'height': height})
+    # img = imgkit.from_string(output, None, options={'format': 'png', 'width': width, 'height': height})
+    pdfkit.from_string(output, f'/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/samples/sample_{i}.pdf')
 
     # Convert the image to a PIL image
-    pil_img = Image.open(io.BytesIO(img))
+    # pil_img = Image.open(io.BytesIO(img))
 
     # Convert the PIL image to a NumPy array
-    np_img = np.array(pil_img)
-    pil_img.save(f'/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/samples/sample_{i}.png')
+    # np_img = np.array(pil_img)
+    # pil_img.save(f'/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/samples/sample_{i}.png')

@@ -1,7 +1,11 @@
 ## Entry 03/27
 ### TODO:
 - [x] Fix the bug on getting style.css
-- [] Try adding more "visual" elements to the page (randomizing the styling of the page?)
+- [x] Try adding more "visual" elements to the page (randomizing the styling of the page?)
+- [x] Use pdf instead of images
+- [] Find ways to collect all jinja attributes from the html (probably tricky)
+- [] Adapt the font size to the page?
+
 
 ## Entry 03/25
 ### TODO:
