@@ -5,6 +5,7 @@
 - [x] Use pdf instead of images
 - [] Find ways to collect all jinja attributes from the html (probably tricky)
 - [] Adapt the font size to the page?
+- [] Find a way to make the 2 columns work with the css
 
 
 ## Entry 03/25

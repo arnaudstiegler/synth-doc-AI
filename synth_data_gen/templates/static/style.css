@@ -32,3 +32,11 @@ body { font-family: 'Arial', sans-serif; font-size: 10px; }
 table { width: 100%; border-collapse: collapse; }
 th, td { border: 1px solid #ddd; padding: 8px; font-size: 2em; }
 .billing-info h3, .payment-instructions h3 { font-size: 8px; }
+
+.row {
+    display: flex;
+  }
+  
+.column {
+flex: 50%;
+}

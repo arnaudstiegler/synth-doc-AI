@@ -52,16 +52,19 @@ for i in range(5):
     # NB: the env already has the template folder
     chosen = random.choice(templates)
     print(chosen)
-    template = env.get_template(chosen)
-    import ipdb; ipdb.set_trace()
+    # template = env.get_template(chosen)
+    template = env.get_template('test.html')
+    # import ipdb; ipdb.set_trace()
     data = {
-    'customerName': fake.first_name() + ' ' + fake.last_name(),
-    'accountNumber': fake.numerify(text='INV-#####'),
-    'billDate': fake.date(),
-    'serviceStart': '2022-01-01',
-    'serviceEnd': '2022-01-31',
-    'importantMessages': fake.words()
+    'Customer Name': str(fake.first_name() + ' ' + fake.last_name()),
+    'Account Number': str(fake.numerify(text='INV-#####')),
+    'Bill Date': str(fake.date()),
+    'Service Start': '2022-01-01',
+    'Service End': '2022-01-31',
+    'Important Messages': str(' '.join(fake.words()))
     }
+
+    kv_pairs = [': '.join([k,v]) for k, v in data.items()]
 
     num_items = random.randint(0,10)
     charges = [
@@ -79,7 +82,7 @@ for i in range(5):
     with open(os.path.join(style_folder_path, chosen_style_file), 'r') as css_file:
         css_content = css_file.read()
     # Render the template with data
-    output = template.render(css=css_content, charges=charges, terms=terms)    
+    output = template.render(css=css_content, charges=charges, terms=terms, kv_pairs=kv_pairs)    
 
     # Convert the HTML template to an image
     # img = imgkit.from_string(output, None, options={'format': 'png', 'width': width, 'height': height})
