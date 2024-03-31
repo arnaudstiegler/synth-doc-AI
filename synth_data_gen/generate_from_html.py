@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from faker import Faker
 from jinja2 import Environment, FileSystemLoader, Template
 import random
-from synth_data_gen.utils import read_file
+from synth_data_gen.utils import read_file, parse_jinja_variables
 import os
 import pdfkit
 
@@ -51,10 +51,10 @@ for i in range(5):
     # TODO: vary the template
     # NB: the env already has the template folder
     chosen = random.choice(templates)
-    print(chosen)
+    print(parse_jinja_variables(os.path.join(template_folder, chosen)))
     # template = env.get_template(chosen)
     template = env.get_template('test.html')
-    # import ipdb; ipdb.set_trace()
+
     data = {
     'Customer Name': str(fake.first_name() + ' ' + fake.last_name()),
     'Account Number': str(fake.numerify(text='INV-#####')),
@@ -64,7 +64,7 @@ for i in range(5):
     'Important Messages': str(' '.join(fake.words()))
     }
 
-    kv_pairs = [': '.join([k,v]) for k, v in data.items()]
+    kv_pairs = [(k, v) for k, v in data.items()]
 
     num_items = random.randint(0,10)
     charges = [

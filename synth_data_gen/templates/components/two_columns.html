@@ -1,16 +1,22 @@
 {% macro two_columns(kv_pairs) %}
 {% set half = kv_pairs|length // 2 %}
-<div class="row" style="display: flex;">
-    <div class="column" style="flex: 50%;">
-        {% for kv_pair in kv_pairs[:half]%}
-            <p>{{kv_pair}}</p>
+<!-- {
+    box-sizing: border-box;
+} -->
+<div class="row">
+    <div class="column" style="float:left; width:50%;">
+        {% for k, v in kv_pairs[:half] %}
+            <p>
+                <td>{{ k }}: {{v}}</td>
+            </p>
+            {% endfor %}
+    </div>
+    <div class="column" style="float:left; width:50%;">
+        {% for k, v in kv_pairs[half:] %}
+        <p>
+            <td>{{ k }}: {{v}}</td>
+        </p>
         {% endfor %}
     </div>
-    <div class="column" style="flex: 50%;">
-        {% for kv_pair in kv_pairs[half:]%}
-            <p>{{kv_pair}}</p>
-        {% endfor %}
-    </div>
-</div>
+</div style="content: ''; display: table; clear: both;">
 {% endmacro %}
-

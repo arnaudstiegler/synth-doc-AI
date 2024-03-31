@@ -1,7 +1,6 @@
 .invoice-table {
     font-family: Arial, sans-serif;
     width: 80%;
-    margin: 20px auto;
     border-collapse: collapse;
 }
 
@@ -26,17 +25,8 @@
 
 .invoice-table tbody tr:nth-child(even){background-color: #f2f2f2;}
 
-body { font-family: 'Arial', sans-serif; font-size: 10px; }
+body { font-family: 'Arial', sans-serif; font-size: 1em; margin: 500px auto;}
 .header, .footer { text-align: center; }
-.content, .billing-info, .payment-instructions { margin: 20px; }
 table { width: 100%; border-collapse: collapse; }
-th, td { border: 1px solid #ddd; padding: 8px; font-size: 2em; }
-.billing-info h3, .payment-instructions h3 { font-size: 8px; }
-
-.row {
-    display: flex;
-  }
-  
-.column {
-flex: 50%;
-}
+th, td { border: 1px solid #ddd; padding: 8px; font-size: 1em; }
+h3 { font-size: 1.5em; }

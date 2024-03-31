@@ -1,3 +1,13 @@
+## Entry 03/31
+### TODO:
+- [x] Find ways to collect all jinja attributes from the html (probably tricky)
+- [x] Adapt the font size to the page? -> use em
+- [x] Find a way to make the 2 columns work with the css
+- [] Integrate the metatype into the variable name
+- [] Figure out a solution for macro inputs
+- [] Think about how to generate more style and templates easily
+
+
 ## Entry 03/27
 ### TODO:
 - [x] Fix the bug on getting style.css

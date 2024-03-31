@@ -21,7 +21,9 @@
         <p><strong>Address:</strong> <span class="billingAddress" data-metatype="String">{{ billingAddress }}</span></p>
         <p><strong>Email:</strong> <span class="billingEmail" data-metatype="String">{{ billingEmail }}</span></p>
     </div>
-    {{two_columns(kv_pairs)}}
+
+    {{ two_columns(kv_pairs) }}
+
     <div class="content">
         <p><strong>Account Number:</strong> <span class="accountNumber" data-metatype="String">{{ accountNumber }}</span></p>
         <p><strong>Invoice Date:</strong> <span class="billDate" data-metatype="Date">{{ billDate }}</span></p>
