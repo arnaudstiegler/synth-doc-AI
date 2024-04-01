@@ -1,10 +1,21 @@
+## Entry 04/01
+### TODO:
+- [x] Integrate a random image into the html
+- [x] Add back augraphy to see how it behaves
+- [x] Update the column components to generate a random number of columns
+- [x] Create helper to generate the kv_pairs
+- [] Fix PDF -> PNG conversion
+- [x] Integrate the metatype into the variable name
+- [] Figure out a solution for macro inputs
+- [] Think about how to generate more style and templates easily
+
 ## Entry 03/31
 ### TODO:
 - [x] Find ways to collect all jinja attributes from the html (probably tricky)
 - [x] Adapt the font size to the page? -> use em
 - [x] Find a way to make the 2 columns work with the css
 - [] Integrate the metatype into the variable name
-- [] Test out GPT to generate key-value pairs
+- [x] Test out GPT to generate key-value pairs
 - [] Figure out a solution for macro inputs
 - [] Think about how to generate more style and templates easily
 
