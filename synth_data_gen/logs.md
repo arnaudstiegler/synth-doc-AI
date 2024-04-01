@@ -4,6 +4,7 @@
 - [x] Adapt the font size to the page? -> use em
 - [x] Find a way to make the 2 columns work with the css
 - [] Integrate the metatype into the variable name
+- [] Test out GPT to generate key-value pairs
 - [] Figure out a solution for macro inputs
 - [] Think about how to generate more style and templates easily
 

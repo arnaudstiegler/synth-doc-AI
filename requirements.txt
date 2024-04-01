@@ -16,4 +16,4 @@ sentencepiece
 matplotlib
 faker
 ipdb
-gummi
+openai

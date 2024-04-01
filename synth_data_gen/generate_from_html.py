@@ -11,21 +11,16 @@ import random
 from synth_data_gen.utils import read_file, parse_jinja_variables
 import os
 import pdfkit
+import json
 
+
+def generate_random_kv_pairs():
+    with open('/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/templates/llm_content/key_value.json') as f:
+        kv_pairs = json.load(f)
+        return random.sample(list(kv_pairs.items()), random.randint(1, 20))
 
 pipeline = default_augraphy_pipeline()
 fake = Faker()
-
-            # "first_name": self.fake.first_name(),
-            # "last_name": self.fake.last_name(),
-            # "date_of_birth": self.fake.date_of_birth().strftime('%Y-%m-%d'),
-            # "social_security_number": self.fake.ssn(),
-            # "address": self.fake.street_address(),
-            # "city": self.fake.city(),
-            # "state": self.fake.state(),
-            # "zip_code": self.fake.zipcode(),
-            # "email": self.fake.email(),
-            # "phone_number": self.fake.phone_number()
 
 # Set the path to your HTML file
 # html_file_path = '/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/templates/test.html'
@@ -64,7 +59,7 @@ for i in range(5):
     'Important Messages': str(' '.join(fake.words()))
     }
 
-    kv_pairs = [(k, v) for k, v in data.items()]
+    kv_pairs = [(k, getattr(fake, v)()) for k, v in generate_random_kv_pairs()]
 
     num_items = random.randint(0,10)
     charges = [
