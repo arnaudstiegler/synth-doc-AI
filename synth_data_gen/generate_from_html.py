@@ -45,8 +45,6 @@ height = 3508
 
 
 for i in range(5):
-    # TODO: vary the template
-    # NB: the env already has the template folder
     chosen = random.choice(templates)
     print(parse_jinja_variables(os.path.join(template_folder, chosen)))
     # template = env.get_template(chosen)
@@ -82,17 +80,20 @@ for i in range(5):
     
     pdfkit.from_string(output, f'/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/samples/sample_{i}.pdf')
 
-    # TODO: this call is buggy
-    # imgkit.from_file(
-    #     f'/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/samples/sample_{i}.pdf', 
-    #     f'/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/samples/sample_{i}.png'
-    #     )
-
     use_augraphy=True
     if use_augraphy:
-        # TODO: seems like the PDF formatting break down here
-        img = imgkit.from_string(output, None, options={'format': 'png', 'width': width, 'height': height})
+        from pdf2image import convert_from_path
+
+        # Path to your PDF file
+        pdf_path = f'/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/samples/sample_{i}.pdf'
+
+        # Convert PDF to a list of image objects
+        images = convert_from_path(pdf_path)
+
+        # Only keep the first page
+        images[0].save(f'/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/samples/sample_{i}.png', 'PNG')
+        # img = imgkit.from_string(output, None, options={'format': 'png', 'width': width, 'height': height})
 
         img = Image.open(f'/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/samples/sample_{i}.png').convert('RGB')
         augmented = pipeline(np.array(img))
-        Image.fromarray(augmented).save(f'/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/samples/sample_{i}.png')
+        Image.fromarray(augmented).save(f'/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/samples/sample_{i}_aug.png')

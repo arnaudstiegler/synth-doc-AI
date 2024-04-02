@@ -1,0 +1,18 @@
+{% from "components/table_macro.html" import charges_table %}
+{% from "components/paragraph.html" import paragraph %}
+{% from "components/multi_columns_kv.html" import multi_columns %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="stylesheet" href="/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/templates/static/style.css"/> -->
+    <title>Invoice</title>
+    <style>{{ css|safe }}</style>
+</head>
+<body>
+{{ macro1 }}
+{{ macro2 }}
+</body>
+</html>

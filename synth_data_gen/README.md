@@ -1,12 +1,11 @@
 # Synthetic data pipeline
 
 
-## TODO:
-- Adjust box/text ratio
-- Set max size for a box
-- Add min/max size for a given component
-- Try out paragraph
-- Try out header
+## Current plan for templates:
+3 types of templates:
+- Specialized templates: the layout is fixed almost entirely, only the filler values are generated
+- Constrained templates: the layout is random but must meet certain criteria (for instance, it needs to contain a table)
+- Freeform templates: the layout is fully randomized
 
 
 ## Misc

@@ -17,3 +17,5 @@ matplotlib
 faker
 ipdb
 openai
+pdf2image
+beautifulsoup4

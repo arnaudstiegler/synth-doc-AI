@@ -4,10 +4,10 @@
 - [x] Add back augraphy to see how it behaves
 - [x] Update the column components to generate a random number of columns
 - [x] Create helper to generate the kv_pairs
-- [] Fix PDF -> PNG conversion
+- [x] Fix PDF -> PNG conversion
 - [x] Integrate the metatype into the variable name
 - [] Figure out a solution for macro inputs
-- [] Think about how to generate more style and templates easily
+- [] Think about how to generate more style and templates easily -> Can we randomly sample jinja macros and add them?
 
 ## Entry 03/31
 ### TODO:
