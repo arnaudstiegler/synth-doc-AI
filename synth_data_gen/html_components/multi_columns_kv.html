@@ -1,0 +1,12 @@
+<div class="row">
+    {% set part = kv_pairs|length // num_columns %}
+    {% for num_column in range(num_columns) %}
+    <div class="column" style="float:left; width:50%;">
+        {% for k, v in kv_pairs[num_column*part:(num_column+1)*part] %}
+        <p>
+            <td>{{ k }}: {{ v }}</td>
+        </p>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div style="content: ''; display: table; clear: both;">

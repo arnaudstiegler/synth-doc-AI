@@ -2,7 +2,11 @@
 ### TODO:
 - [x] Figure out how to use a custom style -> Not sure if this is actually doable with pdfkit
 - [x] Scrape fonts
-- [] Look into  ([weasyprint](https://github.com/Kozea/WeasyPrint?tab=BSD-3-Clause-1-ov-file#readme)) as an alternative
+- [x] Look into  ([weasyprint](https://github.com/Kozea/WeasyPrint?tab=BSD-3-Clause-1-ov-file#readme)) as an alternative
+- [x] Update the main script to use weasyprint
+- [x] Clean up the script
+- [x] Find a way to randomize the layout entirely
+- [x] Create a separate jinja env for components
 
 ## Entry 04/01
 ### TODO:

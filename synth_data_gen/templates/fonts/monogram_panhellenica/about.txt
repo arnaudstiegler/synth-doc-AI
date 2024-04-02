@@ -1,0 +1,40 @@
+Thank you for downloading Monogram Panhellenica! Letterpunch Typography is a small 
+craft font foundry based in Chicago, IL. All our fonts are free for non-commercial, 
+non-political personal use!
+
+For commercial or political use, please see licensing options available at:
+
+    https://www.dafont.com/profile.php?user=465183
+
+Left- and right-circle forms are accessible through the OpenType 'liga' font feature
+of 'monogram-panhellenica.ttf'. 
+
+The file 'monogram-panhellenica.ttf' contains *all* of the glyphs needed to typeset 
+a circle monogram. The fallback fonts 'monogram-panhellenica-fallback-left.ttf' 
+and 'monogram-panhellenica-fallback-right.ttf' should only be used if your creative 
+software does not support OpenType font features.
+
+To create a left-circle form, type a left parenthesis '(', followed by a capital letter. 
+To create a right-circle form, type a capital letter, followed by a right parenthesis ')'.
+
+Example: 
+
+    '(ABC)'
+
+will create a circle monogram with 'A' on the left, 'B' in the middle, and 'C' on the right. 
+
+National flag icons can be used as the center glyph to render two-letter monograms. 
+
+American flag: Dollar sign '$'
+Canadian flag: Percent sign '%'
+Pan-African flag: Number sign '#'
+
+Example: 
+
+    '(Χ$Ω)'
+
+will create a circle monogram with the Greek letter 'Χ' on the left, an American 
+flag in the middle, and the Greek letter 'Ω' on the right.
+
+If left- and right-circle forms are not appearing, make sure that OpenType font features 
+are enabled in your creative software.

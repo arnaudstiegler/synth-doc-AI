@@ -1,0 +1,16 @@
+Air Force II and Air Force II Solid Truetype Fonts for Windows (version 1)
+
+2024 Iconian Fonts - Daniel Zadorozny
+
+http://www.iconian.com
+
+These are dingbat fonts with over 40 glyphs each of military jet aircraft.
+
+Each glyph has a mirrored counterpart between the upper and lower cases (as well as the numerals/punctuation). Use of a character map program, such as Windows' Character Map, will be very helpful in exploring and using these fonts.
+
+These fonts may be freely distributed and are free for all non-commercial uses.  
+
+For commercial use of the font please visit http://iconian.com/commercial.html for additional information.
+
+or e-mail me at iconian@aol.com 
+
