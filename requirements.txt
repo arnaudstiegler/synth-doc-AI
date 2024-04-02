@@ -19,3 +19,4 @@ ipdb
 openai
 pdf2image
 beautifulsoup4
+weasyprint

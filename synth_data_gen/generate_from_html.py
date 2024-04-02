@@ -45,8 +45,8 @@ height = 3508
 
 
 for i in range(5):
-    chosen = random.choice(templates)
-    print(parse_jinja_variables(os.path.join(template_folder, chosen)))
+    # chosen = random.choice(templates)
+    # print(parse_jinja_variables(os.path.join(template_folder, chosen)))
     # template = env.get_template(chosen)
     template = env.get_template('invoice.html')
 
@@ -65,6 +65,7 @@ for i in range(5):
     style_files = os.listdir(style_folder_path)
 
     chosen_style_file = random.choice(style_files)
+    chosen_style_file = 'style.css'
     print(chosen_style_file)
     with open(os.path.join(style_folder_path, chosen_style_file), 'r') as css_file:
         css_content = css_file.read()
@@ -77,10 +78,18 @@ for i in range(5):
     output = template.render(css=css_content, charges=charges, terms=terms, kv_pairs=kv_pairs, logo=img_str)    
 
     # Convert the HTML template to an image
-    
-    pdfkit.from_string(output, f'/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/samples/sample_{i}.pdf')
+    pdfkit_options = {
+    'enable-local-file-access': None
+    }
+    import ipdb; ipdb.set_trace()
+    pdfkit.from_string(
+        output, 
+        f'/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/samples/sample_{i}.pdf', 
+        options=pdfkit_options,
+        verbose=True
+        )
 
-    use_augraphy=True
+    use_augraphy=False
     if use_augraphy:
         from pdf2image import convert_from_path
 
@@ -92,7 +101,6 @@ for i in range(5):
 
         # Only keep the first page
         images[0].save(f'/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/samples/sample_{i}.png', 'PNG')
-        # img = imgkit.from_string(output, None, options={'format': 'png', 'width': width, 'height': height})
 
         img = Image.open(f'/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/samples/sample_{i}.png').convert('RGB')
         augmented = pipeline(np.array(img))

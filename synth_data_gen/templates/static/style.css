@@ -25,7 +25,8 @@
 
 .invoice-table tbody tr:nth-child(even){background-color: #f2f2f2;}
 
-body { font-family: 'Arial', sans-serif; font-size: 1em; margin: 500px auto;}
+/* body { font-family: 'Arial', sans-serif; font-size: 1em; margin: 500px auto;} */
+/* body {font-size: 1em; margin: 500px auto;} */
 .header, .footer { text-align: center; }
 table { width: 100%; border-collapse: collapse; }
 th, td { border: 1px solid #ddd; padding: 8px; font-size: 1em; }

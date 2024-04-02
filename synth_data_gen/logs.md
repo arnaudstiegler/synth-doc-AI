@@ -1,3 +1,9 @@
+## Entry 04/02:
+### TODO:
+- [x] Figure out how to use a custom style -> Not sure if this is actually doable with pdfkit
+- [x] Scrape fonts
+- [] Look into  ([weasyprint](https://github.com/Kozea/WeasyPrint?tab=BSD-3-Clause-1-ov-file#readme)) as an alternative
+
 ## Entry 04/01
 ### TODO:
 - [x] Integrate a random image into the html
