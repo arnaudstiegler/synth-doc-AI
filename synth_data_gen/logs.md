@@ -7,6 +7,7 @@
 - [x] Clean up the script
 - [x] Find a way to randomize the layout entirely
 - [x] Create a separate jinja env for components
+- [x] random font in the css
 
 ## Entry 04/01
 ### TODO:

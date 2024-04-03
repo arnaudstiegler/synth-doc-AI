@@ -14,6 +14,8 @@ from weasyprint import HTML, CSS
 from weasyprint.text.fonts import FontConfiguration
 import logging
 from weasyprint.logger import LOGGER
+from synth_data_gen.style_utils import generate_css
+
 
 # Enable WeasyPrint logging
 # LOGGER.setLevel(logging.DEBUG)
@@ -52,8 +54,10 @@ def generate_faker_image() -> str:
     img_str = base64.b64encode(buffered.getvalue()).decode()
     return img_str
 
+
 def generate_augmented_png(i: int):
     from pdf2image import convert_from_path
+
     # Path to your PDF file
     pdf_path = f"/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/samples/sample_{i}.pdf"
 
@@ -75,71 +79,54 @@ def generate_augmented_png(i: int):
     )
 
 
-def generate_image(image_index: int, env: Environment, component_env: Environment, template: Template, use_augraphy=False):
-    # chosen = random.choice(templates)
-    # print(parse_jinja_variables(os.path.join(template_folder, chosen)))
-    # template = env.get_template(chosen)
+def generate_image(
+    image_index: int,
+    env: Environment,
+    component_env: Environment,
+    template: Template,
+    use_augraphy=False,
+):
+
     template = env.get_template("random_macros.html")
 
     macros = component_env.list_templates()
-    random_macros = random.sample(macros, 2)
+    # random_macros = random.sample(macros, 2)
+    random_macros = [
+        "table.html",
+        'multi_columns_kv.html',
+        'footer.html',
+        'paragraph.html',
+        'header.html'
+    ]
 
     component_mapping = {
-        'utils_macro.html': {},
-        'table_macro.html': {'charges': [{'amount': 1, 'description': 'test'}]},
-        'multi_columns_kv.html': {'kv_pairs': generate_random_kv_pairs(fake), 'num_columns': 1},
-        'footer.html': {'text': fake.text()},
-        'paragraph.html': {'text': fake.text()},
-        'header.html': {'text': fake.text()}
-        }
+        "utils_macro.html": {},
+        "table.html": {"charges": [{"amount": 12, "description": "test"}]},
+        "multi_columns_kv.html": {
+            "kv_pairs": generate_random_kv_pairs(fake),
+            "num_columns": 1,
+        },
+        "footer.html": {"text": fake.text()},
+        "paragraph.html": {"text": fake.text()},
+        "header.html": {"text": fake.text()},
+    }
 
     components_to_add = []
-    for comp in random_macros:
+    for _ in range(5):
+        comp = random.choice(random_macros)
         current_comp = component_env.get_template(comp)
-        # Here we need to populat ethe values that need to be populated
-        # For now, ugly mapping:
+        # TODO: this needs to go
         data = component_mapping[comp]
         components_to_add.append(current_comp.render(**data))
-        
-    template_data = {f'macro{i}': comp for i, comp in enumerate(components_to_add)}
 
-    # kv_pairs = generate_random_kv_pairs(fake)
-
-    # num_items = random.randint(0, 10)
-    # charges = [
-    #     {
-    #         "description": f"Item {i}",
-    #         "amount": float(f"{random.randint(0, 1000000)/100:.2f}"),
-    #     }
-    #     for i in range(num_items)
-    # ]
-
-    # terms = read_file(
-    #     "/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/text_samples/terms.txt"
-    # )
-    terms = fake.text()
-
-    # Read CSS content
-    style_folder_path = "synth_data_gen/templates/static/"
-    style_files = os.listdir(style_folder_path)
-
-    # chosen_style_file = random.choice(style_files)
-    # chosen_style_file = "style.css"
-    # print(chosen_style_file)
-    # with open(os.path.join(style_folder_path, chosen_style_file), "r") as css_file:
-    #     css_content = css_file.read()
-
-    # macro_template
-
+    template_data = {f"macro{i}": comp for i, comp in enumerate(components_to_add)}
 
     # Render the template with data
-    output = template.render(
-        **template_data
-    )
+    output = template.render(**template_data)
 
     font_config = FontConfiguration()
     html = HTML(string=output)
-    css = CSS("synth_data_gen/templates/static/style.css", font_config=font_config)
+    css = CSS(string=generate_css(), font_config=font_config)
     html.write_pdf(
         f"/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/samples/sample_{image_index}.pdf",
         stylesheets=[css],
@@ -154,11 +141,19 @@ def generate_documents():
     template_folder = "synth_data_gen/templates/"
     templates = [file for file in os.listdir(template_folder) if file.endswith(".html")]
     template_env = Environment(loader=FileSystemLoader(template_folder))
-    component_env = Environment(loader=FileSystemLoader('synth_data_gen/html_components'))
+    component_env = Environment(
+        loader=FileSystemLoader("synth_data_gen/html_components")
+    )
 
     for i in range(5):
-        generate_image(image_index=i, env=template_env, component_env=component_env, template=templates[1], use_augraphy=False)
+        generate_image(
+            image_index=i,
+            env=template_env,
+            component_env=component_env,
+            template=templates[1],
+            use_augraphy=False,
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     generate_documents()

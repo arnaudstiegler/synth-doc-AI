@@ -13,4 +13,3 @@ def parse_jinja_variables(html_path: str):
     with open(html_path, "r") as file:  # r to open file in READ mode
         html_as_string = file.read()
         return re.findall("\{\{\s(.*?)\s\}\}", html_as_string)
-
