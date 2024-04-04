@@ -36,7 +36,7 @@ fake = Faker()
 
 def get_random_kv_pairs():
     with open(
-        "/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/templates/llm_content/key_value.json"
+        "synth_data_gen/templates/llm_content/key_value.json"
     ) as f:
         kv_pairs = json.load(f)
         return random.sample(list(kv_pairs.items()), random.randint(1, 20))

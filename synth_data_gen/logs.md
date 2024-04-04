@@ -3,9 +3,10 @@ for training
 
 ## Entry 04/04
 ### TODO:
-- [] Multiproc the datagen script
-- [] Add some more styling randomization
-- [] 
+- [x] Multiproc the datagen script
+- [x] Add some more styling randomization
+- [x] Cleanup the faker metatype generation
+- [] Look into Genalog
 
 ## Entry 04/03:
 ### TODO:
