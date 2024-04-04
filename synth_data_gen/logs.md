@@ -1,7 +1,16 @@
+BEWARE: there's an issue where we don't have the guarantee that the component listed in the metadata is actually in the page used
+for training
+
+## Entry 04/04
+### TODO:
+- [] Multiproc the datagen script
+- [] Add some more styling randomization
+- [] 
+
 ## Entry 04/03:
 ### TODO:
 - [x] Look into how to create a structured form
-- [] Think about how to randomize css styling more thoroughly
+- [x] Think about how to randomize css styling more thoroughly
 
 ## Entry 04/02:
 ### TODO:

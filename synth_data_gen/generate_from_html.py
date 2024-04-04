@@ -16,6 +16,9 @@ import logging
 from weasyprint.logger import LOGGER
 from synth_data_gen.style_utils import generate_css
 from tqdm import tqdm
+from multiprocessing import Pool
+import time
+import click
 
 
 # Enable WeasyPrint logging
@@ -54,7 +57,6 @@ def generate_random_kv_pairs_v2(fake: Faker):
         metatype = get_random_metatype()
         if isinstance(metatype, list):
             metatype = random.choice(metatype)
-        print(metatype)
         out_list.append((fake.word(), str(getattr(fake, metatype)())))
 
     return out_list
@@ -68,44 +70,42 @@ def generate_faker_image() -> str:
     return img_str
 
 
-def generate_augmented_png(i: int):
+def generate_augmented_png(out_dir:str, i: int):
     from pdf2image import convert_from_path
 
     # Path to your PDF file
-    pdf_path = f"/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/samples/sample_{i}.pdf"
+    pdf_path = os.path.join(out_dir, f"sample_{i}.pdf")
 
     # Convert PDF to a list of image objects
     images = convert_from_path(pdf_path)
 
     # Only keep the first page
     images[0].save(
-        f"/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/samples/sample_{i}.png",
+        os.path.join(out_dir, f"sample_{i}.png"),
         "PNG",
     )
 
     img = Image.open(
-        f"/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/samples/sample_{i}.png"
+        os.path.join(out_dir, f"sample_{i}.png")
     ).convert("RGB")
     augmented = pipeline(np.array(img))
     Image.fromarray(augmented).save(
-        f"/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/samples/sample_{i}_aug.png"
+        os.path.join(out_dir, f"sample_{i}_aug.png")
     )
+    # To save some space
+    os.remove(os.path.join(out_dir, f"sample_{i}.png"))
 
 
-def generate_image(
-    image_index: int,
-    env: Environment,
-    component_env: Environment,
-    template: Template,
-    use_augraphy=False,
-):
+def generate_image(args):
+    start = time.time()
+    out_dir, image_index, env, component_env, template, use_augraphy = args
 
     template = env.get_template("random_macros.html")
     metadata = []
     macros = component_env.list_templates()
 
     components_to_add = []
-    for _ in range(random.randint(4, 20)):        
+    for _ in range(random.randint(8, 20)):        
         component_mapping = {
             "utils_macro.html": {},
             "table.html": {"charges": [{"amount": random.randint(0, 10000), "description": fake.word()} for _ in range(random.randint(1, 15))]},
@@ -122,13 +122,12 @@ def generate_image(
         }
         comp = random.choice(macros)
         current_comp = component_env.get_template(comp)
-        # TODO: this needs to go
         data = component_mapping[comp]
         metadata.append(data)
         components_to_add.append(current_comp.render(**data))
 
     template_data = {f"macro{i}": comp for i, comp in enumerate(components_to_add)}
-    json.dump(metadata, open(f"/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/samples/sample_{image_index}.json", 'w'))
+    json.dump(metadata, open(os.path.join(out_dir, f"sample_{image_index}.json"), 'w'))
     # Render the template with data
     output = template.render(**template_data)
 
@@ -136,16 +135,21 @@ def generate_image(
     html = HTML(string=output)
     css = CSS(string=generate_css(), font_config=font_config)
     html.write_pdf(
-        f"/Users/arnaudstiegler/llm-table-extraction/synth_data_gen/samples/sample_{image_index}.pdf",
+        os.path.join(out_dir, f"sample_{image_index}.pdf"),
         stylesheets=[css],
         font_config=font_config,
     )
 
     if use_augraphy:
-        generate_augmented_png(image_index)
+        # This could be run outside of the PDF generation script
+        generate_augmented_png(out_dir, image_index)
+
+    return time.time() - start
 
 
-def generate_documents():
+@click.command()
+@click.option('--out_dir', default='synth_data_gen/samples/', type=str)
+def generate_documents(out_dir: str) -> None:
     template_folder = "synth_data_gen/templates/"
     templates = [file for file in os.listdir(template_folder) if file.endswith(".html")]
     template_env = Environment(loader=FileSystemLoader(template_folder))
@@ -153,14 +157,10 @@ def generate_documents():
         loader=FileSystemLoader("synth_data_gen/html_components")
     )
 
-    for i in tqdm(range(5)):
-        generate_image(
-            image_index=i,
-            env=template_env,
-            component_env=component_env,
-            template=templates[1],
-            use_augraphy=True,
-        )
+    args_list = [(out_dir, i, template_env, component_env, templates[1], True) for i in range(5)]
+    
+    with Pool(processes=os.cpu_count() // 2) as pool:
+        _ = pool.map(generate_image, args_list)
 
 
 if __name__ == "__main__":
