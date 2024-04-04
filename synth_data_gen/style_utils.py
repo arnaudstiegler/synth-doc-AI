@@ -11,8 +11,9 @@ def generate_css():
     margin_auto = random.randint(5, 50)  # Random margin between 400px and 600px
     border_value = 'border: 1px solid black;' if random.random() < 1/3.0 else ''
     maybe_flex = 'flex:1 ;' if random.random() < 1/3.0 else ''
-    display_flex = 'display: flex; flex-direction: column;' if random.random() < 0.2 else ''
+    display_flex = 'display: flex; flex-direction: column;' if random.random() < 0.1 else ''
     font = 'file://' + random.choice(matplotlib.font_manager.findSystemFonts(fontpaths=None, fontext='ttf'))
+    random_table_width = random.random()
     
     css_content = f"""
 @font-face {{
