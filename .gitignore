@@ -163,4 +163,4 @@ wandb_config.json
 wandb/
 
 augraphy_cache/
-samples/
+synth_data_gen/samples/
