@@ -24,6 +24,7 @@ import click
 # LOGGER.setLevel(logging.DEBUG)
 # logging.basicConfig(level=logging.DEBUG)
 
+NUM_SAMPLES=5e5
 
 # Set the width and height of the output image
 DOCUMENT_WIDTH = 2480
@@ -147,6 +148,7 @@ def generate_image(args):
 @click.command()
 @click.option('--out_dir', default='synth_data_gen/samples/', type=str)
 def generate_documents(out_dir: str) -> None:
+    # TODO: this needs to be reworked
     template_folder = "synth_data_gen/templates/"
     templates = [file for file in os.listdir(template_folder) if file.endswith(".html")]
     template_env = Environment(loader=FileSystemLoader(template_folder))
@@ -154,10 +156,10 @@ def generate_documents(out_dir: str) -> None:
         loader=FileSystemLoader("synth_data_gen/html_components")
     )
 
-    args_list = [(out_dir, i, template_env, component_env, templates[1], True) for i in range(5)]
+    args_list = [(out_dir, i, template_env, component_env, templates[1], True) for i in range(NUM_SAMPLES)]
     
     with Pool(processes=os.cpu_count() // 2) as pool:
-        _ = pool.map(generate_image, args_list)
+        list(tqdm(pool.imap(generate_image, args_list), total=len(args_list)))
 
 
 if __name__ == "__main__":
