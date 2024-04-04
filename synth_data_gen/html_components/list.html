@@ -1,5 +1,5 @@
 <ul>
-    {% for elem in elems %}
-        <li>{{**elem}}</li>
+    {% for k, v in elems %}
+        <li>{{ k }}: {{ v }}</li>
     {% endfor %}
 </ul>

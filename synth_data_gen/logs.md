@@ -1,3 +1,8 @@
+## Entry 04/03:
+### TODO:
+- [x] Look into how to create a structured form
+- [] Think about how to randomize css styling more thoroughly
+
 ## Entry 04/02:
 ### TODO:
 - [x] Figure out how to use a custom style -> Not sure if this is actually doable with pdfkit
