@@ -19,6 +19,6 @@ ipdb
 openai
 pdf2image
 beautifulsoup4
-weasyprint
+weasyprint==52.5  # Problem with Ubuntu 20.04
 click
 augraphy

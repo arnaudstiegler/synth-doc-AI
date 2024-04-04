@@ -11,7 +11,6 @@ from io import BytesIO
 import base64
 from augraphy import *
 from weasyprint import HTML, CSS
-from weasyprint.text.fonts import FontConfiguration
 import logging
 from weasyprint.logger import LOGGER
 from synth_data_gen.style_utils import generate_css
@@ -131,13 +130,11 @@ def generate_image(args):
     # Render the template with data
     output = template.render(**template_data)
 
-    font_config = FontConfiguration()
     html = HTML(string=output)
-    css = CSS(string=generate_css(), font_config=font_config)
+    css = CSS(string=generate_css())
     html.write_pdf(
         os.path.join(out_dir, f"sample_{image_index}.pdf"),
         stylesheets=[css],
-        font_config=font_config,
     )
 
     if use_augraphy:
