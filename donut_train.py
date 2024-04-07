@@ -76,7 +76,7 @@ class KVDataset:
 
     def __getitem__(self, i):
         doc_kv, img_path = self.docs[i]
-        img = Image.open(img_path)
+        img = Image.open(img_path).convert('RGB')
 
         if len(doc_kv) == 0:
             text_target = f"{random.choice(self.kv_pairs)}: {MISSING_TOKEN}"
