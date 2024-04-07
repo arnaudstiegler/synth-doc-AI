@@ -168,6 +168,7 @@ def train(dataset_path: str):
             logging_dir="./logs",  # Directory for storing logs
             save_strategy="steps",  # Save the model checkpoint every logging step
             save_steps=1000,  # Save checkpoints every 50 steps
+            save_total_limit=2,
             evaluation_strategy="steps",  # Evaluate the model every logging step
             eval_steps=5000,  # Evaluate and save checkpoints every 50 steps
             do_eval=True,  # Perform evaluation at the end of training
