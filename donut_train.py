@@ -19,7 +19,7 @@ from torch.distributed.fsdp.fully_sharded_data_parallel import (
     FullStateDictConfig,
 )
 from transformers import DonutProcessor, VisionEncoderDecoderModel
-
+import click
 
 fsdp_plugin = FullyShardedDataParallelPlugin(
     state_dict_config=FullStateDictConfig(offload_to_cpu=True, rank0_only=False),
@@ -118,11 +118,17 @@ def custom_collate_fn(batch):
     return {"pixel_values": pixel_values_stacked, "labels": labels_stacked}
 
 
-def train():
+@click.command()
+@click.option(
+    "--dataset-path",
+    default="synth_data/batch_1/",
+    help="Path to the dataset directory.",
+)
+def train(dataset_path: str):
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    train_dataset = KVDataset("synth_data/batch_1/", "train")
-    eval_dataset = KVDataset("synth_data/batch_1/", "val")
+    train_dataset = KVDataset(dataset_path, "train")
+    eval_dataset = KVDataset(dataset_path, "val")
 
     processor = DonutProcessor.from_pretrained("naver-clova-ix/donut-base")
     model = VisionEncoderDecoderModel.from_pretrained("naver-clova-ix/donut-base")
