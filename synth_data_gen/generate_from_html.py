@@ -24,7 +24,7 @@ import click
 # LOGGER.setLevel(logging.DEBUG)
 # logging.basicConfig(level=logging.DEBUG)
 
-NUM_SAMPLES=int(5e5)
+NUM_SAMPLES = int(5e5)
 
 # Set the width and height of the output image
 DOCUMENT_WIDTH = 2480
@@ -35,9 +35,7 @@ fake = Faker()
 
 
 def get_random_kv_pairs():
-    with open(
-        "synth_data_gen/templates/llm_content/key_value.json"
-    ) as f:
+    with open("synth_data_gen/templates/llm_content/key_value.json") as f:
         kv_pairs = json.load(f)
         return random.sample(list(kv_pairs.items()), random.randint(1, 20))
 
@@ -50,9 +48,10 @@ def generate_random_kv_pairs(fake: Faker):
 
     return out_list
 
+
 def generate_random_kv_pairs_v2(fake: Faker):
     out_list = []
-    
+
     for _ in range(random.randint(1, 10)):
         metatype = get_random_metatype()
         if isinstance(metatype, list):
@@ -70,7 +69,7 @@ def generate_faker_image() -> str:
     return img_str
 
 
-def generate_augmented_png(out_dir:str, i: int):
+def generate_augmented_png(out_dir: str, i: int):
     from pdf2image import convert_from_path
 
     # Path to your PDF file
@@ -85,13 +84,9 @@ def generate_augmented_png(out_dir:str, i: int):
         "PNG",
     )
 
-    img = Image.open(
-        os.path.join(out_dir, f"sample_{i}.png")
-    ).convert("RGB")
+    img = Image.open(os.path.join(out_dir, f"sample_{i}.png")).convert("RGB")
     augmented = pipeline(np.array(img))
-    Image.fromarray(augmented).save(
-        os.path.join(out_dir, f"sample_{i}_aug.png")
-    )
+    Image.fromarray(augmented).save(os.path.join(out_dir, f"sample_{i}_aug.png"))
     # To save some space
     os.remove(os.path.join(out_dir, f"sample_{i}.png"))
 
@@ -105,10 +100,15 @@ def generate_image(args):
     macros = component_env.list_templates()
 
     components_to_add = []
-    for _ in range(random.randint(8, 20)):        
+    for _ in range(random.randint(8, 20)):
         component_mapping = {
             "utils_macro.html": {},
-            "table.html": {"charges": [{"amount": random.randint(0, 10000), "description": fake.word()} for _ in range(random.randint(1, 15))]},
+            "table.html": {
+                "charges": [
+                    {"amount": random.randint(0, 10000), "description": fake.word()}
+                    for _ in range(random.randint(1, 15))
+                ]
+            },
             "multi_columns_kv.html": {
                 "kv_pairs": generate_random_kv_pairs(fake),
                 "num_columns": random.randint(1, 5),
@@ -118,7 +118,7 @@ def generate_image(args):
             "header.html": {"text": fake.text()},
             "list.html": {"elems": generate_random_kv_pairs(fake)},
             "image_badge.html": {"logo": generate_faker_image()},
-            "timeline.html": {"elems": generate_random_kv_pairs_v2(fake)}
+            "timeline.html": {"elems": generate_random_kv_pairs_v2(fake)},
         }
         comp = random.choice(macros)
         current_comp = component_env.get_template(comp)
@@ -127,7 +127,7 @@ def generate_image(args):
         components_to_add.append(current_comp.render(**data))
 
     template_data = {f"macro{i}": comp for i, comp in enumerate(components_to_add)}
-    json.dump(metadata, open(os.path.join(out_dir, f"sample_{image_index}.json"), 'w'))
+    json.dump(metadata, open(os.path.join(out_dir, f"sample_{image_index}.json"), "w"))
     # Render the template with data
     output = template.render(**template_data)
 
@@ -146,7 +146,7 @@ def generate_image(args):
 
 
 @click.command()
-@click.option('--out_dir', default='synth_data_gen/samples/', type=str)
+@click.option("--out_dir", default="synth_data_gen/samples/", type=str)
 def generate_documents(out_dir: str) -> None:
     # TODO: this needs to be reworked
     template_folder = "synth_data_gen/templates/"
@@ -156,8 +156,11 @@ def generate_documents(out_dir: str) -> None:
         loader=FileSystemLoader("synth_data_gen/html_components")
     )
 
-    args_list = [(out_dir, i, template_env, component_env, templates[1], True) for i in range(NUM_SAMPLES)]
-    
+    args_list = [
+        (out_dir, i, template_env, component_env, templates[1], True)
+        for i in range(NUM_SAMPLES)
+    ]
+
     with Pool(processes=os.cpu_count() // 2) as pool:
         list(tqdm(pool.imap(generate_image, args_list), total=len(args_list)))
 
