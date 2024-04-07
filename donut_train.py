@@ -88,7 +88,7 @@ class KVDataset:
         # Breakdown to avoid the warning message
         pixel_values = self.processor(img, return_tensors="pt")
         labels = self.processor.tokenizer(
-            text_target, return_tensors="pt", max_length=128, padding="max_length"
+            text_target, return_tensors="pt", max_length=128, padding="max_length", truncation=True
         )
 
         return {
