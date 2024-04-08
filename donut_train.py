@@ -47,10 +47,12 @@ class KVDataset:
 
     def __init__(self, folder_path: str, split: str):
         self.folder_path = folder_path
+        self.split = split
+
         self.docs = self.init_docs(split)
         self.kv_pairs = list(self.get_kv_pairs())
         self.processor = DonutProcessor.from_pretrained("naver-clova-ix/donut-base")
-        self.split = split
+        
 
     def init_docs(self, split: str):
         docs = []
