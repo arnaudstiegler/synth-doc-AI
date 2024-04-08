@@ -136,6 +136,7 @@ def custom_collate_fn(batch):
 @click.option(
     "--resume-from-checkpoint",
     default=False,
+    is_flag=True,
     help="Whether to resume training from a checkpoint.",
 )
 def train(dataset_path: str, resume_from_checkpoint: bool):
