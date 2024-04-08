@@ -50,6 +50,7 @@ class KVDataset:
         self.docs = self.init_docs(split)
         self.kv_pairs = list(self.get_kv_pairs())
         self.processor = DonutProcessor.from_pretrained("naver-clova-ix/donut-base")
+        self.split = split
 
     def init_docs(self, split: str):
         docs = []
