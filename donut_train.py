@@ -130,7 +130,12 @@ def custom_collate_fn(batch):
     default="synth_data/batch_1/",
     help="Path to the dataset directory.",
 )
-def train(dataset_path: str):
+@click.option(
+    "--resume-from-checkpoint",
+    default=False,
+    help="Whether to resume training from a checkpoint.",
+)
+def train(dataset_path: str, resume_from_checkpoint: bool):
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     train_dataset = KVDataset(dataset_path, "train")
@@ -170,6 +175,7 @@ def train(dataset_path: str):
             learning_rate=2.5e-5,
             logging_steps=100,
             bf16=True,
+            resume_from_checkpoint=resume_from_checkpoint,
             max_grad_norm=1.0, # This should already be the default
             optim="adamw_torch",
             logging_dir="./logs",  # Directory for storing logs
