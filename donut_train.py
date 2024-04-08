@@ -189,8 +189,8 @@ def train(dataset_path: str):
     # model.config.use_cache = (
     #     False  # silence the warnings. Please re-enable for inference!
     # )
-
-    trainer.train()
+    # trainer.train()
+    trainer.evaluate()
 
 
 if __name__ == "__main__":
