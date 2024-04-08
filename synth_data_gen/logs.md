@@ -1,5 +1,8 @@
-BEWARE: there's an issue where we don't have the guarantee that the component listed in the metadata is actually in the page used
-for training
+## Entry 04/07:
+- [x] Preprocess and generate a batch
+- [x] Sanity check on created data
+- [x] Training v0
+- [] Think about next steps for the datagen
 
 ## Entry 04/04
 ### TODO:

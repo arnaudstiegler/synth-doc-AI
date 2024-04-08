@@ -58,7 +58,13 @@ class KVDataset:
                 kv_pairs = json.load(open(os.path.join(self.folder_path, file)))
                 sample_id = file.split("_")[2].replace(".json", "")
                 img_path = os.path.join(self.folder_path, f"sample_{sample_id}_aug.png")
+                if not os.path.exists(img_path):
+                    # Skipping if we're missing the corresponding img (download issue)
+                    continue
                 docs.append((kv_pairs, img_path))
+
+        print(f'Split={self.split} size: {len(docs)}')
+
         docs = sorted(docs, key=lambda x: x[1])
 
         if split == "train":
@@ -164,6 +170,7 @@ def train(dataset_path: str):
             learning_rate=2.5e-5,
             logging_steps=100,
             bf16=True,
+            max_grad_norm=1.0, # This should already be the default
             optim="adamw_torch",
             logging_dir="./logs",  # Directory for storing logs
             save_strategy="steps",  # Save the model checkpoint every logging step

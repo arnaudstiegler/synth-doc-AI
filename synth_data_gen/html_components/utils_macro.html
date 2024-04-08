@@ -1,3 +1,10 @@
 {% macro format_dollar_amount(value) %}
     {{ '%0.2f' % value|float }}
 {% endmacro %}
+
+{% macro structured_box(key, value) %}
+    <div class="structured-box" style="position: relative; display: flex; justify-content: center; align-items: center; border: 2px solid black; height: 200px; width: 200px;">
+        <span style="position: absolute; top: 0px; left: -2px; margin: 10px; background: white; padding: 2px 5px;">{{ key }}</span>
+        <div style="text-align: center; width: 100%;">{{ value }}</div>
+    </div>
+{% endmacro %}
