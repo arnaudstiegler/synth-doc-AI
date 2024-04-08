@@ -1,3 +1,14 @@
+## Entry 04/08:
+- [x] Babysit the run
+- [x] Add data aug. to make the model insensitive to key casing
+- [x] Measure how often you end up with missing keys during training
+
+Ideas:
+- Add handwriting fonts
+- Add other separators for k/v pairs
+- Add structured box to the mix
+- Lowercase / sensitivity to text key
+
 ## Entry 04/07:
 - [x] Preprocess and generate a batch
 - [x] Sanity check on created data

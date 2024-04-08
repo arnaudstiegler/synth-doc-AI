@@ -88,11 +88,12 @@ class KVDataset:
         img = Image.open(img_path).convert('RGB')
 
         if len(doc_kv) == 0:
-            text_target = f"{random.choice(self.kv_pairs)}: {MISSING_TOKEN}"
+            random_key = random.choice(self.kv_pairs)
+            text_target = f"{random_key.lower() if random.random() < 0.2 else random_key}: {MISSING_TOKEN}"
         else:
             # TODO: should I change that for eval?
             k, v = random.choice(doc_kv)
-            text_target = f"{k}: {v}"
+            text_target = f"{k.lower() if random.random() < 0.2 else k}: {v}"
 
         # Breakdown to avoid the warning message
         pixel_values = self.processor(img, return_tensors="pt")
