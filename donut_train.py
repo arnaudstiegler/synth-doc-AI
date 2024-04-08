@@ -198,8 +198,8 @@ def train(dataset_path: str, resume_from_checkpoint: bool):
     # model.config.use_cache = (
     #     False  # silence the warnings. Please re-enable for inference!
     # )
-    # trainer.train()
-    trainer.evaluate()
+    trainer.train()
+    # trainer.evaluate()
 
 
 if __name__ == "__main__":
