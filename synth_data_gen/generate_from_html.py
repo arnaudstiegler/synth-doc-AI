@@ -24,11 +24,14 @@ import click
 # LOGGER.setLevel(logging.DEBUG)
 # logging.basicConfig(level=logging.DEBUG)
 
-NUM_SAMPLES = int(5e5)
+# NUM_SAMPLES = int(5e5)
+NUM_SAMPLES = 5
 
 # Set the width and height of the output image
 DOCUMENT_WIDTH = 2480
 DOCUMENT_HEIGHT = 3508
+
+SEPARATORS = [':', ',', ';', '=', '->', '=>']
 
 pipeline = default_augraphy_pipeline()
 fake = Faker()
@@ -111,14 +114,17 @@ def generate_image(args):
             },
             "multi_columns_kv.html": {
                 "kv_pairs": generate_random_kv_pairs(fake),
+                "separator": random.choice(SEPARATORS),
                 "num_columns": random.randint(1, 5),
             },
             "footer.html": {"text": fake.text()},
             "paragraph.html": {"text": fake.text()},
             "header.html": {"text": fake.text()},
-            "list.html": {"elems": generate_random_kv_pairs(fake)},
+            "list.html": {"kv_pairs": generate_random_kv_pairs(fake), "separator": random.choice(SEPARATORS)},
             "image_badge.html": {"logo": generate_faker_image()},
-            "timeline.html": {"elems": generate_random_kv_pairs_v2(fake)},
+            "timeline.html": {"kv_pairs": generate_random_kv_pairs_v2(fake), "separator": random.choice(SEPARATORS)},
+            "structured_grid.html": {"kv_pairs": generate_random_kv_pairs_v2(fake)},
+            "structured_box.html": {"key": "test key", "value": "test value"}
         }
         comp = random.choice(macros)
         current_comp = component_env.get_template(comp)

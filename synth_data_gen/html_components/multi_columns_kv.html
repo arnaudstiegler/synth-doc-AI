@@ -4,7 +4,7 @@
     <div class="column" style="float:left; width:50%;">
         {% for k, v in kv_pairs[num_column*part:(num_column+1)*part] %}
         <p>
-            <td>{{ k }}: {{ v }}</td>
+            <td>{{ k }}{{separator}} {{ v }}</td>
         </p>
         {% endfor %}
     </div>

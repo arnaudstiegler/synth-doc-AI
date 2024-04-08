@@ -1,27 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flex Grid of BBox Components</title>
-</head>
-<body>
-
-<div style="display: flex; flex-wrap: wrap; gap: 0px; justify-content: center;"> <!-- Flex Grid Container -->
-  <!-- BBox Container 1 -->
-  <div style="position: relative; display: flex; justify-content: center; align-items: center; border: 2px solid black; height: 200px; width: 200px;">
-    <span style="position: absolute; top: 0px; left: -2px; margin: 10px; background: white; padding: 2px 5px;">Top Left</span>
-    <div style="text-align: center; width: 100%;">Center Value</div>
-  </div>
-  
-  <!-- BBox Container 2 (Duplicate as needed) -->
-  <div style="position: relative; display: flex; justify-content: center; align-items: center; border: 2px solid black; height: 200px; width: 200px;">
-    <span style="position: absolute; top: 0px; left: -2px; margin: 10px; background: white; padding: 2px 5px;">Top Left</span>
-    <div style="text-align: center; width: 100%;">Center Value</div>
-  </div>
-  
-  <!-- More BBox Containers can be added here -->
+{% from "utils_macro.html" import structured_box %}
+<div style="display: flex; flex-wrap: wrap; gap: 0px; justify-content: center; overflow: auto;">
+  {% for k, v in kv_pairs %}
+    {{ structured_box(k, v) }}
+  {% endfor %}    
 </div>
-
-</body>
-</html>

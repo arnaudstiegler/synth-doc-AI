@@ -52,7 +52,7 @@ table tbody tr:nth-child(even){{background-color: {random_color()};}}
 
 body {{ font-family: 'random_font'; {display_flex} font-size: {font_size}em; margin: {margin_auto}px auto; text; { maybe_flex }}}
 .header, .footer {{ text-align: center; }}
-div {{ {border_value} {maybe_flex} }}
+div {{ {border_value} }}
 table {{ width: 100%; border-collapse: collapse; }}
 th, td {{ border: 1px solid #ddd; padding: {padding}px; font-size: {font_size}em; }}
 h3 {{ font-size: 1.5em; {maybe_flex}}}

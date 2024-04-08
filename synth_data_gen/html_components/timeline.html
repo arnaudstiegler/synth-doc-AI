@@ -1,5 +1,5 @@
 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
-    {% for k, v in elems %}
-    <div style="background-color: #f0f0f0; padding: 20px;">{{ k }}: {{ v }}</div>
+    {% for k, v in kv_pairs %}
+    <div style="background-color: #f0f0f0; padding: 20px;">{{ k }}{{separator}} {{ v }}</div>
     {% endfor %}    
 </div>
