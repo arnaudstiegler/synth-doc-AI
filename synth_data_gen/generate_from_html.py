@@ -25,7 +25,7 @@ import click
 # logging.basicConfig(level=logging.DEBUG)
 
 # NUM_SAMPLES = int(5e5)
-NUM_SAMPLES = 20
+NUM_SAMPLES = 5
 
 # Set the width and height of the output image
 DOCUMENT_WIDTH = 2480

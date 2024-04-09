@@ -108,8 +108,7 @@ class KVDataset:
         }
 
     def __len__(self):
-        # TODO: revert
-        return 10
+        return len(self.docs)
 
 
 MAX_STEPS = int(1e6)
@@ -171,7 +170,7 @@ def train(dataset_path: str, resume_from_checkpoint: bool):
         eval_dataset=eval_dataset,
         args=TrainingArguments(
             output_dir="test_run/",
-            warmup_steps=10,
+            warmup_steps=1000,
             per_device_train_batch_size=2,
             per_device_eval_batch_size=4,
             gradient_checkpointing=True,
@@ -179,17 +178,17 @@ def train(dataset_path: str, resume_from_checkpoint: bool):
             remove_unused_columns=False,
             max_steps=MAX_STEPS,
             learning_rate=2.5e-5,
-            logging_steps=10,
+            logging_steps=100,
             bf16=True,
             resume_from_checkpoint=resume_from_checkpoint,
             max_grad_norm=1.0, # This should already be the default
             optim="adamw_torch",
             logging_dir="./logs",  # Directory for storing logs
             save_strategy="steps",  # Save the model checkpoint every logging step
-            save_steps=50,  # Save checkpoints every 50 steps
+            save_steps=5000,  # Save checkpoints every 50 steps
             save_total_limit=2,
             evaluation_strategy="steps",  # Evaluate the model every logging step
-            eval_steps=50,  # Evaluate and save checkpoints every 50 steps
+            eval_steps=5000,  # Evaluate and save checkpoints every 50 steps
             load_best_model_at_end=True,
             metric_for_best_model="eval_loss",
             greater_is_better=False,
@@ -205,6 +204,7 @@ def train(dataset_path: str, resume_from_checkpoint: bool):
     #     False  # silence the warnings. Please re-enable for inference!
     # )
     trainer.train()
+
 
 
 if __name__ == "__main__":
