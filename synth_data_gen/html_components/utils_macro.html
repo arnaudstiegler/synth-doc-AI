@@ -3,8 +3,8 @@
 {% endmacro %}
 
 {% macro structured_box(key, value) %}
-<div class="structured-box" style="position: relative; display: flex; justify-content: center; flex-direction: column; align-items: center; border: 2px solid black; height: 100px; width: 200px;">
-    <span style="position: absolute; top: 10px; left: px; margin: 0px; background: white;">{{ key }}</span>
-    <div style="text-align: center; width: 100%; word-wrap: break-word; overflow-wrap: break-word; word-break: break-all;">{{ value }}</div>
+<div class="structured-box" style="position: relative; border: 2px solid black; height: 200px; width: 200px;">
+    <span style="position: absolute; top: 5px; left: 5px; margin: 0px; background: white; z-index: 1;">{{ key }}</span>
+    <div style="position: absolute; top: 50%; text-align: center; width: 100%; word-wrap: break-word; overflow-wrap: break-word; word-break: break-all;">{{ value }}</div>
 </div>
 {% endmacro %}

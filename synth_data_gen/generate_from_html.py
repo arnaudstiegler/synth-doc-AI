@@ -124,7 +124,8 @@ def generate_image(args):
             "image_badge.html": {"logo": generate_faker_image()},
             "timeline.html": {"kv_pairs": generate_random_kv_pairs_v2(fake), "separator": random.choice(SEPARATORS)},
             "structured_grid.html": {"kv_pairs": generate_random_kv_pairs_v2(fake)},
-            "structured_box.html": {"key": "test key", "value": "test value"}
+            # TODO: this is ugly
+            "structured_box.html": {"key": generate_random_kv_pairs_v2(fake)[0][0], "value": generate_random_kv_pairs_v2(fake)[0][1]}
         }
         comp = random.choice(macros)
         current_comp = component_env.get_template(comp)
