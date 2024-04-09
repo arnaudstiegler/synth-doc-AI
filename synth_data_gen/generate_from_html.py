@@ -25,7 +25,7 @@ import click
 # logging.basicConfig(level=logging.DEBUG)
 
 # NUM_SAMPLES = int(5e5)
-NUM_SAMPLES = 5
+NUM_SAMPLES = 20
 
 # Set the width and height of the output image
 DOCUMENT_WIDTH = 2480
@@ -103,7 +103,8 @@ def generate_image(args):
     macros = component_env.list_templates()
 
     components_to_add = []
-    for _ in range(random.randint(8, 20)):
+    # We are capped at 8 from 'random_macros.html'
+    for _ in range(8):
         component_mapping = {
             "utils_macro.html": {},
             "table.html": {
