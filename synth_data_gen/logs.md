@@ -1,3 +1,16 @@
+## Entry 04/10:
+- [x] scale the structured box size with the font size
+- [] Make the table html more compact
+- [x] Add the kv parsing as part of the preprocessing
+
+## Entry 04/09:
+- [x] Fix the structured box html
+- [x] Fix the checkpoint save strategy
+- [] Make the table html more compact
+- [] Add the kv parsing as part of the preprocessing
+- [] scale the structured box size with the font size
+
+
 ## Entry 04/08:
 - [x] Babysit the run
 - [x] Add data aug. to make the model insensitive to key casing

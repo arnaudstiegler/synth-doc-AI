@@ -12,26 +12,27 @@ import base64
 from augraphy import *
 from weasyprint import HTML, CSS
 import logging
+from typing import Optional
 from weasyprint.logger import LOGGER
 from synth_data_gen.style_utils import generate_css
 from tqdm import tqdm
 from multiprocessing import Pool
 import time
 import click
+from pdf2image import convert_from_path
 
 
 # Enable WeasyPrint logging
 # LOGGER.setLevel(logging.DEBUG)
 # logging.basicConfig(level=logging.DEBUG)
 
-# NUM_SAMPLES = int(5e5)
-NUM_SAMPLES = 5
+NUM_SAMPLES = int(5e5)
 
 # Set the width and height of the output image
 DOCUMENT_WIDTH = 2480
 DOCUMENT_HEIGHT = 3508
 
-SEPARATORS = [':', ',', ';', '=', '->', '=>']
+SEPARATORS = [":", ",", ";", "=", "->", "=>"]
 
 pipeline = default_augraphy_pipeline()
 fake = Faker()
@@ -52,10 +53,11 @@ def generate_random_kv_pairs(fake: Faker):
     return out_list
 
 
-def generate_random_kv_pairs_v2(fake: Faker):
+def generate_random_kv_pairs_v2(fake: Faker, num_pairs: Optional[int] = None):
     out_list = []
 
-    for _ in range(random.randint(1, 10)):
+    num_pairs = random.randint(1, 10) if not num_pairs else num_pairs
+    for _ in range(num_pairs):
         metatype = get_random_metatype()
         if isinstance(metatype, list):
             metatype = random.choice(metatype)
@@ -73,8 +75,6 @@ def generate_faker_image() -> str:
 
 
 def generate_augmented_png(out_dir: str, i: int):
-    from pdf2image import convert_from_path
-
     # Path to your PDF file
     pdf_path = os.path.join(out_dir, f"sample_{i}.pdf")
 
@@ -104,13 +104,14 @@ def generate_image(args):
 
     components_to_add = []
     # We are capped at 8 from 'random_macros.html'
-    for _ in range(8):
+    MAX_MACRO = 8
+    for _ in range(MAX_MACRO):
         component_mapping = {
             "utils_macro.html": {},
             "table.html": {
                 "charges": [
                     {"amount": random.randint(0, 10000), "description": fake.word()}
-                    for _ in range(random.randint(1, 15))
+                    for _ in range(random.randint(1, 5))
                 ]
             },
             "multi_columns_kv.html": {
@@ -121,12 +122,17 @@ def generate_image(args):
             "footer.html": {"text": fake.text()},
             "paragraph.html": {"text": fake.text()},
             "header.html": {"text": fake.text()},
-            "list.html": {"kv_pairs": generate_random_kv_pairs(fake), "separator": random.choice(SEPARATORS)},
+            "list.html": {
+                "kv_pairs": generate_random_kv_pairs(fake),
+                "separator": random.choice(SEPARATORS),
+            },
             "image_badge.html": {"logo": generate_faker_image()},
-            "timeline.html": {"kv_pairs": generate_random_kv_pairs_v2(fake), "separator": random.choice(SEPARATORS)},
+            "timeline.html": {
+                "kv_pairs": generate_random_kv_pairs_v2(fake),
+                "separator": random.choice(SEPARATORS),
+            },
             "structured_grid.html": {"kv_pairs": generate_random_kv_pairs_v2(fake)},
-            # TODO: this is ugly
-            "structured_box.html": {"key": generate_random_kv_pairs_v2(fake)[0][0], "value": generate_random_kv_pairs_v2(fake)[0][1]}
+            "structured_box.html": {"kv_pairs": generate_random_kv_pairs_v2(fake, 1)},
         }
         comp = random.choice(macros)
         current_comp = component_env.get_template(comp)
@@ -135,15 +141,37 @@ def generate_image(args):
         components_to_add.append(current_comp.render(**data))
 
     template_data = {f"macro{i}": comp for i, comp in enumerate(components_to_add)}
+
     json.dump(metadata, open(os.path.join(out_dir, f"sample_{image_index}.json"), "w"))
     # Render the template with data
     output = template.render(**template_data)
+    css = generate_css()
 
     html = HTML(string=output)
-    css = CSS(string=generate_css())
+    css = CSS(string=css)
     html.write_pdf(
         os.path.join(out_dir, f"sample_{image_index}.pdf"),
         stylesheets=[css],
+    )
+
+    # Postproc the kv pairs
+
+    from PyPDF2 import PdfReader
+
+    pdf_file_path = os.path.join(out_dir, f"sample_{image_index}.pdf")
+    with open(pdf_file_path, "rb") as file:
+        pdf = PdfReader(file)
+        first_page_text = pdf.pages[0].extract_text()
+    kv_pairs = []
+    for elem in metadata:
+        if "kv_pairs" in elem.keys():
+            for k, v in elem["kv_pairs"]:
+                if k in first_page_text and v in first_page_text:
+                    kv_pairs.append((k, v))
+
+    json.dump(
+        kv_pairs,
+        open(os.path.join(out_dir, f"kv_pairs_sample_{image_index}.json"), "w"),
     )
 
     if use_augraphy:

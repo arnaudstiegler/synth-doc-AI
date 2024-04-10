@@ -22,3 +22,4 @@ beautifulsoup4
 weasyprint==52.5  # Problem with Ubuntu 20.04
 click
 augraphy
+PyPDF2

@@ -52,7 +52,6 @@ class KVDataset:
         self.docs = self.init_docs(split)
         self.kv_pairs = list(self.get_kv_pairs())
         self.processor = DonutProcessor.from_pretrained("naver-clova-ix/donut-base")
-        
 
     def init_docs(self, split: str):
         docs = []
@@ -66,7 +65,7 @@ class KVDataset:
                     continue
                 docs.append((kv_pairs, img_path))
 
-        print(f'Split={self.split} size: {len(docs)}')
+        print(f"Split={self.split} size: {len(docs)}")
 
         docs = sorted(docs, key=lambda x: x[1])
 
@@ -85,7 +84,7 @@ class KVDataset:
 
     def __getitem__(self, i):
         doc_kv, img_path = self.docs[i]
-        img = Image.open(img_path).convert('RGB')
+        img = Image.open(img_path).convert("RGB")
 
         if len(doc_kv) == 0:
             random_key = random.choice(self.kv_pairs)
@@ -98,7 +97,11 @@ class KVDataset:
         # Breakdown to avoid the warning message
         pixel_values = self.processor(img, return_tensors="pt")
         labels = self.processor.tokenizer(
-            text_target, return_tensors="pt", max_length=128, padding="max_length", truncation=True
+            text_target,
+            return_tensors="pt",
+            max_length=128,
+            padding="max_length",
+            truncation=True,
         )
 
         return {
@@ -181,7 +184,7 @@ def train(dataset_path: str, resume_from_checkpoint: bool):
             logging_steps=100,
             bf16=True,
             resume_from_checkpoint=resume_from_checkpoint,
-            max_grad_norm=1.0, # This should already be the default
+            max_grad_norm=1.0,  # This should already be the default
             optim="adamw_torch",
             logging_dir="./logs",  # Directory for storing logs
             save_strategy="steps",  # Save the model checkpoint every logging step
@@ -204,7 +207,6 @@ def train(dataset_path: str, resume_from_checkpoint: bool):
     #     False  # silence the warnings. Please re-enable for inference!
     # )
     trainer.train()
-
 
 
 if __name__ == "__main__":
