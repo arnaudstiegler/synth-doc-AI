@@ -1,7 +1,11 @@
+## Entry 04/11:
+- [x] Solving the font rendering
+
 ## Entry 04/10:
 - [x] scale the structured box size with the font size
-- [] Make the table html more compact
+- [x] Make the table html more compact
 - [x] Add the kv parsing as part of the preprocessing
+- [x] Improve the font management
 
 ## Entry 04/09:
 - [x] Fix the structured box html

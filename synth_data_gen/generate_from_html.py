@@ -20,13 +20,16 @@ from multiprocessing import Pool
 import time
 import click
 from pdf2image import convert_from_path
+from weasyprint.fonts import FontConfiguration
 
 
 # Enable WeasyPrint logging
 # LOGGER.setLevel(logging.DEBUG)
 # logging.basicConfig(level=logging.DEBUG)
 
-NUM_SAMPLES = int(5e5)
+# TODO: revert
+# NUM_SAMPLES = int(5e5)
+NUM_SAMPLES = 5
 
 # Set the width and height of the output image
 DOCUMENT_WIDTH = 2480
@@ -146,12 +149,15 @@ def generate_image(args):
     # Render the template with data
     output = template.render(**template_data)
     css = generate_css()
-
+    
+    font_config = FontConfiguration()
     html = HTML(string=output)
-    css = CSS(string=css)
+    css = CSS(string=css, font_config=font_config)
+    
     html.write_pdf(
         os.path.join(out_dir, f"sample_{image_index}.pdf"),
         stylesheets=[css],
+        font_config=font_config
     )
 
     # Postproc the kv pairs
