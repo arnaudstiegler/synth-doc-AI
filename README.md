@@ -34,11 +34,13 @@ For now, the pipeline works as follows:
 ## Samples
 
 <div align="center">
-<img src="./assets/sample.pdf"  width="50%">
+<img src="./assets/sample.png"  width="50%">
+<figcaption>PDF rendering</figcaption>
 </div>
 
 <div align="center">
 <img src="./assets/sample_augmented.png"  width="50%">
+<figcaption>PNG post-augraphy augmentations</figcaption>
 </div>
 
 
