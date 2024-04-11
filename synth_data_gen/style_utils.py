@@ -23,7 +23,7 @@ def generate_css():
 
     all_fonts = find_ttf_files('synth_data_gen/google-fonts/') + matplotlib.font_manager.findSystemFonts(fontpaths=None, fontext="ttf")
     font = "file://" + random.choice(all_fonts)
-    print(font)
+
     random_table_width = random.random()
 
 # @font-face {{
