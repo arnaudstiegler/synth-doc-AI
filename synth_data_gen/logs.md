@@ -1,6 +1,8 @@
 ## Entry 04/11:
 - [x] Solving the font rendering
-- [] Integrate back the default fonts
+- [x] Integrate back the default fonts
+- [x] Start generation second batch
+- [] Clean up the codebase
 
 ## Entry 04/10:
 - [x] scale the structured box size with the font size
