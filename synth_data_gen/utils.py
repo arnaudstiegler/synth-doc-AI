@@ -2,6 +2,7 @@ import re
 import random
 
 
+# TODO: some of them are actually lists of elements and lead to overlapping HTML components
 FAKER_METATYPES = [
     "aba",
     "address",
