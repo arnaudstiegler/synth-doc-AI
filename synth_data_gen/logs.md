@@ -1,5 +1,6 @@
 ## Entry 04/11:
 - [x] Solving the font rendering
+- [] Integrate back the default fonts
 
 ## Entry 04/10:
 - [x] scale the structured box size with the font size

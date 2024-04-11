@@ -7,7 +7,7 @@ def find_ttf_files(folder_path):
     for root, dirs, files in os.walk(folder_path):
         for file in files:
             if file.endswith('.ttf'):
-                ttf_files.append(os.path.join(root, file))
+                ttf_files.append(os.path.abspath(os.path.join(root, file)))
     return ttf_files
 
 
@@ -21,8 +21,8 @@ def generate_css():
     margin_auto = 1
     border_value = "border: 1px solid black;" if random.random() < 0.1 else ""
 
-    all_fonts = find_ttf_files('synth_data_gen/google-fonts/')
-    font = "file://" + os.path.abspath(random.choice(all_fonts))
+    all_fonts = find_ttf_files('synth_data_gen/google-fonts/') + matplotlib.font_manager.findSystemFonts(fontpaths=None, fontext="ttf")
+    font = "file://" + random.choice(all_fonts)
     print(font)
     random_table_width = random.random()
 
