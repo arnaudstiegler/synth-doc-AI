@@ -77,6 +77,8 @@ class KVDataset:
         elif split == "val":
             val_split_size = int((self.VAL_SPLIT_SIZE) * len(docs))
             return docs[-val_split_size:]
+        else:
+            raise ValueError(f'Split should be either train or val but received {split}')
 
     def get_kv_pairs(self):
         kv_pairs_list = []
@@ -192,7 +194,7 @@ def train(dataset_path: str, resume_from_checkpoint: bool, test_run: bool):
             remove_unused_columns=False,
             max_steps=MAX_STEPS,
             learning_rate=2.5e-5,
-            logging_steps=100,
+            logging_steps=100 if not test_run else 5,
             bf16=True,
             resume_from_checkpoint=resume_from_checkpoint,
             max_grad_norm=1.0,  # This should already be the default
@@ -202,7 +204,7 @@ def train(dataset_path: str, resume_from_checkpoint: bool, test_run: bool):
             save_steps=5000,  # Save checkpoints every 50 steps
             save_total_limit=2,
             evaluation_strategy="steps",  # Evaluate the model every logging step
-            eval_steps=5000,  # Evaluate and save checkpoints every 50 steps
+            eval_steps=5000 if not test_run else 10,  # Evaluate and save checkpoints every 50 steps
             load_best_model_at_end=True,
             metric_for_best_model="eval_loss",
             greater_is_better=False,
