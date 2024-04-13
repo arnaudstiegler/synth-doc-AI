@@ -197,7 +197,7 @@ def train(dataset_path: str, resume_from_checkpoint: bool, test_run: bool):
             logging_steps=100 if not test_run else 5,
             bf16=True,
             torch_compile=True,
-            torch_compile_backend='inductor'
+            torch_compile_backend='inductor',
             resume_from_checkpoint=resume_from_checkpoint,
             max_grad_norm=1.0,  # This should already be the default
             optim="adamw_torch",
