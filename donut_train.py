@@ -59,7 +59,7 @@ class KVDataset:
         for file in os.listdir(self.folder_path):
             if "kv_pairs" in file:
                 kv_pairs = json.load(open(os.path.join(self.folder_path, file)))
-                sample_id = file.split("_")[2].replace(".json", "")
+                sample_id = file.split("_")[-1].replace(".json", "")
                 img_path = os.path.join(self.folder_path, f"sample_{sample_id}_aug.png")
                 if not os.path.exists(img_path):
                     # Skipping if we're missing the corresponding img (download issue)
