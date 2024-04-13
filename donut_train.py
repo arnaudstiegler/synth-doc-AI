@@ -45,9 +45,10 @@ MISSING_TOKEN = "</Missing>"
 class KVDataset:
     VAL_SPLIT_SIZE = 0.05
 
-    def __init__(self, folder_path: str, split: str):
+    def __init__(self, folder_path: str, split: str, test_run: bool):
         self.folder_path = folder_path
         self.split = split
+        self.test_run = test_run
 
         self.docs = self.init_docs(split)
         self.kv_pairs = list(self.get_kv_pairs())
@@ -62,6 +63,7 @@ class KVDataset:
                 img_path = os.path.join(self.folder_path, f"sample_{sample_id}_aug.png")
                 if not os.path.exists(img_path):
                     # Skipping if we're missing the corresponding img (download issue)
+                    print(f'Skipping sample {sample_id}: could not find image')
                     continue
                 docs.append((kv_pairs, img_path))
 
@@ -111,6 +113,9 @@ class KVDataset:
         }
 
     def __len__(self):
+        if self.test_run:
+            # For debugging purposes
+            return 10
         return len(self.docs)
 
 
@@ -143,11 +148,17 @@ def custom_collate_fn(batch):
     is_flag=True,
     help="Whether to resume training from a checkpoint.",
 )
-def train(dataset_path: str, resume_from_checkpoint: bool):
+@click.option(
+    "--test-run",
+    default=False,
+    is_flag=True,
+    help="Runs the training script on a very small subset",
+)
+def train(dataset_path: str, resume_from_checkpoint: bool, test_run: bool):
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    train_dataset = KVDataset(dataset_path, "train")
-    eval_dataset = KVDataset(dataset_path, "val")
+    train_dataset = KVDataset(dataset_path, "train", test_run)
+    eval_dataset = KVDataset(dataset_path, "val", test_run)
 
     processor = DonutProcessor.from_pretrained("naver-clova-ix/donut-base")
     model = VisionEncoderDecoderModel.from_pretrained("naver-clova-ix/donut-base")
