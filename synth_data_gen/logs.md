@@ -1,3 +1,11 @@
+## Entry 04/15:
+- [] Understand why torch.compile doesn't work
+- [] Debug the run
+
+## Entry 04/13:
+- [x] Started run with v2
+- [] Why is the gradient norm >> 1 while max_grad_norm=1 in the trainer arguments?
+
 ## Entry 04/11:
 - [x] Solving the font rendering
 - [x] Integrate back the default fonts

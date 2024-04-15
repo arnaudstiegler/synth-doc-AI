@@ -201,7 +201,7 @@ def train(dataset_path: str, resume_from_checkpoint: bool, test_run: bool):
             # torch_compile_backend='inductor',
             resume_from_checkpoint=resume_from_checkpoint,
             max_grad_norm=1.0,  # This should already be the default
-            optim="adamw_torch",
+            optim="adamw_bnb_8bit",
             logging_dir="./logs",  # Directory for storing logs
             save_strategy="steps",  # Save the model checkpoint every logging step
             save_steps=5000,  # Save checkpoints every 50 steps
