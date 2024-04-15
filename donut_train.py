@@ -65,20 +65,21 @@ class KVDataset:
                     # Skipping if we're missing the corresponding img (download issue)
                     print(f'Skipping sample {sample_id}: could not find image')
                     continue
-                docs.append((kv_pairs, img_path))
-
-        print(f"Split={self.split} size: {len(docs)}")
+                docs.append((kv_pairs, img_path)) 
 
         docs = sorted(docs, key=lambda x: x[1])
 
         if split == "train":
             train_split_size = int((1 - self.VAL_SPLIT_SIZE) * len(docs))
-            return docs[:train_split_size]
+            split_docs = docs[:train_split_size]
         elif split == "val":
             val_split_size = int((self.VAL_SPLIT_SIZE) * len(docs))
-            return docs[-val_split_size:]
+            split_docs = docs[-val_split_size:]
         else:
             raise ValueError(f'Split should be either train or val but received {split}')
+        
+        print(f"Split={self.split} size: {len(split_docs)}")
+        return split_docs
 
     def get_kv_pairs(self):
         kv_pairs_list = []
