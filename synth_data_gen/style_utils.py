@@ -2,11 +2,12 @@ import random
 import matplotlib.font_manager
 import os
 
+
 def find_ttf_files(folder_path):
     ttf_files = []
     for root, dirs, files in os.walk(folder_path):
         for file in files:
-            if file.endswith('.ttf'):
+            if file.endswith(".ttf"):
                 ttf_files.append(os.path.abspath(os.path.join(root, file)))
     return ttf_files
 
@@ -16,23 +17,31 @@ def generate_css():
         return f"rgb({random.randint(0, 255)}, {random.randint(0, 255)}, {random.randint(0, 255)})"
 
     padding = random.randint(1, 10)
-    font_size = random.randint(10, 20)
-    # margin_auto = random.randint(5, 20)
-    margin_auto = 1
+    font_size = random.randint(14, 22)
+    margin_auto1 = random.randint(1, 3)
+    margin_auto2 = random.randint(1, 3)
     border_value = "border: 1px solid black;" if random.random() < 0.1 else ""
 
-    all_fonts = find_ttf_files('synth_data_gen/google-fonts/') + matplotlib.font_manager.findSystemFonts(fontpaths=None, fontext="ttf")
+    all_fonts = find_ttf_files(
+        "synth_data_gen/google-fonts/"
+    ) + matplotlib.font_manager.findSystemFonts(fontpaths=None, fontext="ttf")
     font = "file://" + random.choice(all_fonts)
 
     random_table_width = random.random()
 
-# @font-face {{
-# font-family: random_font;
-# src: url(file://{font}) format('truetype');
-# }}
+    if random.random() < 0.3:
+        # Weird format shouldn't account for too many cases
+        width = random.randint(300, 500)
+        height = random.randint(300, 500)
+        page_size = f"@page {{size: {width}mm {height}mm ;}}"
+    else:
+        # Basically normal A4 size
+        page_size = ""
+    print(page_size)
 
     css_content = f"""
-
+{page_size}
+    
 @font-face {{
 font-family: 'Zeyada';
 src: url({ font }) format('truetype');
@@ -63,7 +72,7 @@ src: url({ font }) format('truetype');
 
 table tbody tr:nth-child(even){{background-color: {random_color()};}}
 
-body {{ font-family: 'Zeyada'; font-size: {font_size}px; margin: {margin_auto}px auto; overflow: visible;}}
+body {{ font-family: 'Zeyada'; font-size: {font_size}px; margin: {margin_auto1}px {margin_auto2}px; overflow: visible;}}
 .header, .footer {{ text-align: center; font-family: 'Zeyada';}}
 div {{ {border_value} font-family: 'Zeyada';}}
 table {{ width: 100%; border-collapse: collapse; }}

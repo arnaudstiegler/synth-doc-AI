@@ -63,9 +63,9 @@ class KVDataset:
                 img_path = os.path.join(self.folder_path, f"sample_{sample_id}_aug.png")
                 if not os.path.exists(img_path):
                     # Skipping if we're missing the corresponding img (download issue)
-                    print(f'Skipping sample {sample_id}: could not find image')
+                    print(f"Skipping sample {sample_id}: could not find image")
                     continue
-                docs.append((kv_pairs, img_path)) 
+                docs.append((kv_pairs, img_path))
 
         docs = sorted(docs, key=lambda x: x[1])
 
@@ -76,8 +76,10 @@ class KVDataset:
             val_split_size = int((self.VAL_SPLIT_SIZE) * len(docs))
             split_docs = docs[-val_split_size:]
         else:
-            raise ValueError(f'Split should be either train or val but received {split}')
-        
+            raise ValueError(
+                f"Split should be either train or val but received {split}"
+            )
+
         print(f"Split={self.split} size: {len(split_docs)}")
         return split_docs
 
@@ -208,7 +210,9 @@ def train(dataset_path: str, resume_from_checkpoint: bool, test_run: bool):
             save_steps=5000,  # Save checkpoints every 50 steps
             save_total_limit=2,
             evaluation_strategy="steps",  # Evaluate the model every logging step
-            eval_steps=5000 if not test_run else 10,  # Evaluate and save checkpoints every 50 steps
+            eval_steps=5000
+            if not test_run
+            else 10,  # Evaluate and save checkpoints every 50 steps
             load_best_model_at_end=True,
             metric_for_best_model="eval_loss",
             greater_is_better=False,

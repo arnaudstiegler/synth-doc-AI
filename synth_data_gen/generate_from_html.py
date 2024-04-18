@@ -27,7 +27,7 @@ from weasyprint.fonts import FontConfiguration
 # LOGGER.setLevel(logging.DEBUG)
 # logging.basicConfig(level=logging.DEBUG)
 
-NUM_SAMPLES = 200000
+NUM_SAMPLES = 5
 
 # Set the width and height of the output image
 DOCUMENT_WIDTH = 2480
@@ -104,8 +104,8 @@ def generate_image(args):
     macros = component_env.list_templates()
 
     components_to_add = []
-    # We are capped at 8 from 'random_macros.html'
-    MAX_MACRO = 8
+    # We are capped at 12 from 'random_macros.html'
+    MAX_MACRO = 12
     for _ in range(MAX_MACRO):
         component_mapping = {
             "utils_macro.html": {},
@@ -147,15 +147,15 @@ def generate_image(args):
     # Render the template with data
     output = template.render(**template_data)
     css = generate_css()
-    
+
     font_config = FontConfiguration()
     html = HTML(string=output)
     css = CSS(string=css, font_config=font_config)
-    
+
     html.write_pdf(
         os.path.join(out_dir, f"sample_{image_index}.pdf"),
         stylesheets=[css],
-        font_config=font_config
+        font_config=font_config,
     )
 
     # Postproc the kv pairs
