@@ -1,5 +1,5 @@
-{% set num_spaces1 = range(1, 3) | random %}
-{% set num_spaces2 = range(1, 3) | random %}
+{% set num_spaces1 = range(0, 3) | random %}
+{% set num_spaces2 = range(0, 3) | random %}
 <ul>
     {% for k, v in elems %}
         <li>{{ k }}{{ ' ' * num_spaces1 }}{{ separator }}{{ ' ' * num_spaces2 }}{{ v }}</li>

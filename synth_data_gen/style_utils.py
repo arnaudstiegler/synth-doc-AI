@@ -37,7 +37,7 @@ def generate_css():
     else:
         # Basically normal A4 size
         page_size = ""
-    print(page_size)
+    print(font)
 
     css_content = f"""
 {page_size}
@@ -72,7 +72,7 @@ src: url({ font }) format('truetype');
 
 table tbody tr:nth-child(even){{background-color: {random_color()};}}
 
-body {{ font-family: 'Zeyada'; font-size: {font_size}px; margin: {margin_auto1}px {margin_auto2}px; overflow: visible;}}
+body {{ font-family: 'Zeyada'; font-size: {font_size}px; margin: {margin_auto1}px {margin_auto2}px;}}
 .header, .footer {{ text-align: center; font-family: 'Zeyada';}}
 div {{ {border_value} font-family: 'Zeyada';}}
 table {{ width: 100%; border-collapse: collapse; }}

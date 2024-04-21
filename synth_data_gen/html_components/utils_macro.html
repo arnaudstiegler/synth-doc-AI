@@ -3,8 +3,15 @@
 {% endmacro %}
 
 {% macro structured_box(key, value) %}
-<div class="structured-box" style="position: relative; border: 2px solid black; height: 10em; width: 20em;">
+<div class="structured-box" style="position: relative; border: 2px solid black; height: 5em; width: 10em;">
     <span style="position: absolute; top: 0.5em; left: 0.5em; margin: 0px; background: white; z-index: 1;">{{ key }}</span>
     <div style="position: absolute; top: 50%; text-align: center; width: 100%; word-wrap: break-word; overflow-wrap: break-word;">{{ value }}</div>
 </div>
+{% endmacro %}
+
+{% macro two_line_kv(key, value) %}
+<div style="line-height: 1.2;">
+    <div><strong>{{ key }}</strong></div>
+    <div>{{ value }}</div>
+  </div>
 {% endmacro %}

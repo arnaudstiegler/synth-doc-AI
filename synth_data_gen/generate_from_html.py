@@ -27,7 +27,7 @@ from weasyprint.fonts import FontConfiguration
 # LOGGER.setLevel(logging.DEBUG)
 # logging.basicConfig(level=logging.DEBUG)
 
-NUM_SAMPLES = 5
+NUM_SAMPLES = 20
 
 # Set the width and height of the output image
 DOCUMENT_WIDTH = 2480
@@ -134,6 +134,7 @@ def generate_image(args):
             },
             "structured_grid.html": {"kv_pairs": generate_random_kv_pairs_v2(fake)},
             "structured_box.html": {"kv_pairs": generate_random_kv_pairs_v2(fake, 1)},
+            "two_line_list.html": {"kv_pairs": generate_random_kv_pairs_v2(fake)},
         }
         comp = random.choice(macros)
         current_comp = component_env.get_template(comp)
