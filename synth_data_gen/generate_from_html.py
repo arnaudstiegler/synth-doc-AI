@@ -94,7 +94,7 @@ def generate_augmented_png(out_dir: str, i: int):
     Image.fromarray(augmented).save(os.path.join(out_dir, f"sample_{i}_aug.png"))
     # To save some space
     os.remove(os.path.join(out_dir, f"sample_{i}.png"))
-    os.remove(os.path.join(out_dir, f"sample_{i}.pdf"))
+    # os.remove(os.path.join(out_dir, f"sample_{i}.pdf"))
 
 
 def generate_image(args):
@@ -146,7 +146,7 @@ def generate_image(args):
 
     template_data = {f"macro{i}": comp for i, comp in enumerate(components_to_add)}
 
-    json.dump(metadata, open(os.path.join(out_dir, f"sample_{image_index}.json"), "w"))
+    # json.dump(metadata, open(os.path.join(out_dir, f"sample_{image_index}.json"), "w"))
     # Render the template with data
     output = template.render(**template_data)
     css = generate_css()
