@@ -71,7 +71,7 @@ src: url({ font }) format('truetype');
 
 table tbody tr:nth-child(even){{background-color: {random_color()};}}
 
-body {{ font-family: 'Zeyada'; font-size: {font_size}px; margin: {margin_auto1}px {margin_auto2}px;}}
+body {{ font-family: 'Zeyada'; font-size: {font_size}px; overflow: visible; margin: {margin_auto1}px {margin_auto2}px;}}
 .header, .footer {{ text-align: center; font-family: 'Zeyada';}}
 div {{ {border_value} font-family: 'Zeyada';}}
 table {{ width: 100%; border-collapse: collapse; }}
