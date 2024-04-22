@@ -170,8 +170,10 @@ def generate_image(args):
         pdf = PdfReader(file)
         first_page_text = pdf.pages[0].extract_text()
     kv_pairs = []
+    has_kv_pairs = False
     for elem in metadata:
         if "kv_pairs" in elem.keys():
+            has_kv_pairs = True
             for k, v in elem["kv_pairs"]:
                 if ' '.join(k.split()) in first_page_text and ' '.join(v.split()) in first_page_text:
                     kv_pairs.append((k, v))
@@ -185,7 +187,7 @@ def generate_image(args):
         # This could be run outside of the PDF generation script
         generate_augmented_png(out_dir, image_index)
 
-    return time.time() - start
+    return has_kv_pairs
 
 
 @click.command()
@@ -205,8 +207,9 @@ def generate_documents(out_dir: str) -> None:
     ]
 
     with Pool(processes=os.cpu_count() // 2) as pool:
-        list(tqdm(pool.imap(generate_image, args_list), total=len(args_list)))
+        out = list(tqdm(pool.imap(generate_image, args_list), total=len(args_list)))
 
+    print(f'Proportion of docs having kv pairs: {sum(out) / len(out)}')
 
 if __name__ == "__main__":
     generate_documents()

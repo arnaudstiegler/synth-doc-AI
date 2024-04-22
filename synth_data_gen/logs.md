@@ -1,8 +1,8 @@
 ## Entry 04/18:
 - [x] Run some tests on the trained model: performing worse, often returns "Missing" on fields that are present
-- [] Check presence rate for old vs new data
-- [] Should add a stricter count for documents with no kv-pairs?
-- [] Look into documents that have no kv pairs to make sure they're not hiding a pattern
+- [x] Check presence rate for old vs new data
+- [x] Should add a stricter count for documents with no kv-pairs?
+- [x] Look into documents that have no kv pairs to make sure they're not hiding a pattern
 
 ## Entry 04/15:
 - [x] Understand why torch.compile doesn't work
