@@ -94,7 +94,7 @@ for epoch in range(10):
                 for eval_batch in val_data:
                     output = model(**eval_batch)
                     loss = output.loss
-                    loss_avg.append(loss)
+                    loss_avg.append(loss.cpu())
 
                 accelerator.log({"val_loss": np.mean(loss_avg)}, step=total_step)
 
