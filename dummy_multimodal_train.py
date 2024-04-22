@@ -67,7 +67,7 @@ val_data = torch.utils.data.DataLoader(
 )
 
 optimizer = bnb.optim.Adam8bit(model.parameters(), lr=2e-5)
-model, optimizer, data = accelerator.prepare(model, optimizer, train_data, val_data)
+model, optimizer, train_data, val_data = accelerator.prepare(model, optimizer, train_data, val_data)
 model.gradient_checkpointing_enable()
 
 
