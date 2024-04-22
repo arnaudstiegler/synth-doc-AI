@@ -2,7 +2,7 @@ import logging
 from functools import partial
 
 import torch
-from accelerate import Accelerator
+from accelerate import Accelerator, Dee
 from accelerate.logging import get_logger
 from accelerate.utils import DummyOptim
 from torch.optim import AdamW
@@ -30,7 +30,6 @@ logger = get_logger(__name__)
 logger.setLevel(logging.INFO)
 config = read_deepspeed_config()
 accelerator = Accelerator()
-
 dataset = SquadDataset(tokenizer, "train")
 
 collate = partial(collate_fn, tokenizer.pad_token_id)
