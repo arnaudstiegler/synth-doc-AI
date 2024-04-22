@@ -27,7 +27,8 @@ from weasyprint.fonts import FontConfiguration
 # LOGGER.setLevel(logging.DEBUG)
 # logging.basicConfig(level=logging.DEBUG)
 
-NUM_SAMPLES = 70000
+# NUM_SAMPLES = 70000
+NUM_SAMPLES = 20
 
 # Set the width and height of the output image
 DOCUMENT_WIDTH = 2480
@@ -203,8 +204,7 @@ def generate_documents(out_dir: str) -> None:
         for i in range(NUM_SAMPLES)
     ]
 
-    # with Pool(processes=os.cpu_count() // 2) as pool:
-    with Pool(processes=1) as pool:
+    with Pool(processes=os.cpu_count() // 2) as pool:
         list(tqdm(pool.imap(generate_image, args_list), total=len(args_list)))
 
 
