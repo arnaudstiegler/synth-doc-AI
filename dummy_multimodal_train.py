@@ -70,33 +70,33 @@ optimizer = bnb.optim.Adam8bit(model.parameters(), lr=2e-5)
 model, optimizer, train_data, val_data = accelerator.prepare(model, optimizer, train_data, val_data)
 model.gradient_checkpointing_enable()
 
-
-model.train()
 total_step = 0
 for epoch in range(10):
     for batch in train_data:
-        optimizer.zero_grad()
+        with torch.cuda.amp.autocast():
+            model.train()
+            optimizer.zero_grad()
 
-        output = model(**batch)
-        loss = output.loss
-        logger.info(f"Loss: {loss.item()}", main_process_only=True)
-        accelerator.log({"train_loss": loss.item()}, step=total_step)
-        accelerator.backward(loss)
-        optimizer.step()
+            output = model(**batch)
+            loss = output.loss
+            logger.info(f"Loss: {loss.item()}", main_process_only=True)
+            accelerator.log({"train_loss": loss.item()}, step=total_step)
+            accelerator.backward(loss)
+            optimizer.step()
 
-        total_step += 1
+            total_step += 1
 
-        if total_step % 10 == 0:
-            # Run eval
-            model.eval()
-            with torch.no_grad():
-                loss_avg = []
-                for eval_batch in val_data:
-                    output = model(**eval_batch)
-                    loss = output.loss
-                    loss_avg.append(loss.cpu())
+            if total_step % 10 == 0:
+                # Run eval
+                model.eval()
+                with torch.no_grad():
+                    loss_avg = []
+                    for eval_batch in val_data:
+                        output = model(**eval_batch)
+                        loss = output.loss
+                        loss_avg.append(loss.cpu())
 
-                accelerator.log({"val_loss": np.mean(loss_avg)}, step=total_step)
+                    accelerator.log({"val_loss": np.mean(loss_avg)}, step=total_step)
 
 # Make sure that the wandb tracker finishes correctly
 accelerator.end_training()
