@@ -27,8 +27,7 @@ from weasyprint.fonts import FontConfiguration
 # LOGGER.setLevel(logging.DEBUG)
 # logging.basicConfig(level=logging.DEBUG)
 
-# NUM_SAMPLES = 70000
-NUM_SAMPLES = 20
+NUM_SAMPLES = 70000
 
 # Set the width and height of the output image
 DOCUMENT_WIDTH = 2480
