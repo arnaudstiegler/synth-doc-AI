@@ -12,6 +12,7 @@ from torch.utils.data import default_collate
 import bitsandbytes as bnb
 import torch
 from donut_train import KVDataset, MISSING_TOKEN, custom_collate_fn
+import time
 
 
 # For now, not using quantization
@@ -76,14 +77,16 @@ for epoch in range(10):
         with torch.cuda.amp.autocast():
             model.train()
             optimizer.zero_grad()
+            train_start = time.time()
 
             output = model(**batch)
             loss = output.loss
             logger.info(f"Loss: {loss.item()}", main_process_only=True)
-            accelerator.log({"train_loss": loss.item()}, step=total_step)
+            accelerator.log({"train/loss": loss.item()}, step=total_step)
             accelerator.backward(loss)
             optimizer.step()
 
+            accelerator.log({"train/time_per_step": time.time() - train_start}, step=total_step)
             total_step += 1
 
             if total_step % 10 == 0:
@@ -91,12 +94,15 @@ for epoch in range(10):
                 model.eval()
                 with torch.no_grad():
                     loss_avg = []
+                    eval_step_avg = []
                     for eval_batch in val_data:
+                        eval_start = time.time()
                         output = model(**eval_batch)
                         loss = output.loss
+                        eval_step_avg.append(time.time()-eval_start)
                         loss_avg.append(loss.cpu())
 
-                    accelerator.log({"val_loss": np.mean(loss_avg)}, step=total_step)
+                    accelerator.log({"val/loss": np.mean(loss_avg), "eval/samples_per_second": sum(eval_step_avg) / len(eval_step_avg)}, step=total_step)
 
 # Make sure that the wandb tracker finishes correctly
 accelerator.end_training()
