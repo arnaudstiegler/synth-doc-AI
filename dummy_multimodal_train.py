@@ -7,10 +7,12 @@ from accelerate.logging import get_logger
 from torch.optim import AdamW
 from torch.utils.data import DataLoader
 from datasets import load_dataset
-from transformers import AutoModelForCausalLM, AutoProcessor, BitsAndBytesConfig
+from transformers import DonutProcessor, VisionEncoderDecoderModel, BitsAndBytesConfig
 from torch.utils.data import default_collate
 import bitsandbytes as bnb
 import torch
+from donut_train import KVDataset, MISSING_TOKEN, custom_collate_fn
+
 
 bnb_config = BitsAndBytesConfig(
     load_in_4bit=True,
@@ -20,56 +22,52 @@ bnb_config = BitsAndBytesConfig(
 )
 
 
+dataset_path = '/home/ubuntu/synth_data/'
 device = "cuda" if torch.cuda.is_available() else "cpu"
-# Load model directly
-model = AutoModelForCausalLM.from_pretrained(
-    "adept/fuyu-8b",
-    torch_dtype="auto" if torch.cuda.is_available() else torch.float32,
-    quantization_config=bnb_config,
-    low_cpu_mem_usage=True,
-    # attn_implementation="flash_attention_2",
-    # code_revision="main",
-)
-processor = AutoProcessor.from_pretrained(
-    "adept/fuyu-8b", padding="max_length", max_length=128
-)
+
+train_dataset = KVDataset(dataset_path, "train", True)
+eval_dataset = KVDataset(dataset_path, "val", True)
+
+processor = DonutProcessor.from_pretrained("naver-clova-ix/donut-base")
+model = VisionEncoderDecoderModel.from_pretrained("naver-clova-ix/donut-base")
+# the tokenizer doesn't natively have a pad token
+processor.tokenizer.add_tokens([MISSING_TOKEN])
+
+model.config.pad_token_id = processor.tokenizer.pad_token_id
+model.config.decoder_start_token_id = processor.tokenizer.bos_token_id
+model.decoder.resize_token_embeddings(len(processor.tokenizer))
+
+model.gradient_checkpointing_enable()
 
 logger = get_logger(__name__)
 logger.setLevel(logging.INFO)
-# config = read_deepspeed_config()
+
 accelerator = Accelerator()
-
-dataset = load_dataset("textvqa")
-sample = dataset["train"][0]
-
-# collate = partial(TextVQADataset.collate_fn, processor.tokenizer.pad_token_id)
-data = torch.utils.data.DataLoader(
-    dataset,
+train_data = torch.utils.data.DataLoader(
+    train_dataset,
     shuffle=True,
-    batch_size=1,
+    batch_size=2,
+    collate_fn=default_collate,
+)
+val_data = torch.utils.data.DataLoader(
+    eval_dataset,
+    shuffle=True,
+    batch_size=4,
     collate_fn=default_collate,
 )
 
-optimizer = bnb.optim.Adam8bit(model.parameters(), lr=0.01)
-model, optimizer, data = accelerator.prepare(model, optimizer, data)
+optimizer = bnb.optim.Adam8bit(model.parameters(), lr=2e-5)
+model, optimizer, data = accelerator.prepare(model, optimizer, train_data, val_data)
 model.gradient_checkpointing_enable()
 
-sample = dataset["train"][0]
+
 model.train()
 for epoch in range(10):
-    for k in range(100):
+    for batch in train_data:
         optimizer.zero_grad()
-        text = sample["question"] + " " + sample["answers"][0]
-        maxsize = (512, 512)
-        sample["image"].thumbnail(maxsize, PIL.Image.LANCZOS)
-        inputs = processor(text=text, images=sample["image"], return_tensors="pt").to(
-            "cuda:0"
-        )
-        # print(inputs['image_patches'][0])
-        inputs["labels"] = inputs["input_ids"].clone()
-        output = model(**inputs)
+        
+        output = model(**batch)
         loss = output.loss
-        print(f"Loss: {loss.item()}")
         logger.info(f"Loss: {loss.item()}", main_process_only=True)
         accelerator.backward(loss)
         optimizer.step()

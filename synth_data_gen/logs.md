@@ -1,3 +1,11 @@
+## Entry 04/21:
+- [x] Adding one line kv html component
+- [x] sanity check on the generated samples
+- [x] investigate missing kv pairs -> caused by overflow
+- [x] cleanup overlap between some of the components
+- [x] Adding variable page size
+- [x] Restart generation
+
 ## Entry 04/18:
 - [x] Run some tests on the trained model: performing worse, often returns "Missing" on fields that are present
 - [x] Check presence rate for old vs new data
