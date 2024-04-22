@@ -1,6 +1,8 @@
 {% from "utils_macro.html" import two_line_kv %}
 <div style="display: flex; flex-wrap: wrap; gap: 5px; column-gap: 20px; justify-content: center; overflow: auto;">
   {% for k, v in kv_pairs %}
-    {{ two_line_kv(k, v) }}
+    <div style="margin: 5px;"> <!-- Add margin to create space between elements -->
+      {{ two_line_kv(k, v) }}
+    </div>
   {% endfor %}    
 </div>

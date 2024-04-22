@@ -17,7 +17,7 @@ def generate_css():
         return f"rgb({random.randint(0, 255)}, {random.randint(0, 255)}, {random.randint(0, 255)})"
 
     padding = random.randint(1, 10)
-    font_size = random.randint(14, 22)
+    font_size = random.randint(14, 18)
     margin_auto1 = random.randint(1, 3)
     margin_auto2 = random.randint(1, 3)
     border_value = "border: 1px solid black;" if random.random() < 0.1 else ""
@@ -29,7 +29,7 @@ def generate_css():
 
     random_table_width = random.random()
 
-    if random.random() < 0.3:
+    if random.random() < 0.4:
         # Weird format shouldn't account for too many cases
         width = random.randint(300, 500)
         height = random.randint(300, 500)
@@ -37,7 +37,6 @@ def generate_css():
     else:
         # Basically normal A4 size
         page_size = ""
-    print(font)
 
     css_content = f"""
 {page_size}

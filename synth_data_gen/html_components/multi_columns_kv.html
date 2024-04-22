@@ -1,14 +1,14 @@
 {% set num_spaces1 = range(0, 3) | random %}
 {% set num_spaces2 = range(0, 3) | random %}
-<div class="row">
+<div class="row" style="display: flex; flex-wrap: wrap;">
     {% set part = kv_pairs|length // num_columns %}
     {% for num_column in range(num_columns) %}
-    <div class="column" style="float:left; width:50%;">
+    <div class="column" style="flex: 1 1 50%;">
         {% for k, v in kv_pairs[num_column*part:(num_column+1)*part] %}
         <p>
-            <td>{{ k }}{{ ' ' * num_spaces1 }}{{separator}}{{ ' ' * num_spaces2 }}{{ v }}</td>
+            <td>{{ k }}{{ ' ' * num_spaces1 }}{{ separator }}{{ ' ' * num_spaces2 }}{{ v }}</td>
         </p>
         {% endfor %}
     </div>
     {% endfor %}
-</div style="content: ''; display: table; clear: both;">
+</div>

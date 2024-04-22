@@ -1,6 +1,8 @@
 {% from "utils_macro.html" import structured_box %}
-<div style="display: inline-block; flex-wrap: wrap; gap: 5px; justify-content: center; overflow: auto;">
+<div style="display: flex; flex-wrap: wrap; gap: 5px; justify-content: flex-start; overflow: auto;">
   {% for k, v in kv_pairs %}
-    {{ structured_box(k, v) }}
+    <div style="display: block;"> <!-- Change to block to fill the full line -->
+      {{ structured_box(k, v) }}
+    </div>
   {% endfor %}    
 </div>

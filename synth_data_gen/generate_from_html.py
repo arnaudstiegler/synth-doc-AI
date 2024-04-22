@@ -27,13 +27,13 @@ from weasyprint.fonts import FontConfiguration
 # LOGGER.setLevel(logging.DEBUG)
 # logging.basicConfig(level=logging.DEBUG)
 
-NUM_SAMPLES = 20
+NUM_SAMPLES = 70000
 
 # Set the width and height of the output image
 DOCUMENT_WIDTH = 2480
 DOCUMENT_HEIGHT = 3508
 
-SEPARATORS = [":", ",", ";", "=", "->", "=>"]
+SEPARATORS = [":", ";", "=", "->", "=>", " "]
 
 pipeline = default_augraphy_pipeline()
 fake = Faker()
@@ -93,6 +93,7 @@ def generate_augmented_png(out_dir: str, i: int):
     Image.fromarray(augmented).save(os.path.join(out_dir, f"sample_{i}_aug.png"))
     # To save some space
     os.remove(os.path.join(out_dir, f"sample_{i}.png"))
+    os.remove(os.path.join(out_dir, f"sample_{i}.pdf"))
 
 
 def generate_image(args):
@@ -171,7 +172,7 @@ def generate_image(args):
     for elem in metadata:
         if "kv_pairs" in elem.keys():
             for k, v in elem["kv_pairs"]:
-                if k in first_page_text and v in first_page_text:
+                if ' '.join(k.split()) in first_page_text and ' '.join(v.split()) in first_page_text:
                     kv_pairs.append((k, v))
 
     json.dump(
@@ -202,7 +203,8 @@ def generate_documents(out_dir: str) -> None:
         for i in range(NUM_SAMPLES)
     ]
 
-    with Pool(processes=os.cpu_count() // 2) as pool:
+    # with Pool(processes=os.cpu_count() // 2) as pool:
+    with Pool(processes=1) as pool:
         list(tqdm(pool.imap(generate_image, args_list), total=len(args_list)))
 
 
