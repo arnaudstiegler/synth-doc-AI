@@ -23,7 +23,7 @@ from donut_train import KVDataset, MISSING_TOKEN, custom_collate_fn
 # )
 
 
-dataset_path = '/home/ubuntu/synth_data/'
+dataset_path = "/home/ubuntu/synth_data/"
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 train_dataset = KVDataset(dataset_path, "train", test_run=True)
@@ -44,20 +44,14 @@ logger = get_logger(__name__)
 logger.setLevel(logging.INFO)
 
 
-deepspeed_plugin = DeepSpeedPlugin(
-    zero_stage=2,
-    gradient_clipping=1.0
-    )
+deepspeed_plugin = DeepSpeedPlugin(zero_stage=2, gradient_clipping=1.0)
 accelerator = Accelerator(
-    mixed_precision='bf16', 
-    deepspeed_plugin=deepspeed_plugin,
-    log_with="wandb"
-    )
+    mixed_precision="bf16", deepspeed_plugin=deepspeed_plugin, log_with="wandb"
+)
 
 accelerator.init_trackers(
-    project_name="huggingface", 
-    init_kwargs={"wandb": {"entity": "arnaud-stiegler"}}
-    )
+    project_name="huggingface", init_kwargs={"wandb": {"entity": "arnaud-stiegler"}}
+)
 
 train_data = torch.utils.data.DataLoader(
     train_dataset,
@@ -82,7 +76,7 @@ total_step = 0
 for epoch in range(10):
     for batch in train_data:
         optimizer.zero_grad()
-        
+
         output = model(**batch)
         loss = output.loss
         logger.info(f"Loss: {loss.item()}", main_process_only=True)
@@ -101,7 +95,7 @@ for epoch in range(10):
                     output = model(**eval_batch)
                     loss = output.loss
                     loss_avg.append(loss)
-                
+
                 accelerator.log({"val_loss": np.mean(loss_avg)}, step=total_step)
 
 # Make sure that the wandb tracker finishes correctly

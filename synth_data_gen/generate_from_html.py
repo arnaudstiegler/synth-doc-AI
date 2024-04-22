@@ -174,7 +174,10 @@ def generate_image(args):
         if "kv_pairs" in elem.keys():
             has_kv_pairs = True
             for k, v in elem["kv_pairs"]:
-                if ' '.join(k.split()) in first_page_text and ' '.join(v.split()) in first_page_text:
+                if (
+                    " ".join(k.split()) in first_page_text
+                    and " ".join(v.split()) in first_page_text
+                ):
                     kv_pairs.append((k, v))
 
     json.dump(
@@ -208,7 +211,8 @@ def generate_documents(out_dir: str) -> None:
     with Pool(processes=os.cpu_count() // 2) as pool:
         out = list(tqdm(pool.imap(generate_image, args_list), total=len(args_list)))
 
-    print(f'Proportion of docs having kv pairs: {sum(out) / len(out)}')
+    print(f"Proportion of docs having kv pairs: {sum(out) / len(out)}")
+
 
 if __name__ == "__main__":
     generate_documents()

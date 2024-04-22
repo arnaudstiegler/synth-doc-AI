@@ -13,26 +13,12 @@ import wandb
 import os
 from datetime import datetime
 from typing import Dict, Any
-from accelerate import FullyShardedDataParallelPlugin, Accelerator
 from torch.distributed.fsdp.fully_sharded_data_parallel import (
     FullOptimStateDictConfig,
     FullStateDictConfig,
 )
 from transformers import DonutProcessor, VisionEncoderDecoderModel
 import click
-
-fsdp_plugin = FullyShardedDataParallelPlugin(
-    state_dict_config=FullStateDictConfig(offload_to_cpu=True, rank0_only=False),
-    optim_state_dict_config=FullOptimStateDictConfig(
-        offload_to_cpu=True, rank0_only=False
-    ),
-)
-
-accelerator = Accelerator(fsdp_plugin=fsdp_plugin)
-import torch._dynamo
-
-torch._dynamo.config.suppress_errors = True
-
 import os
 import json
 from PIL import Image
