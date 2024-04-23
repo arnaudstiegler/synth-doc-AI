@@ -27,7 +27,7 @@ from PyPDF2 import PdfReader
 # LOGGER.setLevel(logging.DEBUG)
 # logging.basicConfig(level=logging.DEBUG)
 
-NUM_SAMPLES = 5
+NUM_SAMPLES = 5000
 
 # Set the width and height of the output image
 DOCUMENT_WIDTH = 2480
