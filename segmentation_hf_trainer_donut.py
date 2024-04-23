@@ -74,21 +74,21 @@ def train(dataset_path: str, resume_from_checkpoint: bool, test_run: bool):
         args=TrainingArguments(
             output_dir="test_run/",
             warmup_steps=1000,
-            per_device_train_batch_size=1,
-            per_device_eval_batch_size=1,
+            per_device_train_batch_size=2,
+            per_device_eval_batch_size=4,
             gradient_checkpointing=True,
             gradient_accumulation_steps=1,
             remove_unused_columns=False,
             max_steps=MAX_STEPS,
             learning_rate=2.5e-5,
             logging_steps=100 if not test_run else 5,
-            # bf16=True,
+            bf16=True,
             # TODO: torch.compile leads to OOM for now
             # torch_compile=True,
             # torch_compile_backend='inductor',
             resume_from_checkpoint=resume_from_checkpoint,
             max_grad_norm=1.0,  # This should already be the default
-            # optim="adamw_bnb_8bit",
+            optim="adamw_bnb_8bit",
             logging_dir="./logs",  # Directory for storing logs
             save_strategy="steps",  # Save the model checkpoint every logging step
             save_steps=5000,  # Save checkpoints every 50 steps
