@@ -2,18 +2,16 @@ import numpy as np
 from PIL import Image
 from augraphy import *
 from faker import Faker
-from jinja2 import Environment, FileSystemLoader, Template
+from jinja2 import Environment, FileSystemLoader
 import random
-from synth_data_gen.utils import read_file, get_random_metatype
+from synth_data_gen.utils import get_random_metatype
 import os
 import json
 from io import BytesIO
 import base64
 from augraphy import *
 from weasyprint import HTML, CSS
-import logging
 from typing import Optional
-from weasyprint.logger import LOGGER
 from synth_data_gen.style_utils import generate_css
 from tqdm import tqdm
 from multiprocessing import Pool
@@ -21,17 +19,21 @@ import time
 import click
 from pdf2image import convert_from_path
 from weasyprint.fonts import FontConfiguration
-
+from PyPDF2 import PdfReader
 
 # Enable WeasyPrint logging
+# import logging
+# from weasyprint.logger import LOGGER
 # LOGGER.setLevel(logging.DEBUG)
 # logging.basicConfig(level=logging.DEBUG)
 
-NUM_SAMPLES = 70000
+NUM_SAMPLES = 5
 
 # Set the width and height of the output image
 DOCUMENT_WIDTH = 2480
 DOCUMENT_HEIGHT = 3508
+# Default PDF DPI is 72
+SCALE_FACTOR = 200 / 72
 
 SEPARATORS = [":", ";", "=", "->", "=>", " "]
 
@@ -80,7 +82,7 @@ def generate_augmented_png(out_dir: str, i: int):
     pdf_path = os.path.join(out_dir, f"sample_{i}.pdf")
 
     # Convert PDF to a list of image objects
-    images = convert_from_path(pdf_path)
+    images = convert_from_path(pdf_path, dpi=200)
 
     # Only keep the first page
     images[0].save(
@@ -88,12 +90,43 @@ def generate_augmented_png(out_dir: str, i: int):
         "PNG",
     )
 
-    img = Image.open(os.path.join(out_dir, f"sample_{i}.png")).convert("RGB")
-    augmented = pipeline(np.array(img))
-    Image.fromarray(augmented).save(os.path.join(out_dir, f"sample_{i}_aug.png"))
-    # To save some space
-    os.remove(os.path.join(out_dir, f"sample_{i}.png"))
-    os.remove(os.path.join(out_dir, f"sample_{i}.pdf"))
+    # img = Image.open(os.path.join(out_dir, f"sample_{i}.png")).convert("RGB")
+    # augmented = pipeline(np.array(img))
+    # Image.fromarray(augmented).save(os.path.join(out_dir, f"sample_{i}_aug.png"))
+    # # To save some space
+    # os.remove(os.path.join(out_dir, f"sample_{i}.png"))
+    # os.remove(os.path.join(out_dir, f"sample_{i}.pdf"))
+
+
+def get_words_with_bboxes(page):
+    """
+    Return a dictionary containing all words and their corresponding bounding boxes on the page.
+
+    :param page: A PyMuPDF page object
+    :return: A dictionary with words as keys and lists of bounding box tuples as values
+    """
+    words_dict = {}
+
+    # Extract words and their bounding boxes
+    word_list = page.get_text("words")  # List of words with their bounding boxes
+
+    # Iterate through the list of words
+    for word_info in word_list:
+        word, bbox = word_info[4], word_info[:4]  # Extract word and its bbox
+        x1, y1, x2, y2 = bbox
+        scaled_bbox = [
+            x1 * SCALE_FACTOR,
+            y1 * SCALE_FACTOR,
+            x2 * SCALE_FACTOR,
+            y2 * SCALE_FACTOR,
+        ]
+        # Append the bbox to the list of bboxes for the word in the dictionary
+        if word in words_dict:
+            words_dict[word].append(scaled_bbox)
+        else:
+            words_dict[word] = [scaled_bbox]
+
+    return words_dict
 
 
 def generate_image(args):
@@ -145,7 +178,6 @@ def generate_image(args):
 
     template_data = {f"macro{i}": comp for i, comp in enumerate(components_to_add)}
 
-    # json.dump(metadata, open(os.path.join(out_dir, f"sample_{image_index}.json"), "w"))
     # Render the template with data
     output = template.render(**template_data)
     css = generate_css()
@@ -162,34 +194,46 @@ def generate_image(args):
 
     # Postproc the kv pairs
 
-    from PyPDF2 import PdfReader
-
     pdf_file_path = os.path.join(out_dir, f"sample_{image_index}.pdf")
-    with open(pdf_file_path, "rb") as file:
-        pdf = PdfReader(file)
-        first_page_text = pdf.pages[0].extract_text()
-    kv_pairs = []
-    has_kv_pairs = False
-    for elem in metadata:
-        if "kv_pairs" in elem.keys():
-            has_kv_pairs = True
-            for k, v in elem["kv_pairs"]:
-                if (
-                    " ".join(k.split()) in first_page_text
-                    and " ".join(v.split()) in first_page_text
-                ):
-                    kv_pairs.append((k, v))
+    # with open(pdf_file_path, "rb") as file:
+    #     pdf = PdfReader(file)
+    #     first_page_text = pdf.pages[0].extract_text()
+    #     page_words = get_words_with_bboxes(pdf.pages[0])
+    import fitz
 
+    pdf_document = fitz.open(pdf_file_path)
+
+    # Select the page to analyze
+    page_number = 0  # Adjust as needed for the page you're interested in
+    page = pdf_document.load_page(page_number)
+    page_words = get_words_with_bboxes(page)
+    # kv_pairs = []
+    # has_kv_pairs = False
+    # for elem in metadata:
+    #     if "kv_pairs" in elem.keys():
+    #         has_kv_pairs = True
+    #         for k, v in elem["kv_pairs"]:
+    #             if (
+    #                 " ".join(k.split()) in first_page_text
+    #                 and " ".join(v.split()) in first_page_text
+    #             ):
+    #                 kv_pairs.append((k, v))
+
+    # json.dump(
+    #     kv_pairs,
+    #     open(os.path.join(out_dir, f"kv_pairs_sample_{image_index}.json"), "w"),
+    # )
     json.dump(
-        kv_pairs,
-        open(os.path.join(out_dir, f"kv_pairs_sample_{image_index}.json"), "w"),
+        page_words,
+        open(os.path.join(out_dir, f"segmentation_sample_{image_index}.json"), "w"),
     )
 
     if use_augraphy:
         # This could be run outside of the PDF generation script
         generate_augmented_png(out_dir, image_index)
 
-    return has_kv_pairs
+    # return
+    return True
 
 
 @click.command()
