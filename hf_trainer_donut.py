@@ -162,8 +162,6 @@ def train(dataset_path: str, resume_from_checkpoint: bool, test_run: bool):
 
     model.gradient_checkpointing_enable()
 
-    model = accelerator.prepare_model(model)
-
     project = "synth-donut"
     base_model_name = "donut"
     run_name = base_model_name + "-" + project
