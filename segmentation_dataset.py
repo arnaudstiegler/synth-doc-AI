@@ -5,6 +5,8 @@ import random
 from PIL import Image
 import numpy as np
 
+# TODO: duplicated
+MISSING_TOKEN = "</Missing>"
 
 MAX_BUCKET = 1000
 Y_COORDS_TOKENS = {i: f"<y_coords_{i}>" for i in range(0, MAX_BUCKET + 1)}
@@ -58,17 +60,20 @@ class SegmentationDataset:
         img = Image.open(img_path).convert("RGB")
         width, height = img.size
 
-        word_to_segment = random.choice(list(bboxes.keys()))
+        if len(list(bboxes.keys())) == 0:
+            text_target = MISSING_TOKEN
+        else:
+            word_to_segment = random.choice(list(bboxes.keys()))
 
-        text_target = word_to_segment + " "
-        for bbox in bboxes[word_to_segment]:
-            x1, y1, x2, y2 = bbox
-            text_target += (
-                X_COORDS_TOKENS[np.clip(int((x1 / width) * MAX_BUCKET), 0, MAX_BUCKET)]
-                + Y_COORDS_TOKENS[np.clip(int((y1 / height) * MAX_BUCKET), 0, MAX_BUCKET)]
-                + X_COORDS_TOKENS[np.clip(int((x2 / width) * MAX_BUCKET), 0, MAX_BUCKET)]
-                + Y_COORDS_TOKENS[np.clip(int((y2 / height) * MAX_BUCKET), 0, MAX_BUCKET)]
-            )
+            text_target = word_to_segment + " "
+            for bbox in bboxes[word_to_segment]:
+                x1, y1, x2, y2 = bbox
+                text_target += (
+                    X_COORDS_TOKENS[np.clip(int((x1 / width) * MAX_BUCKET), 0, MAX_BUCKET)]
+                    + Y_COORDS_TOKENS[np.clip(int((y1 / height) * MAX_BUCKET), 0, MAX_BUCKET)]
+                    + X_COORDS_TOKENS[np.clip(int((x2 / width) * MAX_BUCKET), 0, MAX_BUCKET)]
+                    + Y_COORDS_TOKENS[np.clip(int((y2 / height) * MAX_BUCKET), 0, MAX_BUCKET)]
+                )
 
         # Breakdown to avoid the warning message
         pixel_values = self.processor(img, return_tensors="pt")
