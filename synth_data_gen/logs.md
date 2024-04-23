@@ -1,3 +1,10 @@
+## 04/22:
+- [x] Sanity check on the batch 3
+- [x] Play around with accelerate to see whether this could be better than the HF trainer
+- [x] Start run on batch 3
+
+Note: the augmentation from Augraphy is a bit too strong, makes most page really hard to read.
+
 ## Entry 04/21:
 - [x] Adding one line kv html component
 - [x] sanity check on the generated samples
