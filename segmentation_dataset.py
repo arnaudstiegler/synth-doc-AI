@@ -3,6 +3,8 @@ import os
 import json
 import random
 from PIL import Image
+import numpy as np
+
 
 MAX_BUCKET = 1000
 Y_COORDS_TOKENS = {i: f"<y_coords_{i}>" for i in range(0, MAX_BUCKET + 1)}
