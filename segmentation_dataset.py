@@ -72,7 +72,7 @@ class SegmentationDataset:
         labels = self.processor.tokenizer(
             text_target,
             return_tensors="pt",
-            max_length=128,
+            max_length=32, # Max length can be super small
             padding="max_length",
             truncation=True,
         )
