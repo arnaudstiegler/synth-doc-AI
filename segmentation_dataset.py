@@ -4,8 +4,9 @@ import json
 import random
 from PIL import Image
 
-Y_COORDS_TOKENS = {i: f"<y_coords_{i}>" for i in range(0, 1001)}
-X_COORDS_TOKENS = {i: f"<x_coords_{i}>" for i in range(0, 1001)}
+MAX_BUCKET = 1000
+Y_COORDS_TOKENS = {i: f"<y_coords_{i}>" for i in range(0, MAX_BUCKET + 1)}
+X_COORDS_TOKENS = {i: f"<x_coords_{i}>" for i in range(0, MAX_BUCKET + 1)}
 
 
 class SegmentationDataset:
@@ -61,10 +62,10 @@ class SegmentationDataset:
         for bbox in bboxes[word_to_segment]:
             x1, y1, x2, y2 = bbox
             text_target += (
-                X_COORDS_TOKENS[int((x1 / width) * 1000)]
-                + Y_COORDS_TOKENS[int((y1 / height) * 1000)]
-                + X_COORDS_TOKENS[int((x2 / width) * 1000)]
-                + Y_COORDS_TOKENS[int((y2 / height) * 1000)]
+                X_COORDS_TOKENS[np.clip(int((x1 / width) * MAX_BUCKET), 0, MAX_BUCKET)]
+                + Y_COORDS_TOKENS[np.clip(int((y1 / height) * MAX_BUCKET), 0, MAX_BUCKET)]
+                + X_COORDS_TOKENS[np.clip(int((x2 / width) * MAX_BUCKET), 0, MAX_BUCKET)]
+                + Y_COORDS_TOKENS[np.clip(int((y2 / height) * MAX_BUCKET), 0, MAX_BUCKET)]
             )
 
         # Breakdown to avoid the warning message
@@ -101,6 +102,7 @@ if __name__ == "__main__":
         "train",
         True,
     )
-    for i in range(len(dataset)):
-        for k in range(100):
-            x = dataset[i]
+    from tqdm import tqdm
+    for _ in tqdm(range(10000)):
+        doc_idx = random.randint(0, len(dataset))
+        x = dataset[doc_idx]
