@@ -61,10 +61,10 @@ class SegmentationDataset:
         for bbox in bboxes[word_to_segment]:
             x1, y1, x2, y2 = bbox
             text_target += (
-                x_coords_tokens[int((x1 / width) * 1000)]
-                + y_coords_tokens[int((y1 / height) * 1000)]
-                + x_coords_tokens[int((x2 / width) * 1000)]
-                + y_coords_tokens[int((y2 / height) * 1000)]
+                X_COORDS_TOKENS[int((x1 / width) * 1000)]
+                + Y_COORDS_TOKENS[int((y1 / height) * 1000)]
+                + X_COORDS_TOKENS[int((x2 / width) * 1000)]
+                + Y_COORDS_TOKENS[int((y2 / height) * 1000)]
             )
 
         # Breakdown to avoid the warning message
