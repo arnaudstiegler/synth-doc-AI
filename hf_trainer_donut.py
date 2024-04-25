@@ -20,12 +20,25 @@ from transformers import DonutProcessor, VisionEncoderDecoderModel
 import click
 from faker import Faker
 
-from kv_dataset import KVDataset, custom_collate_fn
+from kv_dataset import KVDataset
 
 MISSING_TOKEN = "</Missing>"
 
 
 MAX_STEPS = int(1e6)
+
+def custom_collate_fn(batch):
+    # Stacking pixel_values
+    pixel_values = [item["pixel_values"] for item in batch]
+    pixel_values_stacked = torch.concatenate(pixel_values)
+
+    # Padding and stacking labels
+    labels = [item["labels"] for item in batch]
+    labels_stacked = torch.concatenate(labels)
+    # To mask the loss
+    labels_stacked[labels_stacked == 1] = -100
+
+    return {"pixel_values": pixel_values_stacked, "labels": labels_stacked}
 
 
 @click.command()
