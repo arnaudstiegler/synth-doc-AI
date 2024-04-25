@@ -51,6 +51,9 @@ class KVDataset:
                     # Skipping if we're missing the corresponding img (download issue)
                     print(f"Skipping sample {sample_id}: could not find image")
                     continue
+                elif len(kv_pairs) == 0:
+                    print(f"Skipping sample {sample_id}: no kv_pair")
+                    continue
                 docs.append((kv_pairs, img_path))
 
         docs = sorted(docs, key=lambda x: x[1])
@@ -80,8 +83,9 @@ class KVDataset:
         img = Image.open(img_path).convert("RGB")
 
         if len(doc_kv) == 0:
-            random_key = random.choice(self.kv_pairs)
-            text_target = f"{random_key.lower() if random.random() < 0.2 else random_key}: {MISSING_TOKEN}"
+            raise ValueError('Should always have kv_pairs')
+            # random_key = random.choice(self.kv_pairs)
+            # text_target = f"{random_key.lower() if random.random() < 0.2 else random_key}: {MISSING_TOKEN}"
         else:
             # TODO: should I change that for eval?
             k, v = random.choice(doc_kv)
