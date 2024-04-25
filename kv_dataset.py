@@ -21,6 +21,7 @@ class KVDataset:
 
     def init_docs(self, split: str):
         docs = []
+        missing_kv_pairs = []
         for file in os.listdir(self.folder_path):
             if "kv_pairs" in file:
                 kv_pairs = json.load(open(os.path.join(self.folder_path, file)))
@@ -32,7 +33,9 @@ class KVDataset:
                     continue
                 elif len(kv_pairs) == 0:
                     print(f"Skipping sample {sample_id}: no kv_pair")
+                    missing_kv_pairs.append(1)
                     continue
+                missing_kv_pairs.append[0]
                 docs.append((kv_pairs, img_path))
 
         docs = sorted(docs, key=lambda x: x[1])

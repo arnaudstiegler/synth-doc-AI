@@ -131,7 +131,7 @@ def get_words_with_bboxes(page):
 
 def generate_image(args):
     start = time.time()
-    out_dir, image_index, env, component_env, template, use_augraphy = args
+    out_dir, image_index, env, component_env, template, use_augraphy, task = args
 
     template = env.get_template("random_macros.html")
     metadata = []
@@ -193,7 +193,7 @@ def generate_image(args):
     )
 
     # Postproc the kv pairs
-    if True:
+    if task == 'kv_pair':
         pdf_file_path = os.path.join(out_dir, f"sample_{image_index}.pdf")
         with open(pdf_file_path, "rb") as file:
             pdf = PdfReader(file)
@@ -214,19 +214,22 @@ def generate_image(args):
             kv_pairs,
             open(os.path.join(out_dir, f"kv_pairs_sample_{image_index}.json"), "w"),
         )
-        
-    # For the segmentation task
-    # import fitz
-    # pdf_document = fitz.open(pdf_file_path)
+    elif task == 'segmentation':
 
-    # Select the page to analyze
-    # page_number = 0  # Adjust as needed for the page you're interested in
-    # page = pdf_document.load_page(page_number)
-    # page_words = get_words_with_bboxes(page)
-        # json.dump(
-    #     page_words,
-    #     open(os.path.join(out_dir, f"segmentation_sample_{image_index}.json"), "w"),
-    # )
+        # For the segmentation task
+        import fitz
+        pdf_document = fitz.open(pdf_file_path)
+
+        # Select the page to analyze
+        page_number = 0  # Adjust as needed for the page you're interested in
+        page = pdf_document.load_page(page_number)
+        page_words = get_words_with_bboxes(page)
+        json.dump(
+            page_words,
+            open(os.path.join(out_dir, f"segmentation_sample_{image_index}.json"), "w"),
+        )
+    else:
+        raise ValueError(f'Task {task} is not supported')
 
 
 
@@ -242,7 +245,8 @@ def generate_image(args):
 
 @click.command()
 @click.option("--out_dir", default="synth_data_gen/samples/", type=str)
-def generate_documents(out_dir: str) -> None:
+@click.option("--task", required=True, type=click.Choice(['segmentation', 'kv_pair']), help="Choose the task to perform.")
+def generate_documents(out_dir: str, task: str) -> None:
     # TODO: this needs to be reworked
     template_folder = "synth_data_gen/templates/"
     templates = [file for file in os.listdir(template_folder) if file.endswith(".html")]
@@ -252,7 +256,7 @@ def generate_documents(out_dir: str) -> None:
     )
 
     args_list = [
-        (out_dir, i, template_env, component_env, templates[1], True)
+        (out_dir, i, template_env, component_env, templates[1], True, task)
         for i in range(NUM_SAMPLES)
     ]
 
