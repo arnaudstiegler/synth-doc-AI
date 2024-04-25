@@ -10,7 +10,6 @@ from transformers import (
 )
 from datasets import load_dataset
 import wandb
-import os
 from datetime import datetime
 from typing import Dict, Any
 from torch.distributed.fsdp.fully_sharded_data_parallel import (
@@ -19,116 +18,14 @@ from torch.distributed.fsdp.fully_sharded_data_parallel import (
 )
 from transformers import DonutProcessor, VisionEncoderDecoderModel
 import click
-import os
-import json
-from PIL import Image
 from faker import Faker
-import random
+
+from kv_dataset import KVDataset, custom_collate_fn
 
 MISSING_TOKEN = "</Missing>"
 
 
-class KVDataset:
-    VAL_SPLIT_SIZE = 0.05
-
-    def __init__(self, folder_path: str, split: str, test_run: bool):
-        self.folder_path = folder_path
-        self.split = split
-        self.test_run = test_run
-
-        self.docs = self.init_docs(split)
-        self.kv_pairs = list(self.get_kv_pairs())
-        self.processor = DonutProcessor.from_pretrained("naver-clova-ix/donut-base")
-
-    def init_docs(self, split: str):
-        docs = []
-        for file in os.listdir(self.folder_path):
-            if "kv_pairs" in file:
-                kv_pairs = json.load(open(os.path.join(self.folder_path, file)))
-                sample_id = file.split("_")[-1].replace(".json", "")
-                img_path = os.path.join(self.folder_path, f"sample_{sample_id}_aug.png")
-                if not os.path.exists(img_path):
-                    # Skipping if we're missing the corresponding img (download issue)
-                    print(f"Skipping sample {sample_id}: could not find image")
-                    continue
-                elif len(kv_pairs) == 0:
-                    print(f"Skipping sample {sample_id}: no kv_pair")
-                    continue
-                docs.append((kv_pairs, img_path))
-
-        docs = sorted(docs, key=lambda x: x[1])
-
-        if split == "train":
-            train_split_size = int((1 - self.VAL_SPLIT_SIZE) * len(docs))
-            split_docs = docs[:train_split_size]
-        elif split == "val":
-            val_split_size = int((self.VAL_SPLIT_SIZE) * len(docs))
-            split_docs = docs[-val_split_size:]
-        else:
-            raise ValueError(
-                f"Split should be either train or val but received {split}"
-            )
-
-        print(f"Split={self.split} size: {len(split_docs)}")
-        return split_docs
-
-    def get_kv_pairs(self):
-        kv_pairs_list = []
-        for kv_pairs, _ in self.docs:
-            kv_pairs_list += [k for k, _ in kv_pairs]
-        return set(kv_pairs_list)
-
-    def __getitem__(self, i):
-        doc_kv, img_path = self.docs[i]
-        img = Image.open(img_path).convert("RGB")
-
-        if len(doc_kv) == 0:
-            raise ValueError('Should always have kv_pairs')
-            # random_key = random.choice(self.kv_pairs)
-            # text_target = f"{random_key.lower() if random.random() < 0.2 else random_key}: {MISSING_TOKEN}"
-        else:
-            # TODO: should I change that for eval?
-            k, v = random.choice(doc_kv)
-            text_target = f"{k.lower() if random.random() < 0.2 else k}: {v}"
-
-        # Breakdown to avoid the warning message
-        pixel_values = self.processor(img, return_tensors="pt")
-        labels = self.processor.tokenizer(
-            text_target,
-            return_tensors="pt",
-            max_length=128,
-            padding="max_length",
-            truncation=True,
-        )
-
-        return {
-            "pixel_values": pixel_values["pixel_values"],
-            "labels": labels["input_ids"],
-            "image_path": img_path,
-        }
-
-    def __len__(self):
-        if self.test_run:
-            # For debugging purposes
-            return 10
-        return len(self.docs)
-
-
 MAX_STEPS = int(1e6)
-
-
-def custom_collate_fn(batch):
-    # Stacking pixel_values
-    pixel_values = [item["pixel_values"] for item in batch]
-    pixel_values_stacked = torch.concatenate(pixel_values)
-
-    # Padding and stacking labels
-    labels = [item["labels"] for item in batch]
-    labels_stacked = torch.concatenate(labels)
-    # To mask the loss
-    labels_stacked[labels_stacked == 1] = -100
-
-    return {"pixel_values": pixel_values_stacked, "labels": labels_stacked}
 
 
 @click.command()

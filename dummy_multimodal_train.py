@@ -48,7 +48,10 @@ logger = get_logger(__name__)
 logger.setLevel(logging.INFO)
 
 
-accelerator = Accelerator(mixed_precision="bf16", log_with="wandb")
+deepspeed_plugin = DeepSpeedPlugin(zero_stage=2, gradient_clipping=1.0)
+accelerator = Accelerator(
+    mixed_precision="bf16", deepspeed_plugin=deepspeed_plugin, log_with="wandb"
+)
 
 accelerator.init_trackers(
     project_name="huggingface", init_kwargs={"wandb": {"entity": "arnaud-stiegler"}}
@@ -68,9 +71,7 @@ val_data = torch.utils.data.DataLoader(
 )
 
 optimizer = bnb.optim.Adam8bit(model.parameters(), lr=2e-5)
-model, optimizer, train_data, val_data = accelerator.prepare(
-    model, optimizer, train_data, val_data
-)
+model, optimizer, train_data, val_data = accelerator.prepare(model, optimizer, train_data, val_data)
 model.gradient_checkpointing_enable()
 
 total_step = 0
@@ -88,9 +89,7 @@ for epoch in range(10):
             accelerator.backward(loss)
             optimizer.step()
 
-            accelerator.log(
-                {"train/time_per_step": time.time() - train_start}, step=total_step
-            )
+            accelerator.log({"train/time_per_step": time.time() - train_start}, step=total_step)
             total_step += 1
 
             if total_step % 10 == 0:
@@ -103,17 +102,10 @@ for epoch in range(10):
                         eval_start = time.time()
                         output = model(**eval_batch)
                         loss = output.loss
-                        eval_step_avg.append(time.time() - eval_start)
+                        eval_step_avg.append(time.time()-eval_start)
                         loss_avg.append(loss.cpu())
 
-                    accelerator.log(
-                        {
-                            "val/loss": np.mean(loss_avg),
-                            "eval/samples_per_second": sum(eval_step_avg)
-                            / len(eval_step_avg),
-                        },
-                        step=total_step,
-                    )
+                    accelerator.log({"val/loss": np.mean(loss_avg), "eval/samples_per_second": sum(eval_step_avg) / len(eval_step_avg)}, step=total_step)
 
 # Make sure that the wandb tracker finishes correctly
 accelerator.end_training()
