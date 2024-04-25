@@ -9,7 +9,7 @@ import os
 import json
 from io import BytesIO
 import base64
-from augraphy import *
+from synth_data_gen.augraphy_pipeline import AUG_PIPE
 from weasyprint import HTML, CSS
 from typing import Optional
 from synth_data_gen.style_utils import generate_css
@@ -27,7 +27,7 @@ from PyPDF2 import PdfReader
 # LOGGER.setLevel(logging.DEBUG)
 # logging.basicConfig(level=logging.DEBUG)
 
-NUM_SAMPLES = 5000
+NUM_SAMPLES = 20
 
 # Set the width and height of the output image
 DOCUMENT_WIDTH = 2480
@@ -37,7 +37,7 @@ SCALE_FACTOR = 200 / 72
 
 SEPARATORS = [":", ";", "=", "->", "=>", " "]
 
-pipeline = default_augraphy_pipeline()
+pipeline = AUG_PIPE
 fake = Faker()
 
 
@@ -90,12 +90,12 @@ def generate_augmented_png(out_dir: str, i: int):
         "PNG",
     )
 
-    # img = Image.open(os.path.join(out_dir, f"sample_{i}.png")).convert("RGB")
-    # augmented = pipeline(np.array(img))
-    # Image.fromarray(augmented).save(os.path.join(out_dir, f"sample_{i}_aug.png"))
+    img = Image.open(os.path.join(out_dir, f"sample_{i}.png")).convert("RGB")
+    augmented = pipeline(np.array(img))
+    Image.fromarray(augmented).save(os.path.join(out_dir, f"sample_{i}_aug.png"))
     # # To save some space
-    # os.remove(os.path.join(out_dir, f"sample_{i}.png"))
-    # os.remove(os.path.join(out_dir, f"sample_{i}.pdf"))
+    os.remove(os.path.join(out_dir, f"sample_{i}.png"))
+    os.remove(os.path.join(out_dir, f"sample_{i}.pdf"))
 
 
 def get_words_with_bboxes(page):
@@ -193,40 +193,44 @@ def generate_image(args):
     )
 
     # Postproc the kv pairs
+    if True:
+        pdf_file_path = os.path.join(out_dir, f"sample_{image_index}.pdf")
+        with open(pdf_file_path, "rb") as file:
+            pdf = PdfReader(file)
+            first_page_text = pdf.pages[0].extract_text()
+        kv_pairs = []
+        has_kv_pairs = False
+        for elem in metadata:
+            if "kv_pairs" in elem.keys():
+                has_kv_pairs = True
+                for k, v in elem["kv_pairs"]:
+                    if (
+                        " ".join(k.split()) in first_page_text
+                        and " ".join(v.split()) in first_page_text
+                    ):
+                        kv_pairs.append((k, v))
 
-    pdf_file_path = os.path.join(out_dir, f"sample_{image_index}.pdf")
-    # with open(pdf_file_path, "rb") as file:
-    #     pdf = PdfReader(file)
-    #     first_page_text = pdf.pages[0].extract_text()
-    #     page_words = get_words_with_bboxes(pdf.pages[0])
-    import fitz
-
-    pdf_document = fitz.open(pdf_file_path)
+        json.dump(
+            kv_pairs,
+            open(os.path.join(out_dir, f"kv_pairs_sample_{image_index}.json"), "w"),
+        )
+        
+    # For the segmentation task
+    # import fitz
+    # pdf_document = fitz.open(pdf_file_path)
 
     # Select the page to analyze
-    page_number = 0  # Adjust as needed for the page you're interested in
-    page = pdf_document.load_page(page_number)
-    page_words = get_words_with_bboxes(page)
-    # kv_pairs = []
-    # has_kv_pairs = False
-    # for elem in metadata:
-    #     if "kv_pairs" in elem.keys():
-    #         has_kv_pairs = True
-    #         for k, v in elem["kv_pairs"]:
-    #             if (
-    #                 " ".join(k.split()) in first_page_text
-    #                 and " ".join(v.split()) in first_page_text
-    #             ):
-    #                 kv_pairs.append((k, v))
-
-    # json.dump(
-    #     kv_pairs,
-    #     open(os.path.join(out_dir, f"kv_pairs_sample_{image_index}.json"), "w"),
+    # page_number = 0  # Adjust as needed for the page you're interested in
+    # page = pdf_document.load_page(page_number)
+    # page_words = get_words_with_bboxes(page)
+        # json.dump(
+    #     page_words,
+    #     open(os.path.join(out_dir, f"segmentation_sample_{image_index}.json"), "w"),
     # )
-    json.dump(
-        page_words,
-        open(os.path.join(out_dir, f"segmentation_sample_{image_index}.json"), "w"),
-    )
+
+
+
+
 
     if use_augraphy:
         # This could be run outside of the PDF generation script
