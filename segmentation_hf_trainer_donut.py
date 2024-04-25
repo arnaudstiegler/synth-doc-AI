@@ -56,9 +56,9 @@ def train(dataset_path: str, resume_from_checkpoint: bool, test_run: bool):
 
     model.gradient_checkpointing_enable()
 
-    processor.tokenizer.add_tokens(list(Y_COORDS_TOKENS.values()))
-    processor.tokenizer.add_tokens(list(X_COORDS_TOKENS.values()))
-    model.decoder.resize_token_embeddings(len(processor.tokenizer))
+    # processor.tokenizer.add_tokens(list(Y_COORDS_TOKENS.values()))
+    # processor.tokenizer.add_tokens(list(X_COORDS_TOKENS.values()))
+    # model.decoder.resize_token_embeddings(len(processor.tokenizer))
 
     train_dataset = SegmentationDataset(processor, dataset_path, "train", test_run)
     eval_dataset = SegmentationDataset(processor, dataset_path, "val", test_run)

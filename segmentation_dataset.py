@@ -66,12 +66,17 @@ class SegmentationDataset:
         text_target = word_to_segment + " "
         for bbox in bboxes[word_to_segment]:
             x1, y1, x2, y2 = bbox
-            text_target += (
-                X_COORDS_TOKENS[np.clip(int((x1 / width) * MAX_BUCKET), 0, MAX_BUCKET)]
-                + Y_COORDS_TOKENS[np.clip(int((y1 / height) * MAX_BUCKET), 0, MAX_BUCKET)]
-                + X_COORDS_TOKENS[np.clip(int((x2 / width) * MAX_BUCKET), 0, MAX_BUCKET)]
-                + Y_COORDS_TOKENS[np.clip(int((y2 / height) * MAX_BUCKET), 0, MAX_BUCKET)]
-            )
+            # text_target += (
+            #     X_COORDS_TOKENS[np.clip(int((x1 / width) * MAX_BUCKET), 0, MAX_BUCKET)]
+            #     + Y_COORDS_TOKENS[np.clip(int((y1 / height) * MAX_BUCKET), 0, MAX_BUCKET)]
+            #     + X_COORDS_TOKENS[np.clip(int((x2 / width) * MAX_BUCKET), 0, MAX_BUCKET)]
+            #     + Y_COORDS_TOKENS[np.clip(int((y2 / height) * MAX_BUCKET), 0, MAX_BUCKET)]
+            # )
+            x1_safe = np.clip(int((x1 / width) * MAX_BUCKET), 0, MAX_BUCKET)
+            y1_safe = np.clip(int((y1 / height) * MAX_BUCKET), 0, MAX_BUCKET)
+            x2_safe = np.clip(int((x2 / width) * MAX_BUCKET), 0, MAX_BUCKET)
+            y2_safe = np.clip(int((y2 / height) * MAX_BUCKET), 0, MAX_BUCKET)
+            text_target += f'<box>({x1_safe},{y1_safe},{x2_safe},{y2_safe})</box>'
 
         # Breakdown to avoid the warning message
         pixel_values = self.processor(img, return_tensors="pt")
