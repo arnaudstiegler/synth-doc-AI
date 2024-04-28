@@ -27,6 +27,14 @@ ground_truth = {
         {"field": "ID", "correct": "123 456 789"},
         {"field": "DOB", "correct": "08/31/1982"},
     ],
+    "in_distrib_1.png": [
+        {"field": "Cvv", "correct": "1993-06-02"},
+        {"field": "positive", "correct": "Estates"},
+    ],
+    "in_distrib_2.png": [
+        {"field": "score", "correct": "6308487"},
+        {"field": "Last Maintenance", "correct": "2024-04-07"},
+    ]
 }
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
