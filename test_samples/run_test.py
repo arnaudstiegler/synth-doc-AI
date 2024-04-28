@@ -2,6 +2,7 @@ import os
 from transformers import DonutProcessor, VisionEncoderDecoderModel
 from PIL import Image
 import matplotlib.pyplot as plt
+import torch
 
 
 ground_truth = {
@@ -24,18 +25,20 @@ ground_truth = {
     ],
     "drivers_license.jpg": [
         {"field": "ID", "correct": "123 456 789"},
-        {"field": "DOB", "correct": "08/31/2022"},
+        {"field": "DOB", "correct": "08/31/1982"},
     ],
 }
 
-# model_path = '/Users/arnaudstiegler/Desktop/arnaud_gpu_synth/'
-model_path = "/home/ubuntu/synth_data_run_v0/"
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+model_path = '/Users/arnaudstiegler/Desktop/synth_data_run_v3/'
+# model_path = "/home/ubuntu/synth_data_run_v3/"
 processor = DonutProcessor.from_pretrained("naver-clova-ix/donut-base")
-model = VisionEncoderDecoderModel.from_pretrained(model_path).to("cuda")
+model = VisionEncoderDecoderModel.from_pretrained(model_path).to(device)
 processor.tokenizer.padding_side = "left"
 
 for file in ground_truth.keys():
-    img_path = "/home/ubuntu/kv_samples/"
+    img_path = "test_samples/"
     img = Image.open(os.path.join(img_path, file)).convert("RGB")
     plt.figure(figsize=(20, 20))
     plt.imshow(img)
@@ -47,8 +50,8 @@ for file in ground_truth.keys():
             elem["field"] + ":", return_tensors="pt", padding=True
         )
         pred = model.generate(
-            pixel_values["pixel_values"].to("cuda"),
-            decoder_input_ids=labels["input_ids"][:, :-1].to("cuda"),
+            pixel_values["pixel_values"].to(device),
+            decoder_input_ids=labels["input_ids"][:, :-1].to(device),
             num_beams=1,
         )
         print(elem, processor.batch_decode(pred))

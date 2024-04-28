@@ -192,9 +192,10 @@ def generate_image(args):
         font_config=font_config,
     )
 
+    pdf_file_path = os.path.join(out_dir, f"sample_{image_index}.pdf")
+
     # Postproc the kv pairs
     if task == 'kv_pair':
-        pdf_file_path = os.path.join(out_dir, f"sample_{image_index}.pdf")
         with open(pdf_file_path, "rb") as file:
             pdf = PdfReader(file)
             first_page_text = pdf.pages[0].extract_text()

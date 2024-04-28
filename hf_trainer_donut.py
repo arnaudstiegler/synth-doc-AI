@@ -66,7 +66,7 @@ def train(dataset_path: str, resume_from_checkpoint: bool, test_run: bool):
     eval_dataset = KVDataset(dataset_path, "val", test_run)
 
     processor = DonutProcessor.from_pretrained("naver-clova-ix/donut-base")
-    model = VisionEncoderDecoderModel.from_pretrained("naver-clova-ix/donut-base")
+    model = VisionEncoderDecoderModel.from_pretrained("your-model-identifier")
     # the tokenizer doesn't natively have a pad token
     processor.tokenizer.add_tokens([MISSING_TOKEN])
 
