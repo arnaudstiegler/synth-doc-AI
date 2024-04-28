@@ -164,5 +164,6 @@ wandb/
 
 augraphy_cache/
 synth_data_gen/samples/
+test_run/
 
 .DS_Store
