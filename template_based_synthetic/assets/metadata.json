@@ -148,7 +148,7 @@
           "MRZ_line_1": {
               "metatype": {
                   "source": "custom",
-                  "value": "random_chars_20"
+                  "value": "random_chars_60"
               },
               "bbox": {
                   "x": 9,
@@ -160,7 +160,7 @@
           "MRZ_line_2": {
               "metatype": {
                   "source": "custom",
-                  "value": "random_chars_20"
+                  "value": "random_chars_60"
               },
               "bbox": {
                   "x": 8,

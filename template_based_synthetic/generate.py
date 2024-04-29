@@ -5,8 +5,8 @@ import json
 import os
 from template_based_synthetic.utils import custom_metatype_fill
 from typing import Any, Dict
-
-
+from PIL import Image, ImageDraw, ImageFont
+from html_based_synthetic.augraphy_pipeline import AUG_PIPE
 # Get the correct bounding box
 #
 
@@ -25,7 +25,7 @@ def paste_on_random_background(image, background_images):
     if np.random.rand() > 0.5:
         # Select a random background image
         background_image_path = np.random.choice(background_images)
-        background_image = cv2.imread(background_image_path)
+        background_image = cv2.open(background_image_path)
         if background_image is None:
             raise FileNotFoundError(
                 f"Background image at {background_image_path} not found."
@@ -38,7 +38,7 @@ def paste_on_random_background(image, background_images):
             )
 
         # Blend the images
-        result_image = cv2.addWeighted(background_image, 0.5, image, 0.5, 0)
+        result_image = cv2.addWeighted(background_image, 0.0, image, 1.0, 0)
         return result_image
     else:
         return image
@@ -56,18 +56,15 @@ def paste_faker_data(image_path: str, template_metadata: Dict[str, Any]):
     np.array: Image array with text pasted in specified bounding boxes.
     """
     # Load the image
-    image = cv2.imread(image_path)
+    image = Image.open(image_path)
     if image is None:
         raise FileNotFoundError(f"Image at {image_path} not found.")
 
     # Initialize Faker
     fake = Faker()
 
-    # Define font for cv2.putText
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    font_scale = 0.4
-    color = (0, 0, 0)  # Black color in BGR
-    thickness = 2
+    font = ImageFont.load_default()
+    draw = ImageDraw.Draw(image)
 
     # Loop through each bbox and faker metatype
     for field in template_metadata["fields"].values():
@@ -85,14 +82,14 @@ def paste_faker_data(image_path: str, template_metadata: Dict[str, Any]):
             raise ValueError(f'Source {field["source"]} is not supported.')
 
         # Put text on the image
-        cv2.putText(
-            image,
+        text_bbox = font.getbbox(fake_data)
+        width_diff = np.abs(bbox["width"] - (text_bbox[2] - text_bbox[0]))
+        height_diff = np.abs(bbox["height"] - (text_bbox[3] - text_bbox[1]))
+        draw.text(
+            (bbox["x"], bbox["y"] + height_diff // 2),
             fake_data,
-            (bbox["x"], bbox["y"] + bbox["height"]),
-            font,
-            font_scale,
-            color,
-            thickness,
+            font=font,
+            fill="black",
         )
 
     return image
@@ -100,7 +97,17 @@ def paste_faker_data(image_path: str, template_metadata: Dict[str, Any]):
 
 # Example usage:
 metadata = json.load(open("template_based_synthetic/assets/metadata.json"))
-image_path = "template_based_synthetic/assets/622897914_cleanup.jpg"
+
+background_image_folder_path = "~/Desktop/Tobacco3482-jpg/"
+background_images = [
+    os.path.join(background_image_folder_path, file)
+    for file in os.listdir(background_image_folder_path)
+]
+
+# image_path = "template_based_synthetic/assets/622897914_cleanup.jpg"
+image_path = "template_based_synthetic/assets/template_1_cleanup.jpeg"
 template_metadata = metadata[os.path.basename(image_path)]
 result_image = paste_faker_data(image_path, template_metadata)
-cv2.imwrite("output.jpg", result_image)
+
+augmented_image = AUG_PIPE(np.array(result_image))
+Image.fromarray(augmented_image).save("output.png")

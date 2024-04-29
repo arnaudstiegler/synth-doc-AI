@@ -2,6 +2,8 @@
 - [x] Added metatype support for template-based
 - [x] Annotated the passport templates
 
+https://www.kaggle.com/datasets/patrickaudriaz/tobacco3482jpg?resource=download
+
 Next:
 - Add the right font
 - maybe fix the bboxes
