@@ -1,0 +1,334 @@
+{
+  "622897914_cleanup.jpg": {
+      "fields": {
+          "Type": {
+              "metatype": {
+                  "source": "faker",
+                  "value": "random_letter"
+              },
+              "bbox": {
+                  "x": 194,
+                  "y": 404,
+                  "width": 27,
+                  "height": 15
+              }
+          },
+          "Code": {
+              "metatype": {
+                  "source": "faker",
+                  "value": "random_letter"
+              },
+              "bbox": {
+                  "x": 276,
+                  "y": 407,
+                  "width": 30,
+                  "height": 15
+              }
+          },
+          "Passport_Number": {
+              "metatype": {
+                  "source": "custom",
+                  "value": "id"
+              },
+              "bbox": {
+                  "x": 386,
+                  "y": 409,
+                  "width": 87,
+                  "height": 16
+              }
+          },
+          "Surname": {
+              "metatype": {
+                  "source": "faker",
+                  "value": "last_name"
+              },
+              "bbox": {
+                  "x": 179,
+                  "y": 430,
+                  "width": 102,
+                  "height": 14
+              }
+          },
+          "Given_Names": {
+              "metatype": {
+                  "source": "faker",
+                  "value": "name"
+              },
+              "bbox": {
+                  "x": 173,
+                  "y": 456,
+                  "width": 176,
+                  "height": 18
+              }
+          },
+          "Nationality": {
+              "metatype": {
+                  "source": "faker",
+                  "value": "country"
+              },
+              "bbox": {
+                  "x": 173,
+                  "y": 485,
+                  "width": 177,
+                  "height": 15
+              }
+          },
+          "DOB": {
+              "metatype": {
+                  "source": "faker",
+                  "value": "date"
+              },
+              "bbox": {
+                  "x": 175,
+                  "y": 511,
+                  "width": 196,
+                  "height": 14
+              }
+          },
+          "Place_of_Birth": {
+              "metatype": {
+                  "source": "faker",
+                  "value": "country"
+              },
+              "bbox": {
+                  "x": 173,
+                  "y": 538,
+                  "width": 176,
+                  "height": 15
+              }
+          },
+          "Sex": {
+              "metatype": {
+                  "source": "custom",
+                  "value": "sex"
+              },
+              "bbox": {
+                  "x": 410,
+                  "y": 538,
+                  "width": 61,
+                  "height": 14
+              }
+          },
+          "Date_of_Issue": {
+              "metatype": {
+                  "source": "faker",
+                  "value": "date"
+              },
+              "bbox": {
+                  "x": 174,
+                  "y": 564,
+                  "width": 200,
+                  "height": 16
+              }
+          },
+          "Authority": {
+              "metatype": {
+                  "source": "faker",
+                  "value": "country"
+              },
+              "bbox": {
+                  "x": 403,
+                  "y": 567,
+                  "width": 95,
+                  "height": 33
+              }
+          },
+          "Date_of_Expiration": {
+              "metatype": {
+                  "source": "faker",
+                  "value": "date"
+              },
+              "bbox": {
+                  "x": 173,
+                  "y": 592,
+                  "width": 200,
+                  "height": 16
+              }
+          },
+          "MRZ_line_1": {
+              "metatype": {
+                  "source": "custom",
+                  "value": "random_chars_20"
+              },
+              "bbox": {
+                  "x": 9,
+                  "y": 661,
+                  "width": 472,
+                  "height": 20
+              }
+          },
+          "MRZ_line_2": {
+              "metatype": {
+                  "source": "custom",
+                  "value": "random_chars_20"
+              },
+              "bbox": {
+                  "x": 8,
+                  "y": 690,
+                  "width": 478,
+                  "height": 19
+              }
+          }
+      }
+  },
+  "template_1_cleanup.jpeg": {
+      "fields": {
+          "Type": {
+              "metatype": {
+                  "source": "faker",
+                  "value": "random_letter"
+              },
+              "bbox": {
+                  "x": 228,
+                  "y": 402,
+                  "width": 30,
+                  "height": 12
+              }
+          },
+          "Code": {
+              "metatype": {
+                  "source": "faker",
+                  "value": "random_letter"
+              },
+              "bbox": {
+                  "x": 289,
+                  "y": 401,
+                  "width": 48,
+                  "height": 14
+              }
+          },
+          "Passport_Number": {
+              "metatype": {
+                  "source": "custom",
+                  "value": "id"
+              },
+              "bbox": {
+                  "x": 377,
+                  "y": 401,
+                  "width": 116,
+                  "height": 15
+              }
+          },
+          "Surname": {
+              "metatype": {
+                  "source": "faker",
+                  "value": "last_name"
+              },
+              "bbox": {
+                  "x": 209,
+                  "y": 425,
+                  "width": 111,
+                  "height": 11
+              }
+          },
+          "Given_Names": {
+              "metatype": {
+                  "source": "faker",
+                  "value": "name"
+              },
+              "bbox": {
+                  "x": 206,
+                  "y": 446,
+                  "width": 122,
+                  "height": 14
+              }
+          },
+          "Nationality": {
+              "metatype": {
+                  "source": "faker",
+                  "value": "country"
+              },
+              "bbox": {
+                  "x": 201,
+                  "y": 471,
+                  "width": 137,
+                  "height": 15
+              }
+          },
+          "DOB": {
+              "metatype": {
+                  "source": "faker",
+                  "value": "date"
+              },
+              "bbox": {
+                  "x": 202,
+                  "y": 498,
+                  "width": 185,
+                  "height": 14
+              }
+          },
+          "Place_of_Birth": {
+              "metatype": {
+                  "source": "faker",
+                  "value": "country"
+              },
+              "bbox": {
+                  "x": 201,
+                  "y": 524,
+                  "width": 194,
+                  "height": 15
+              }
+          },
+          "Sex": {
+              "metatype": {
+                  "source": "custom",
+                  "value": "sex"
+              },
+              "bbox": {
+                  "x": 441,
+                  "y": 524,
+                  "width": 37,
+                  "height": 14
+              }
+          },
+          "Date_of_Issue": {
+              "metatype": {
+                  "source": "faker",
+                  "value": "date"
+              },
+              "bbox": {
+                  "x": 199,
+                  "y": 552,
+                  "width": 203,
+                  "height": 14
+              }
+          },
+          "Authority": {
+              "metatype": {
+                  "source": "faker",
+                  "value": "country"
+              },
+              "bbox": {
+                  "x": 434,
+                  "y": 556,
+                  "width": 78,
+                  "height": 36
+              }
+          },
+          "Date_of_Expiration": {
+              "metatype": {
+                  "source": "faker",
+                  "value": "date"
+              },
+              "bbox": {
+                  "x": 198,
+                  "y": 582,
+                  "width": 202,
+                  "height": 16
+              }
+          },
+          "Endorsements": {
+              "metatype": {
+                  "source": "faker",
+                  "value": "sentence"
+              },
+              "bbox": {
+                  "x": 195,
+                  "y": 609,
+                  "width": 205,
+                  "height": 18
+              }
+          }
+      }
+  }
+}

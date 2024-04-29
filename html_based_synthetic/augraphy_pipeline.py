@@ -5,26 +5,22 @@ from augraphy import *
 ink_phase = [
     OneOf(
         [
-    InkBleed(
-        intensity_range=(0.4, 0.7),
-                    kernel_size=(5, 5),
-                    severity=(0.2, 0.4)
-    ),
-    InkShifter(
-    ),
-    BleedThrough(
-    ),
-], p=1.0)
-        ]
+            InkBleed(
+                intensity_range=(0.4, 0.7), kernel_size=(5, 5), severity=(0.2, 0.4)
+            ),
+            InkShifter(),
+            BleedThrough(),
+        ],
+        p=1.0,
+    )
+]
 
 paper_phase = [
-            OneOf(
+    OneOf(
         [
             InkBleed(
-        intensity_range=(0.4, 0.7),
-                    kernel_size=(5, 5),
-                    severity=(0.2, 0.4)
-    ),
+                intensity_range=(0.4, 0.7), kernel_size=(5, 5), severity=(0.2, 0.4)
+            ),
             DelaunayTessellation(
                 n_points_range=(500, 800),
                 n_horizontal_points_range=(500, 800),
@@ -52,32 +48,34 @@ paper_phase = [
                 saturation_range=(10, 40),
             ),
             NoiseTexturize(
-                    sigma_range=(3, 10),
-                    turbulence_range=(2, 5),
-                ),
+                sigma_range=(3, 10),
+                turbulence_range=(2, 5),
+            ),
             BrightnessTexturize(
-                    texturize_range=(0.9, 0.99),
-                    deviation=0.03,
-                ),
+                texturize_range=(0.9, 0.99),
+                deviation=0.03,
+            ),
         ],
         p=1.0,
     ),
 ]
 
 post_phase = [
-     OneOf(
+    OneOf(
         [
             SubtleNoise(
-                    subtle_range=random.randint(5, 10),
-                ),
-                Jpeg(
-                    quality_range=(25, 95),
-                ),
+                subtle_range=random.randint(5, 10),
+            ),
+            Jpeg(
+                quality_range=(25, 95),
+            ),
             Markup(
                 num_lines_range=(2, 7),
                 markup_length_range=(0.5, 1),
                 markup_thickness_range=(1, 2),
-                markup_type=random.choice(["strikethrough", "crossed", "highlight", "underline"]),
+                markup_type=random.choice(
+                    ["strikethrough", "crossed", "highlight", "underline"]
+                ),
                 markup_color="random",
                 single_word_mode=False,
                 repetitions=1,
@@ -128,8 +126,7 @@ post_phase = [
                 wave_pattern=random.choice([True, False]),
                 edge_effect=random.choice([True, False]),
             ),
-        
-                    Faxify(
+            Faxify(
                 scale_range=(0.1, 0.2),
                 monochrome=random.choice([0, 1]),
                 monochrome_method="random",
@@ -145,4 +142,6 @@ post_phase = [
     ),
 ]
 
-AUG_PIPE = AugraphyPipeline(ink_phase=ink_phase, paper_phase=paper_phase, post_phase=post_phase)
+AUG_PIPE = AugraphyPipeline(
+    ink_phase=ink_phase, paper_phase=paper_phase, post_phase=post_phase
+)

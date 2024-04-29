@@ -65,7 +65,7 @@ class KVDataset:
         img = Image.open(img_path).convert("RGB")
 
         if len(doc_kv) == 0:
-            raise ValueError('Should always have kv_pairs')
+            raise ValueError("Should always have kv_pairs")
             # random_key = random.choice(self.kv_pairs)
             # text_target = f"{random_key.lower() if random.random() < 0.2 else random_key}: {MISSING_TOKEN}"
         else:

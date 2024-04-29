@@ -1,3 +1,18 @@
+## 04/28:
+- [x] Added metatype support for template-based
+- [x] Annotated the passport templates
+
+Next:
+- Add the right font
+- maybe fix the bboxes
+- test out second template
+- return sample metadata
+- Augraphy
+
+## 04/27:
+- [x] Missed a bunch of entries here (including batch 4 with no missing values and a segmentation version)
+- [x] Started folder for template-based synthetic data
+
 ## 04/22:
 - [x] Sanity check on the batch 3
 - [x] Play around with accelerate to see whether this could be better than the HF trainer

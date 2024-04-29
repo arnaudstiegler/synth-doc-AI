@@ -34,12 +34,12 @@ ground_truth = {
     "in_distrib_2.png": [
         {"field": "score", "correct": "6308487"},
         {"field": "Last Maintenance", "correct": "2024-04-07"},
-    ]
+    ],
 }
 
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
-model_path = '/Users/arnaudstiegler/Desktop/synth_data_run_v3/'
+model_path = "/Users/arnaudstiegler/Desktop/synth_data_run_v3/"
 # model_path = "/home/ubuntu/synth_data_run_v3/"
 processor = DonutProcessor.from_pretrained("naver-clova-ix/donut-base")
 model = VisionEncoderDecoderModel.from_pretrained(model_path).to(device)

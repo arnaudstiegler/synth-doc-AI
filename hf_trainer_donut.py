@@ -27,6 +27,7 @@ MISSING_TOKEN = "</Missing>"
 
 MAX_STEPS = int(1e6)
 
+
 def custom_collate_fn(batch):
     # Stacking pixel_values
     pixel_values = [item["pixel_values"] for item in batch]

@@ -4,6 +4,7 @@ import json
 import random
 from PIL import Image
 import numpy as np
+
 MAX_BUCKET = 1000
 Y_COORDS_TOKENS = {i: f"<y_coords_{i}>" for i in range(0, MAX_BUCKET + 1)}
 X_COORDS_TOKENS = {i: f"<x_coords_{i}>" for i in range(0, MAX_BUCKET + 1)}
@@ -59,7 +60,6 @@ class SegmentationDataset:
         img = Image.open(img_path).convert("RGB")
         width, height = img.size
 
-
         # TODO: add support for missing word
         word_to_segment = random.choice(list(bboxes.keys()))
 
@@ -76,14 +76,14 @@ class SegmentationDataset:
             y1_safe = np.clip(int((y1 / height) * MAX_BUCKET), 0, MAX_BUCKET)
             x2_safe = np.clip(int((x2 / width) * MAX_BUCKET), 0, MAX_BUCKET)
             y2_safe = np.clip(int((y2 / height) * MAX_BUCKET), 0, MAX_BUCKET)
-            text_target += f'<box>({x1_safe},{y1_safe},{x2_safe},{y2_safe})</box>'
+            text_target += f"<box>({x1_safe},{y1_safe},{x2_safe},{y2_safe})</box>"
 
         # Breakdown to avoid the warning message
         pixel_values = self.processor(img, return_tensors="pt")
         labels = self.processor.tokenizer(
             text_target,
             return_tensors="pt",
-            max_length=32, # Max length can be super small
+            max_length=32,  # Max length can be super small
             padding="max_length",
             truncation=True,
         )
@@ -113,6 +113,7 @@ if __name__ == "__main__":
         True,
     )
     from tqdm import tqdm
+
     for _ in tqdm(range(10000)):
         doc_idx = random.randint(0, len(dataset))
         x = dataset[doc_idx]

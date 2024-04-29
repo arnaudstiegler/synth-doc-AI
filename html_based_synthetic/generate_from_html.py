@@ -195,7 +195,7 @@ def generate_image(args):
     pdf_file_path = os.path.join(out_dir, f"sample_{image_index}.pdf")
 
     # Postproc the kv pairs
-    if task == 'kv_pair':
+    if task == "kv_pair":
         with open(pdf_file_path, "rb") as file:
             pdf = PdfReader(file)
             first_page_text = pdf.pages[0].extract_text()
@@ -215,10 +215,10 @@ def generate_image(args):
             kv_pairs,
             open(os.path.join(out_dir, f"kv_pairs_sample_{image_index}.json"), "w"),
         )
-    elif task == 'segmentation':
-
+    elif task == "segmentation":
         # For the segmentation task
         import fitz
+
         pdf_document = fitz.open(pdf_file_path)
 
         # Select the page to analyze
@@ -230,11 +230,7 @@ def generate_image(args):
             open(os.path.join(out_dir, f"segmentation_sample_{image_index}.json"), "w"),
         )
     else:
-        raise ValueError(f'Task {task} is not supported')
-
-
-
-
+        raise ValueError(f"Task {task} is not supported")
 
     if use_augraphy:
         # This could be run outside of the PDF generation script
@@ -246,7 +242,12 @@ def generate_image(args):
 
 @click.command()
 @click.option("--out_dir", default="synth_data_gen/samples/", type=str)
-@click.option("--task", required=True, type=click.Choice(['segmentation', 'kv_pair']), help="Choose the task to perform.")
+@click.option(
+    "--task",
+    required=True,
+    type=click.Choice(["segmentation", "kv_pair"]),
+    help="Choose the task to perform.",
+)
 def generate_documents(out_dir: str, task: str) -> None:
     # TODO: this needs to be reworked
     template_folder = "synth_data_gen/templates/"
