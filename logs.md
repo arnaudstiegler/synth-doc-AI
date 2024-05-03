@@ -1,3 +1,9 @@
+## 05/03:
+- [x] Dynamic size for the template
+- [x] Random rotation on pasting
+- [x] Random background image
+- [x] Multiproc
+
 ## 04/28:
 - [x] Added metatype support for template-based
 - [x] Annotated the passport templates
