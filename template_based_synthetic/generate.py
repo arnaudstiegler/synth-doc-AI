@@ -158,7 +158,6 @@ def process_image(sample_idx: int):
     result_image, sample_metadata = paste_faker_data(template_path, template_metadata)
     image = paste_on_random_background(result_image, background_images)
 
-    # image.save(f"test_run/output_{i}.png")
     augmented_image = pipeline(np.array(image.convert("RGB")))
     Image.fromarray(augmented_image).save(f"test_run/output_{sample_idx}.png")
     return sample_metadata
