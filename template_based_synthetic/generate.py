@@ -3,43 +3,105 @@ from faker import Faker
 import numpy as np
 import json
 import os
-from template_based_synthetic.utils import custom_metatype_fill
+from typing import List
+from template_based_synthetic.utils import custom_metatype_fill, format_date
 from typing import Any, Dict
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 from html_based_synthetic.augraphy_pipeline import AUG_PIPE
-# Get the correct bounding box
-#
+from augraphy import default_augraphy_pipeline
+import random
+from tqdm import tqdm
+import cv2
+import numpy as np
+from PIL import Image
+import random
+from multiprocessing import Pool
 
 
-def paste_on_random_background(image, background_images):
+template_info = json.load(open("template_based_synthetic/assets/metadata.json"))
+
+background_image_folder_path = "/Users/arnaudstiegler/Desktop/Tobacco3482-jpg/"
+background_images = [
+    os.path.join(background_image_folder_path, file)
+    for file in os.listdir(background_image_folder_path)
+]
+
+templates = [
+    "template_based_synthetic/assets/622897914_cleanup.jpg",
+    "template_based_synthetic/assets/template_1_cleanup.jpeg",
+]
+
+pipeline = default_augraphy_pipeline()
+
+
+def create_grey_background(width, height):
     """
-    Randomly selects a background image and pastes the given image onto it based on a 50% chance.
+    Create a background image with a random grey shade.
 
     Args:
-    image (np.array): The image to be pasted onto a background.
-    background_images (list of str): List of paths to background images.
+    width (int): The width of the image.
+    height (int): The height of the image.
 
     Returns:
-    np.array: The resulting image after potentially pasting onto a background.
+    Image: A Pillow Image object with a random grey shade.
     """
-    if np.random.rand() > 0.5:
+    # Generate a random grey shade
+    grey_value = random.randint(0, 255)
+    grey_color = (grey_value, grey_value, grey_value)
+
+    # Create a new image with the random grey color
+    image = Image.new("RGBA", (width, height), grey_color)
+    return image
+
+
+def paste_on_random_background(image: Image, background_images: list):
+    if random.random() > 0.0:
         # Select a random background image
-        background_image_path = np.random.choice(background_images)
-        background_image = cv2.open(background_image_path)
-        if background_image is None:
-            raise FileNotFoundError(
-                f"Background image at {background_image_path} not found."
-            )
+        if random.random() > 0.0:
+            width = random.randint(1000, 2500)
+            height = random.randint(1000, 2500)
+            background_image = create_grey_background(width, height)
+        else:
+            background_image_path = random.choice(background_images)
+            background_image = Image.open(background_image_path).convert("RGBA")
 
-        # Resize background to match the image dimensions if necessary
-        if background_image.shape[:2] != image.shape[:2]:
-            background_image = cv2.resize(
-                background_image, (image.shape[1], image.shape[0])
-            )
+        new_width = int(
+            random.uniform(background_image.width / 3, (3 / 4) * background_image.width)
+        )
+        aspect_ratio = image.width / image.height
+        new_height = min(int(new_width / aspect_ratio), background_image.height)
+        image_resized = image.resize((new_width, new_height))
 
-        # Blend the images
-        result_image = cv2.addWeighted(background_image, 0.0, image, 1.0, 0)
-        return result_image
+        if (
+            background_image.width - image_resized.width < 0
+            or background_image.height - image_resized.height < 0
+        ):
+            import ipdb
+
+            ipdb.set_trace()
+
+        # Random position
+        x_offset = random.randint(0, background_image.width - image_resized.width)
+        y_offset = random.randint(0, background_image.height - image_resized.height)
+
+        # Random rotation without cropping
+        angle = random.uniform(-180, 180)
+        rotated_image = image_resized.rotate(angle, expand=True)
+
+        # Ensure the background is large enough to fit the resized and rotated image
+        background_image = ImageOps.fit(
+            background_image,
+            (
+                max(background_image.width, rotated_image.width + x_offset),
+                max(background_image.height, rotated_image.height + y_offset),
+            ),
+            method=0,
+            bleed=0.0,
+            centering=(0.5, 0.5),
+        )
+
+        background_image.paste(rotated_image, (x_offset, y_offset), rotated_image)
+        return background_image
     else:
         return image
 
@@ -55,19 +117,17 @@ def paste_faker_data(image_path: str, template_metadata: Dict[str, Any]):
     Returns:
     np.array: Image array with text pasted in specified bounding boxes.
     """
-    # Load the image
-    image = Image.open(image_path)
+    image = Image.open(image_path).convert("RGBA")
     if image is None:
         raise FileNotFoundError(f"Image at {image_path} not found.")
 
-    # Initialize Faker
     fake = Faker()
 
     font = ImageFont.load_default()
     draw = ImageDraw.Draw(image)
 
-    # Loop through each bbox and faker metatype
-    for field in template_metadata["fields"].values():
+    metadata = {}
+    for field_name, field in template_metadata["fields"].items():
         bbox = field["bbox"]
         metatype = field["metatype"]
 
@@ -76,14 +136,18 @@ def paste_faker_data(image_path: str, template_metadata: Dict[str, Any]):
                 fake_data = getattr(fake, metatype["value"])()
             else:
                 raise AttributeError(f"Faker has no attribute '{metatype['value']}'.")
+
+            # TODO: integrate this into the custom metatype logic
+            if metatype["value"] == "date":
+                fake_data = format_date(fake_data)
+
         elif metatype["source"] == "custom":
             fake_data = custom_metatype_fill(metatype["value"])
         else:
             raise ValueError(f'Source {field["source"]} is not supported.')
 
-        # Put text on the image
+        metadata[field_name] = fake_data
         text_bbox = font.getbbox(fake_data)
-        width_diff = np.abs(bbox["width"] - (text_bbox[2] - text_bbox[0]))
         height_diff = np.abs(bbox["height"] - (text_bbox[3] - text_bbox[1]))
         draw.text(
             (bbox["x"], bbox["y"] + height_diff // 2),
@@ -92,22 +156,24 @@ def paste_faker_data(image_path: str, template_metadata: Dict[str, Any]):
             fill="black",
         )
 
-    return image
+    return image, metadata
 
 
-# Example usage:
-metadata = json.load(open("template_based_synthetic/assets/metadata.json"))
+def process_image(sample_idx: int):
+    template_path = random.choice(templates)
+    template_metadata = template_info[os.path.basename(template_path)]
+    result_image, sample_metadata = paste_faker_data(template_path, template_metadata)
+    image = paste_on_random_background(result_image, background_images)
 
-background_image_folder_path = "~/Desktop/Tobacco3482-jpg/"
-background_images = [
-    os.path.join(background_image_folder_path, file)
-    for file in os.listdir(background_image_folder_path)
-]
+    # image.save(f"test_run/output_{i}.png")
+    augmented_image = pipeline(np.array(image.convert("RGB")))
+    Image.fromarray(augmented_image).save(f"test_run/output_{sample_idx}.png")
+    return sample_metadata
 
-# image_path = "template_based_synthetic/assets/622897914_cleanup.jpg"
-image_path = "template_based_synthetic/assets/template_1_cleanup.jpeg"
-template_metadata = metadata[os.path.basename(image_path)]
-result_image = paste_faker_data(image_path, template_metadata)
 
-augmented_image = AUG_PIPE(np.array(result_image))
-Image.fromarray(augmented_image).save("output.png")
+if __name__ == "__main__":
+    num_processes = os.cpu_count() - 1
+    with Pool(processes=num_processes) as pool:
+        metadata = list(tqdm(pool.imap(process_image, range(10)), total=10))
+
+    json.dump(metadata, open("test_run/metadata.json", "w"))
