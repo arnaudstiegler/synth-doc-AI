@@ -165,5 +165,6 @@ wandb/
 augraphy_cache/
 synth_data_gen/samples/
 test_run/
+template_based_synthetic/background_images
 
 .DS_Store

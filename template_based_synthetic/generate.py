@@ -16,11 +16,12 @@ import numpy as np
 from PIL import Image
 import random
 from multiprocessing import Pool
+import click
 
 
 template_info = json.load(open("template_based_synthetic/assets/metadata.json"))
 
-background_image_folder_path = "/Users/arnaudstiegler/Desktop/Tobacco3482-jpg/"
+background_image_folder_path = "template_based_synthetic/assets/background_images/"
 background_images = [
     os.path.join(background_image_folder_path, file)
     for file in os.listdir(background_image_folder_path)
@@ -57,7 +58,7 @@ def create_grey_background(width, height):
 def paste_on_random_background(image: Image, background_images: list):
     if random.random() > 0.0:
         # Select a random background image
-        if random.random() > 0.0:
+        if random.random() > 0.7:
             width = random.randint(1000, 2500)
             height = random.randint(1000, 2500)
             background_image = create_grey_background(width, height)
@@ -71,14 +72,6 @@ def paste_on_random_background(image: Image, background_images: list):
         aspect_ratio = image.width / image.height
         new_height = min(int(new_width / aspect_ratio), background_image.height)
         image_resized = image.resize((new_width, new_height))
-
-        if (
-            background_image.width - image_resized.width < 0
-            or background_image.height - image_resized.height < 0
-        ):
-            import ipdb
-
-            ipdb.set_trace()
 
         # Random position
         x_offset = random.randint(0, background_image.width - image_resized.width)
@@ -170,10 +163,15 @@ def process_image(sample_idx: int):
     Image.fromarray(augmented_image).save(f"test_run/output_{sample_idx}.png")
     return sample_metadata
 
-
-if __name__ == "__main__":
+@click.command()
+@click.option('--num_samples', required=True, type=int)
+def run_generation(num_samples: int):
     num_processes = os.cpu_count() - 1
     with Pool(processes=num_processes) as pool:
-        metadata = list(tqdm(pool.imap(process_image, range(10)), total=10))
+        metadata = list(tqdm(pool.imap(process_image, range(num_samples)), total=num_samples))
 
     json.dump(metadata, open("test_run/metadata.json", "w"))
+
+
+if __name__ == "__main__":
+    run_generation()
