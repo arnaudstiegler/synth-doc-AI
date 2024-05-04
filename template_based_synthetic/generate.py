@@ -158,22 +158,30 @@ def process_image(sample_idx: int):
     result_image, sample_metadata = paste_faker_data(template_path, template_metadata)
     image = paste_on_random_background(result_image, background_images)
     image.save(f"test_run/sample_{sample_idx}.png")
-    # augmented_image = pipeline(np.array(image.convert("RGB")))
-    # Image.fromarray(augmented_image).save(f"test_run/sample_{sample_idx}.png")
     json.dump(sample_metadata, open(f"test_run/sample_{sample_idx}_metadata.json", "w"))
     return sample_metadata
+
+def augment_image(sample_idx: str) -> None:
+    augmented_image = pipeline(np.array(Image.open(f"test_run/sample_{sample_idx}.png").convert("RGB")))
+    Image.fromarray(augmented_image).save(f"test_run/aug_sample_{sample_idx}.png")
 
 
 @click.command()
 @click.option("--num_samples", required=True, type=int)
-def run_generation(num_samples: int):
-    num_processes = os.cpu_count() - 1
-    with Pool(processes=num_processes) as pool:
-        metadata = list(
-            tqdm(pool.imap(process_image, range(num_samples)), total=num_samples)
-        )
-
+@click.option("--run_augraphy", is_flag=True, show_default=True, default=False)
+def run_generation(num_samples: int, run_augraphy: bool):
+    metadata = []
+    for sample_idx in range(num_samples):
+        sample_metadata = process_image(sample_idx)
+        metadata.append(sample_metadata)
     json.dump(metadata, open("test_run/metadata.json", "w"))
+
+    if run_augraphy:
+        num_processes = os.cpu_count() - 1
+        with Pool(processes=num_processes) as pool:
+            _ = list(
+                tqdm(pool.imap(process_image, range(num_samples)), total=num_samples)
+            )
 
 
 if __name__ == "__main__":
