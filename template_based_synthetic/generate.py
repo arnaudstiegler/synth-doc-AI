@@ -157,9 +157,9 @@ def process_image(sample_idx: int):
     template_metadata = template_info[os.path.basename(template_path)]
     result_image, sample_metadata = paste_faker_data(template_path, template_metadata)
     image = paste_on_random_background(result_image, background_images)
-
+    image.save(f"test_run/sample_{sample_idx}.png")
     # augmented_image = pipeline(np.array(image.convert("RGB")))
-    Image.fromarray(image).save(f"test_run/sample_{sample_idx}.png")
+    # Image.fromarray(augmented_image).save(f"test_run/sample_{sample_idx}.png")
     json.dump(sample_metadata, open(f"test_run/sample_{sample_idx}_metadata.json", "w"))
     return sample_metadata
 
