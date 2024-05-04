@@ -180,7 +180,7 @@ def run_generation(num_samples: int, run_augraphy: bool):
         num_processes = os.cpu_count() - 1
         with Pool(processes=num_processes) as pool:
             _ = list(
-                tqdm(pool.imap(process_image, range(num_samples)), total=num_samples)
+                tqdm(pool.imap(augment_image, range(num_samples)), total=num_samples)
             )
 
 
