@@ -18,6 +18,10 @@ import random
 from multiprocessing import Pool
 import click
 
+random_seed = 42
+np.random.seed(random_seed)
+random.seed(random_seed)
+
 
 template_info = json.load(open("template_based_synthetic/assets/metadata.json"))
 
