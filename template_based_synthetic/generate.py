@@ -175,7 +175,7 @@ def augment_image(sample_idx: str) -> None:
 @click.option("--run_augraphy", is_flag=True, show_default=True, default=False)
 def run_generation(num_samples: int, run_augraphy: bool):
     metadata = []
-    for sample_idx in range(num_samples):
+    for sample_idx in tqdm(range(num_samples)):
         sample_metadata = process_image(sample_idx)
         metadata.append(sample_metadata)
     json.dump(metadata, open("test_run/metadata.json", "w"))
