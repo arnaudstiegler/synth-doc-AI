@@ -159,15 +159,19 @@ def process_image(sample_idx: int):
     image = paste_on_random_background(result_image, background_images)
 
     augmented_image = pipeline(np.array(image.convert("RGB")))
-    Image.fromarray(augmented_image).save(f"test_run/output_{sample_idx}.png")
+    Image.fromarray(augmented_image).save(f"test_run/sample_{sample_idx}.png")
+    json.dump(sample_metadata, open(f"test_run/sample_{sample_idx}_metadata.json", "w"))
     return sample_metadata
 
+
 @click.command()
-@click.option('--num_samples', required=True, type=int)
+@click.option("--num_samples", required=True, type=int)
 def run_generation(num_samples: int):
     num_processes = os.cpu_count() - 1
     with Pool(processes=num_processes) as pool:
-        metadata = list(tqdm(pool.imap(process_image, range(num_samples)), total=num_samples))
+        metadata = list(
+            tqdm(pool.imap(process_image, range(num_samples)), total=num_samples)
+        )
 
     json.dump(metadata, open("test_run/metadata.json", "w"))
 
