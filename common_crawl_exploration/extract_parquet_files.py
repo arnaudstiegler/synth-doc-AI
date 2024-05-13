@@ -11,7 +11,7 @@ parquet_files_location = '/home/ubuntu/parquet_files/'
 output_directory = '/home/ubuntu/synth-doc-AI/common_crawl_exploration/test/'
 checkpoint = "openai/clip-vit-large-patch14"
 
-async def fetch_image(session, url, row_id, detector, semaphore):
+async def fetch_image(session, url, row_uid, detector, semaphore):
     async with semaphore:
         try:
             async with session.get(url, timeout=10) as response:
@@ -21,7 +21,7 @@ async def fetch_image(session, url, row_id, detector, semaphore):
                 image = Image.open(BytesIO(image_data))
                 predictions = detector(image, candidate_labels=["document scan", "image"])
                 if predictions[0]['label'] == 'document scan':
-                    image.save(os.path.join(output_directory, f'image_{row_id}.png'))
+                    image.save(os.path.join(output_directory, f'{row_uid}.png'))
         except Exception as e:
             print(f'Skipped: {e}')
 
@@ -29,7 +29,7 @@ async def process_images(file, semaphore):
     df = pd.read_parquet(os.path.join(parquet_files_location, file))
     detector = pipeline(model=checkpoint, task="zero-shot-image-classification")
     async with aiohttp.ClientSession() as session:
-        tasks = [fetch_image(session, row['url'], idx, detector, semaphore) for idx, row in df.iterrows()]
+        tasks = [fetch_image(session, row['url'], row['uid'], detector, semaphore) for _, row in df.iterrows()]
         await asyncio.gather(*tasks)
 
 async def main():
