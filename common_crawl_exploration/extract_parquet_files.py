@@ -31,8 +31,6 @@ async def fetch_image(session, url, row_uid, detector, semaphore, writer, lock):
                             writer.writerow([row_uid, url, image_path, predictions])
         except Exception as e:
             print(f'Skipped: {e}')
-            async with lock:
-                writer.writerow([row_uid, url, None, str(e)])
 
 async def process_images(file, semaphore, writer, lock):
     df = pd.read_parquet(os.path.join(parquet_files_location, file))
