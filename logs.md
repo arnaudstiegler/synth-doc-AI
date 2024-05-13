@@ -1,3 +1,8 @@
+## 05/10:
+- [x] Create HF datasets
+- [x] Publish them on the hub
+- [] List out next steps
+
 ## 05/03:
 - [x] Dynamic size for the template
 - [x] Random rotation on pasting
