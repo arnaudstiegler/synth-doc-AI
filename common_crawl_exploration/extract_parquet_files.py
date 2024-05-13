@@ -7,7 +7,6 @@ import pandas as pd
 from tqdm import tqdm
 from transformers import pipeline
 import csv
-import contextlib
 
 parquet_files_location = '/home/ubuntu/parquet_files/'
 output_directory = '/home/ubuntu/synth-doc-AI/common_crawl_exploration/test/'
@@ -50,8 +49,7 @@ async def main():
     semaphore = asyncio.Semaphore(5)  # Limit to 5 concurrent tasks
     lock = asyncio.Lock()
 
-    async with contextlib.AsyncExitStack() as stack:
-        csvfile = await stack.enter_async_context(open(metadata_file, 'w', newline=''))
+    with open(metadata_file, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(['uid', 'url', 'image_path', 'predictions'])
 
