@@ -26,11 +26,22 @@ async def fetch_image(session, url, row_uid, detector, semaphore, writer, lock):
                     if predictions[0]['label'] == 'document scan':
                         image_path = os.path.join(output_directory, f'{row_uid}.png')
                         image.save(image_path)
-                        
+
                         async with lock:
-                            writer.writerow([row_uid, url, image_path, predictions])
+                            try:
+                                writer.writerow([row_uid, url, image_path, predictions])
+                                print(f"Written to CSV: {row_uid}, {url}, {image_path}, {predictions}")
+                            except Exception as csv_error:
+                                print(f"CSV Write Error: {csv_error} for row {row_uid}, {url}")
         except Exception as e:
-            print(f'Skipped: {e}')
+            pass
+            # print(f'Skipped: {e}')
+            # async with lock:
+            #     try:
+            #         writer.writerow([row_uid, url, None, str(e)])
+            #         print(f"Error written to CSV: {row_uid}, {url}, {str(e)}")
+            #     except Exception as csv_error:
+            #         print(f"CSV Write Error: {csv_error} for row {row_uid}, {url} with error {str(e)}")
 
 async def process_images(file, semaphore, writer, lock):
     df = pd.read_parquet(os.path.join(parquet_files_location, file))
