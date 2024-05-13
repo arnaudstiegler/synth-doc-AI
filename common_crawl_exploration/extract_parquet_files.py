@@ -19,9 +19,10 @@ async def fetch_image(session, url, row_uid, detector, semaphore):
                 # Read the image stream
                 image_data = await response.read()
                 image = Image.open(BytesIO(image_data))
-                predictions = detector(image, candidate_labels=["document scan", "image"])
-                if predictions[0]['label'] == 'document scan':
-                    image.save(os.path.join(output_directory, f'{row_uid}.png'))
+                if image.width * image.height >= 500*500:
+                    predictions = detector(image, candidate_labels=["document scan", "image"])
+                    if predictions[0]['label'] == 'document scan':
+                        image.save(os.path.join(output_directory, f'{row_uid}.png'))
         except Exception as e:
             print(f'Skipped: {e}')
 
