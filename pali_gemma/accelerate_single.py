@@ -19,13 +19,19 @@ from datasets import load_dataset
 
 
 
+accelerator = Accelerator(mixed_precision="bf16", log_with="wandb")
+device_index = accelerator.process_index
+
+
 dataset = load_dataset("arnaudstiegler/synthetic_us_passports_easy")
 train_dataset = dataset['train']
 eval_dataset = dataset['test']
 
 
 
-model_id = "google/paligemma-3b-pt-896"
+# TODO: to replace
+# model_id = "google/paligemma-3b-pt-896"
+model_id = 'google/paligemma-3b-pt-224'
 processor = AutoProcessor.from_pretrained(model_id)
 processor.max_length = 128
 image_token = processor.tokenizer.convert_tokens_to_ids("<image>")
@@ -42,7 +48,7 @@ lora_config = LoraConfig(
     target_modules=["q_proj", "o_proj", "k_proj", "v_proj", "gate_proj", "up_proj", "down_proj"],
     task_type="CAUSAL_LM",
 )
-model = PaliGemmaForConditionalGeneration.from_pretrained(model_id, quantization_config=bnb_config)
+model = PaliGemmaForConditionalGeneration.from_pretrained(model_id, quantization_config=bnb_config, device_map = {"": device_index})
 model = get_peft_model(model, lora_config)
 
 model.gradient_checkpointing_enable()
@@ -65,9 +71,6 @@ def collate_fn(examples):
 logger = get_logger(__name__)
 logger.setLevel(logging.INFO)
 
-
-accelerator = Accelerator(mixed_precision="bf16", log_with="wandb")
-
 accelerator.init_trackers(
     project_name="huggingface", init_kwargs={"wandb": {"entity": "arnaud-stiegler"}}
 )
@@ -75,13 +78,13 @@ accelerator.init_trackers(
 train_data = torch.utils.data.DataLoader(
     train_dataset,
     shuffle=True,
-    batch_size=2,
+    batch_size=1,
     collate_fn=collate_fn,
 )
 val_data = torch.utils.data.DataLoader(
     eval_dataset,
     shuffle=False,
-    batch_size=4,
+    batch_size=1,
     collate_fn=collate_fn,
 )
 
@@ -93,44 +96,43 @@ model, optimizer, train_data, val_data = accelerator.prepare(
 total_step = 0
 for epoch in range(10):
     for batch in train_data:
-        with torch.cuda.amp.autocast():
-            model.train()
-            optimizer.zero_grad()
-            train_start = time.time()
+        model.train()
+        optimizer.zero_grad()
+        train_start = time.time()
 
-            output = model(**batch)
-            loss = output.loss
-            logger.info(f"Loss: {loss.item()}", main_process_only=True)
-            accelerator.log({"train/loss": loss.item()}, step=total_step)
-            accelerator.backward(loss)
-            optimizer.step()
+        output = model(**batch)
+        loss = output.loss
+        logger.info(f"Loss: {loss.item()}", main_process_only=True)
+        accelerator.log({"train/loss": loss.item()}, step=total_step)
+        accelerator.backward(loss)
+        optimizer.step()
 
-            accelerator.log(
-                {"train/time_per_step": time.time() - train_start}, step=total_step
-            )
-            total_step += 1
+        accelerator.log(
+            {"train/time_per_step": time.time() - train_start}, step=total_step
+        )
+        total_step += 1
 
-            if total_step % 10 == 0:
-                # Run eval
-                model.eval()
-                with torch.no_grad():
-                    loss_avg = []
-                    eval_step_avg = []
-                    for eval_batch in val_data:
-                        eval_start = time.time()
-                        output = model(**eval_batch)
-                        loss = output.loss
-                        eval_step_avg.append(time.time() - eval_start)
-                        loss_avg.append(loss.cpu())
+        if total_step % 10 == 0:
+            # Run eval
+            model.eval()
+            with torch.no_grad():
+                loss_avg = []
+                eval_step_avg = []
+                for eval_batch in val_data:
+                    eval_start = time.time()
+                    output = model(**eval_batch)
+                    loss = output.loss
+                    eval_step_avg.append(time.time() - eval_start)
+                    loss_avg.append(loss.cpu())
 
-                    accelerator.log(
-                        {
-                            "val/loss": np.mean(loss_avg),
-                            "eval/samples_per_second": sum(eval_step_avg)
-                            / len(eval_step_avg),
-                        },
-                        step=total_step,
-                    )
+                accelerator.log(
+                    {
+                        "val/loss": np.mean(loss_avg),
+                        "eval/samples_per_second": sum(eval_step_avg)
+                        / len(eval_step_avg),
+                    },
+                    step=total_step,
+                )
 
 # Make sure that the wandb tracker finishes correctly
 accelerator.end_training()
