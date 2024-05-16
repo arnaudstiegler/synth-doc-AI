@@ -28,7 +28,7 @@ eval_dataset = dataset['test']
 
 
 
-model_id = "google/paligemma-3b-pt-224"
+model_id = "google/paligemma-3b-pt-896"
 processor = AutoProcessor.from_pretrained(model_id)
 processor.max_length = 128
 image_token = processor.tokenizer.convert_tokens_to_ids("<image>")
@@ -57,13 +57,12 @@ def collate_fn(examples):
         texts.append(text_str)
     images = [example["image"].convert("RGB") for example in examples]
     tokens = processor(text=texts, images=images,
-                return_tensors="pt", truncation=True, padding=True,
+                return_tensors="pt", truncation=True, padding=True, max_length=128,
                 tokenize_newline_separately=False)
     labels = tokens["input_ids"].clone()
     labels[labels == processor.tokenizer.pad_token_id] = -100
     labels[labels == image_token] = -100
     tokens["labels"] = labels
-    tokens = tokens.to(torch.bfloat16).to(device)
     return tokens
 
 logger = get_logger(__name__)
