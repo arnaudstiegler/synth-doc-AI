@@ -19,9 +19,6 @@ from datasets import load_dataset
 
 
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
-
-
 dataset = load_dataset("arnaudstiegler/synthetic_us_passports_easy")
 train_dataset = dataset['train']
 eval_dataset = dataset['test']
