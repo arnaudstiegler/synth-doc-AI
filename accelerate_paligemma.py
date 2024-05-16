@@ -92,7 +92,6 @@ optimizer = bnb.optim.Adam8bit(model.parameters(), lr=1e-5)
 model, optimizer, train_data, val_data = accelerator.prepare(
     model, optimizer, train_data, val_data
 )
-model.gradient_checkpointing_enable()
 
 total_step = 0
 for epoch in range(10):
