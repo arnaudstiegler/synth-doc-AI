@@ -48,7 +48,10 @@ lora_config = LoraConfig(
     target_modules=["q_proj", "o_proj", "k_proj", "v_proj", "gate_proj", "up_proj", "down_proj"],
     task_type="CAUSAL_LM",
 )
-model = PaliGemmaForConditionalGeneration.from_pretrained(model_id, quantization_config=bnb_config, device_map = {"": device_index})
+model = PaliGemmaForConditionalGeneration.from_pretrained(
+    model_id,
+    # quantization_config=bnb_config,
+    device_map = {"": device_index})
 model = get_peft_model(model, lora_config)
 
 model.gradient_checkpointing_enable()
