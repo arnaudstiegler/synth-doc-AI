@@ -57,7 +57,7 @@ model = get_peft_model(model, lora_config)
 
 optimizer = torch.optim.Adam(model.parameters())
 
-data = torch.utils.data.DataLoader(dataset['train'], shuffle=True, collate_fn=collate_fn, batch_size=2)
+data = torch.utils.data.DataLoader([dataset['train'][0]], shuffle=True, collate_fn=collate_fn, batch_size=1)
 
 model, optimizer, data = accelerator.prepare(model, optimizer, data)
 
