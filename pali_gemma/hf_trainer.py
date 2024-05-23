@@ -42,9 +42,14 @@ lora_config = LoraConfig(
 model = PaliGemmaForConditionalGeneration.from_pretrained(
     model_id, quantization_config=bnb_config, device_map={"": "cuda:0"}
 )
+model.gradient_checkpointing_enable()
 model = get_peft_model(model, lora_config)
 
 optimizer = bnb.optim.Adam8bit(model.parameters(), lr=1e-4)
+
+data = torch.utils.data.DataLoader(
+    dataset["train"], shuffle=True, collate_fn=collate_fn, batch_size=1
+)
 
 train_data = torch.utils.data.DataLoader(
     dataset["train"], shuffle=True, collate_fn=collate_fn, batch_size=2
@@ -75,7 +80,7 @@ args = TrainingArguments(
     report_to=["tensorboard"],
     dataloader_pin_memory=False,
     # FSDP arguments
-    fsdp='FULL_SHARD',
+    fsdp='full_shard',
     torch_compile=True,
     torch_compile_backend='inductor'
 
