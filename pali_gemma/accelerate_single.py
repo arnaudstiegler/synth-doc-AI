@@ -16,60 +16,52 @@ from peft import get_peft_model, LoraConfig
 from transformers import PaliGemmaForConditionalGeneration
 import torch
 from datasets import load_dataset
-
-
+from pali_gemma.utils import collate_fn
+from functools import partial
 
 accelerator = Accelerator(mixed_precision="bf16", log_with="wandb")
 device_index = accelerator.process_index
 
 
 dataset = load_dataset("arnaudstiegler/synthetic_us_passports_easy")
-train_dataset = dataset['train']
-eval_dataset = dataset['test']
-
+train_dataset = dataset["train"]
+eval_dataset = dataset["test"]
 
 
 # TODO: to replace
 # model_id = "google/paligemma-3b-pt-896"
-model_id = 'google/paligemma-3b-pt-224'
+model_id = "google/paligemma-3b-pt-224"
 processor = AutoProcessor.from_pretrained(model_id)
 processor.max_length = 128
+collate = partial(collate_fn, processor)
 image_token = processor.tokenizer.convert_tokens_to_ids("<image>")
 
 
 bnb_config = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_quant_type="nf4",
-        bnb_4bit_compute_dtype=torch.bfloat16
+    load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.bfloat16
 )
 
 lora_config = LoraConfig(
-    r=8, 
-    target_modules=["q_proj", "o_proj", "k_proj", "v_proj", "gate_proj", "up_proj", "down_proj"],
+    r=8,
+    target_modules=[
+        "q_proj",
+        "o_proj",
+        "k_proj",
+        "v_proj",
+        "gate_proj",
+        "up_proj",
+        "down_proj",
+    ],
     task_type="CAUSAL_LM",
 )
 model = PaliGemmaForConditionalGeneration.from_pretrained(
     model_id,
     # quantization_config=bnb_config,
-    device_map = {"": device_index})
+    device_map={"": device_index},
+)
 model = get_peft_model(model, lora_config)
 
 model.gradient_checkpointing_enable()
-
-def collate_fn(examples):
-    texts = []
-    for example in examples:
-        text_str = ', '.join([f'{k.replace("_", " ")} = {v}' for k, v in example.items() if k != 'image'])
-        texts.append(text_str)
-    images = [example["image"].convert("RGB") for example in examples]
-    tokens = processor(text=texts, images=images,
-                return_tensors="pt", truncation=True, padding=True, max_length=128,
-                tokenize_newline_separately=False)
-    labels = tokens["input_ids"].clone()
-    labels[labels == processor.tokenizer.pad_token_id] = -100
-    labels[labels == image_token] = -100
-    tokens["labels"] = labels
-    return tokens
 
 logger = get_logger(__name__)
 logger.setLevel(logging.INFO)

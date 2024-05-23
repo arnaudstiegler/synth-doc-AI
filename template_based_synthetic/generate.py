@@ -165,8 +165,11 @@ def process_image(sample_idx: int):
     json.dump(sample_metadata, open(f"test_run/sample_{sample_idx}_metadata.json", "w"))
     return sample_metadata
 
+
 def augment_image(sample_idx: str) -> None:
-    augmented_image = pipeline(np.array(Image.open(f"test_run/sample_{sample_idx}.png").convert("RGB")))
+    augmented_image = pipeline(
+        np.array(Image.open(f"test_run/sample_{sample_idx}.png").convert("RGB"))
+    )
     Image.fromarray(augmented_image).save(f"test_run/aug_sample_{sample_idx}.png")
 
 
