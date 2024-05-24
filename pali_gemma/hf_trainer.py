@@ -64,7 +64,7 @@ lora_config = LoraConfig(
 model = PaliGemmaForConditionalGeneration.from_pretrained(
     model_id, 
     quantization_config=bnb_config, 
-    # device_map="auto"
+    device_map={'':torch.cuda.current_device()}
 )
 model.gradient_checkpointing_enable()
 model.enable_input_require_grads()
