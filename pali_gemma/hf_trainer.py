@@ -109,4 +109,5 @@ trainer = Trainer(
 )
 print(trainer.is_model_parallel)
 
-trainer.train()
+with torch.autocast("cuda"): 
+    trainer.train()
