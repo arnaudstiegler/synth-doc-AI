@@ -29,7 +29,7 @@ args = TrainingArguments(
     weight_decay=1e-6,
     adam_beta2=0.999,
     logging_steps=1,
-    optim="adamw_bnb_8bit",
+    optim="paged_adamw_bnb_8bit",
     save_strategy="steps",
     save_steps=1000,
     push_to_hub=False,
@@ -39,7 +39,7 @@ args = TrainingArguments(
     # report_to=["tensorboard"],
     dataloader_pin_memory=False,
     # FSDP arguments
-    fsdp='hybrid_shard',
+    # fsdp='hybrid_shard',
     # Torch compile fails for now
     # torch_compile=True,
     # torch_compile_backend='inductor'
