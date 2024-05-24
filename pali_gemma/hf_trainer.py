@@ -14,7 +14,7 @@ from transformers import (
     TrainingArguments,
 )
 
-model_id = "google/paligemma-3b-pt-896"
+model_id = "google/paligemma-3b-pt-448"
 processor = AutoProcessor.from_pretrained(model_id)
 
 
