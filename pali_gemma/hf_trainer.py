@@ -11,12 +11,36 @@ import bitsandbytes as bnb
 from transformers import Trainer, TrainingArguments
 from pali_gemma.utils import collate_fn
 from functools import partial
+import json
+from transformers import AutoProcessor
 
-import sys
-sys.path.append('./synth-doc-AI')
+
+
+
 
 model_id = "google/paligemma-3b-pt-224"
 processor = AutoProcessor.from_pretrained(model_id)
+
+# TODO: should remove that
+def collate_fn(processor: AutoProcessor, examples):
+    texts = ["Process " for _ in examples]
+    labels = [
+        json.dumps({k: v for k, v in example.items() if k != "image"})
+        for example in examples
+    ]
+    images = [example["image"].convert("RGB") for example in examples]
+    tokens = processor(
+        text=texts,
+        images=images,
+        suffix=labels,
+        return_tensors="pt",
+        truncation=True,
+        padding=True,
+        max_length=128,
+        tokenize_newline_separately=False,
+    )
+    return tokens
+
 collate = partial(collate_fn, processor)
 
 dataset = load_dataset("arnaudstiegler/synthetic_us_passports_easy")
