@@ -35,7 +35,7 @@ args = TrainingArguments(
     push_to_hub=False,
     save_total_limit=1,
     bf16=True,
-    deepspeed = 'pali_gemma/deepspeed_config.json',
+    # deepspeed = 'pali_gemma/deepspeed_config.json',
     # report_to=["tensorboard"],
     dataloader_pin_memory=False,
     # FSDP arguments
