@@ -9,13 +9,9 @@ from datasets import load_dataset
 from transformers import AutoProcessor
 import bitsandbytes as bnb
 from transformers import Trainer, TrainingArguments
-from pali_gemma.utils import collate_fn
 from functools import partial
 import json
 from transformers import AutoProcessor
-
-
-
 
 
 model_id = "google/paligemma-3b-pt-224"
