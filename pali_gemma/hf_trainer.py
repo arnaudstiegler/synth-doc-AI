@@ -3,7 +3,7 @@ from functools import partial
 
 import bitsandbytes as bnb
 import torch
-# from accelerate import Accelerator
+from accelerate import Accelerator
 from datasets import load_dataset
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 from transformers import (
@@ -39,7 +39,7 @@ args = TrainingArguments(
     # report_to=["tensorboard"],
     dataloader_pin_memory=False,
     # FSDP arguments
-    # fsdp='full_shard',
+    fsdp='hybrid_shard',
     # Torch compile fails for now
     # torch_compile=True,
     # torch_compile_backend='inductor'
@@ -98,7 +98,7 @@ model = PaliGemmaForConditionalGeneration.from_pretrained(
     model_id,
     quantization_config=bnb_config,
     # device_map={'':torch.cuda.current_device()}
-    # device_map={"": Accelerator().process_index},
+    device_map={"": Accelerator().process_index},
     # For using DeepSpeed
     # device_map = {"": os.environ.get('LOCAL_RANK', '0')}
 )
