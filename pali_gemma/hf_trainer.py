@@ -13,7 +13,15 @@ from transformers import (
     Trainer,
     TrainingArguments,
 )
-import os
+import datetime
+
+run_name = "pali-gemma-896"
+
+# Get the current timestamp
+timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+
+# Add the timestamp to the run name
+run_name_with_timestamp = f"{run_name}_{timestamp}"
 
 
 # Have to declare before model initialization because of deepspeed
@@ -22,19 +30,21 @@ args = TrainingArguments(
     num_train_epochs=2,
     remove_unused_columns=False,
     per_device_train_batch_size=1,
-    per_device_eval_batch_size=1,
-    gradient_accumulation_steps=1,
+    per_device_eval_batch_size=4,
+    gradient_accumulation_steps=4,
     warmup_steps=1000,
     learning_rate=1e-4,
     weight_decay=1e-6,
     adam_beta2=0.999,
-    logging_steps=1,
+    logging_steps=50,
+    eval_steps=200,
     optim="paged_adamw_8bit",
     save_strategy="steps",
     save_steps=1000,
     push_to_hub=False,
     save_total_limit=1,
     bf16=True,
+    run_name=run_name_with_timestamp,
     # deepspeed = 'pali_gemma/deepspeed_config.json',
     # report_to=["tensorboard"],
     dataloader_pin_memory=False,
