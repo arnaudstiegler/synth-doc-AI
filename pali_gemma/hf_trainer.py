@@ -97,16 +97,16 @@ bnb_config = BitsAndBytesConfig(
 
 lora_config = LoraConfig(
     r=8,
-    # target_modules=[
-    #     "q_proj",
-    #     "o_proj",
-    #     "k_proj",
-    #     "v_proj",
-    #     "gate_proj",
-    #     "up_proj",
-    #     "down_proj",
-    # ],
-    target_modules="all-linear",
+    target_modules=[
+        "q_proj",
+        "o_proj",
+        "k_proj",
+        "v_proj",
+        "gate_proj",
+        "up_proj",
+        "down_proj",
+    ],
+    # target_modules="all-linear",
     task_type="CAUSAL_LM",
 )
 model = PaliGemmaForConditionalGeneration.from_pretrained(
