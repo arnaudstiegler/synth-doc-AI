@@ -13,6 +13,7 @@ from functools import partial
 import json
 from transformers import AutoProcessor
 from peft import prepare_model_for_kbit_training
+from accelerate import Accelerator
 
 
 model_id = "google/paligemma-3b-pt-224"
@@ -66,6 +67,7 @@ model = PaliGemmaForConditionalGeneration.from_pretrained(
     model_id, 
     quantization_config=bnb_config, 
     # device_map={'':torch.cuda.current_device()}
+    device_map={"":Accelerator().process_index}
 )
 model.gradient_checkpointing_enable()
 model.enable_input_require_grads()
