@@ -24,7 +24,7 @@ args = TrainingArguments(
     per_device_train_batch_size=1,
     per_device_eval_batch_size=1,
     gradient_accumulation_steps=1,
-    warmup_steps=2,
+    warmup_steps=1000,
     learning_rate=1e-4,
     weight_decay=1e-6,
     adam_beta2=0.999,
@@ -45,7 +45,7 @@ args = TrainingArguments(
     # torch_compile_backend='inductor'
 )
 
-model_id = "google/paligemma-3b-pt-448"
+model_id = "google/paligemma-3b-pt-896"
 processor = AutoProcessor.from_pretrained(model_id)
 
 
