@@ -1,6 +1,7 @@
-import random
-import matplotlib.font_manager
 import os
+import random
+
+import matplotlib.font_manager
 
 
 def find_ttf_files(folder_path):

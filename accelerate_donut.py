@@ -1,22 +1,19 @@
 import logging
+import time
 from functools import partial
+
+import bitsandbytes as bnb
 import numpy as np
 import torch
 from accelerate import Accelerator, DeepSpeedPlugin
 from accelerate.logging import get_logger
-from torch.optim import AdamW
-from torch.utils.data import DataLoader
 from datasets import load_dataset
-from transformers import DonutProcessor, VisionEncoderDecoderModel, BitsAndBytesConfig
-from torch.utils.data import default_collate
-import bitsandbytes as bnb
-import torch
-from kv_dataset import KVDataset
+from torch.optim import AdamW
+from torch.utils.data import DataLoader, default_collate
+from transformers import BitsAndBytesConfig, DonutProcessor, VisionEncoderDecoderModel
+
 from hf_trainer_donut import MISSING_TOKEN
-import time
-
-from kv_dataset import custom_collate_fn
-
+from kv_dataset import KVDataset, custom_collate_fn
 
 # For now, not using quantization
 # bnb_config = BitsAndBytesConfig(

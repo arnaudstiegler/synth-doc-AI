@@ -1,10 +1,9 @@
-from PIL import Image
-from transformers import DonutProcessor
-
-
 import json
 import os
 import random
+
+from PIL import Image
+from transformers import DonutProcessor
 
 
 class KVDataset:

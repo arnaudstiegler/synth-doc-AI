@@ -1,24 +1,26 @@
-import torch
-from transformers import (
-    AutoModelForCausalLM,
-    AutoTokenizer,
-    DataCollatorForLanguageModeling,
-    Trainer,
-    TrainingArguments,
-    BitsAndBytesConfig,
-    DataCollatorWithPadding,
-)
-from datasets import load_dataset
-import wandb
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any, Dict
+
+import click
+import torch
+import wandb
+from datasets import load_dataset
+from faker import Faker
 from torch.distributed.fsdp.fully_sharded_data_parallel import (
     FullOptimStateDictConfig,
     FullStateDictConfig,
 )
-from transformers import DonutProcessor, VisionEncoderDecoderModel
-import click
-from faker import Faker
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    BitsAndBytesConfig,
+    DataCollatorForLanguageModeling,
+    DataCollatorWithPadding,
+    DonutProcessor,
+    Trainer,
+    TrainingArguments,
+    VisionEncoderDecoderModel,
+)
 
 from kv_dataset import KVDataset
 

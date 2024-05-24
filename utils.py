@@ -1,7 +1,8 @@
-import numpy as np
 import json
 import os
 import re
+
+import numpy as np
 
 
 def get_num_trainable_params(model) -> int:

@@ -1,12 +1,13 @@
-import os
 import asyncio
-import aiohttp
-from PIL import Image
+import csv
+import os
 from io import BytesIO
+
+import aiohttp
 import pandas as pd
+from PIL import Image
 from tqdm import tqdm
 from transformers import pipeline
-import csv
 
 parquet_files_location = "/home/ubuntu/parquet_files/"
 output_directory = "/home/ubuntu/synth-doc-AI/common_crawl_exploration/test/"

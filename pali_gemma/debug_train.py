@@ -1,17 +1,19 @@
+import json
+from functools import partial
+
+import bitsandbytes as bnb
 import torch
 import torch.nn.functional as F
-from datasets import load_dataset
 from accelerate import Accelerator
-from transformers import BitsAndBytesConfig
-from peft import get_peft_model, LoraConfig
-from transformers import PaliGemmaForConditionalGeneration
-import torch
-import json
 from datasets import load_dataset
-from transformers import AutoProcessor
-import bitsandbytes as bnb
+from peft import LoraConfig, get_peft_model
+from transformers import (
+    AutoProcessor,
+    BitsAndBytesConfig,
+    PaliGemmaForConditionalGeneration,
+)
+
 from pali_gemma.utils import collate_fn
-from functools import partial
 
 accelerator = Accelerator()
 device_index = accelerator.process_index

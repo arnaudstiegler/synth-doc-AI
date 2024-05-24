@@ -1,6 +1,6 @@
 import random
-from augraphy import *
 
+from augraphy import *
 
 ink_phase = [
     OneOf(

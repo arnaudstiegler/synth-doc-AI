@@ -5,12 +5,11 @@ import torch
 from accelerate import Accelerator, Dee
 from accelerate.logging import get_logger
 from accelerate.utils import DummyOptim
+from dataset import SquadDataset, collate_fn
 from torch.optim import AdamW
 from torch.utils.data import DataLoader
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from dataset import SquadDataset
-from dataset import collate_fn
 from utils import read_deepspeed_config
 
 device = "cuda" if torch.cuda.is_available() else "cpu"

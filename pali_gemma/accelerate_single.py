@@ -1,23 +1,23 @@
 import logging
+import time
 from functools import partial
+
+import bitsandbytes as bnb
 import numpy as np
 import torch
 from accelerate import Accelerator, DeepSpeedPlugin
 from accelerate.logging import get_logger
+from datasets import load_dataset
+from peft import LoraConfig, get_peft_model
 from torch.optim import AdamW
 from torch.utils.data import DataLoader
-from datasets import load_dataset
-from transformers import AutoProcessor
-import bitsandbytes as bnb
-import torch
-import time
-from transformers import BitsAndBytesConfig
-from peft import get_peft_model, LoraConfig
-from transformers import PaliGemmaForConditionalGeneration
-import torch
-from datasets import load_dataset
+from transformers import (
+    AutoProcessor,
+    BitsAndBytesConfig,
+    PaliGemmaForConditionalGeneration,
+)
+
 from pali_gemma.utils import collate_fn
-from functools import partial
 
 accelerator = Accelerator(mixed_precision="bf16", log_with="wandb")
 device_index = accelerator.process_index

@@ -1,10 +1,10 @@
+from typing import Dict, List
+
+import torch
+import torch.nn.functional as F
 from datasets import load_dataset
 from torch.utils.data import Dataset, default_collate
-from transformers import AutoTokenizer, AutoProcessor
-import torch
-from typing import Dict, List
-import torch.nn.functional as F
-
+from transformers import AutoProcessor, AutoTokenizer
 
 MAX_LENGTH = 100
 

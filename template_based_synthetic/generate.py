@@ -1,22 +1,19 @@
-import cv2
-from faker import Faker
-import numpy as np
 import json
 import os
-from typing import List
-from template_based_synthetic.utils import custom_metatype_fill, format_date
-from typing import Any, Dict
-from PIL import Image, ImageDraw, ImageFont, ImageOps
-from html_based_synthetic.augraphy_pipeline import AUG_PIPE
-from augraphy import default_augraphy_pipeline
-import random
-from tqdm import tqdm
-import cv2
-import numpy as np
-from PIL import Image
 import random
 from multiprocessing import Pool
+from typing import Any, Dict, List
+
 import click
+import cv2
+import numpy as np
+from augraphy import default_augraphy_pipeline
+from faker import Faker
+from PIL import Image, ImageDraw, ImageFont, ImageOps
+from tqdm import tqdm
+
+from html_based_synthetic.augraphy_pipeline import AUG_PIPE
+from template_based_synthetic.utils import custom_metatype_fill, format_date
 
 random_seed = 42
 np.random.seed(random_seed)

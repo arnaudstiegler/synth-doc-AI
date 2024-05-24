@@ -1,9 +1,9 @@
 import os
-from transformers import DonutProcessor, VisionEncoderDecoderModel
-from PIL import Image
+
 import matplotlib.pyplot as plt
 import torch
-
+from PIL import Image
+from transformers import DonutProcessor, VisionEncoderDecoderModel
 
 ground_truth = {
     "signature_doc.png": [

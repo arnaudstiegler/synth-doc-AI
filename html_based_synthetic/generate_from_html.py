@@ -1,25 +1,27 @@
+import base64
+import json
+import os
+import random
+import time
+from io import BytesIO
+from multiprocessing import Pool
+from typing import Optional
+
+import click
 import numpy as np
-from PIL import Image
 from augraphy import *
 from faker import Faker
 from jinja2 import Environment, FileSystemLoader
-import random
-from html_based_synthetic.utils import get_random_metatype
-import os
-import json
-from io import BytesIO
-import base64
-from html_based_synthetic.augraphy_pipeline import AUG_PIPE
-from weasyprint import HTML, CSS
-from typing import Optional
-from html_based_synthetic.style_utils import generate_css
-from tqdm import tqdm
-from multiprocessing import Pool
-import time
-import click
 from pdf2image import convert_from_path
-from weasyprint.fonts import FontConfiguration
+from PIL import Image
 from PyPDF2 import PdfReader
+from tqdm import tqdm
+from weasyprint import CSS, HTML
+from weasyprint.fonts import FontConfiguration
+
+from html_based_synthetic.augraphy_pipeline import AUG_PIPE
+from html_based_synthetic.style_utils import generate_css
+from html_based_synthetic.utils import get_random_metatype
 
 # Enable WeasyPrint logging
 # import logging

@@ -1,9 +1,10 @@
-from transformers import DonutProcessor
-import os
 import json
+import os
 import random
-from PIL import Image
+
 import numpy as np
+from PIL import Image
+from transformers import DonutProcessor
 
 MAX_BUCKET = 1000
 Y_COORDS_TOKENS = {i: f"<y_coords_{i}>" for i in range(0, MAX_BUCKET + 1)}

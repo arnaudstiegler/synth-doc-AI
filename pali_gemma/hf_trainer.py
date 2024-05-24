@@ -1,23 +1,22 @@
-import torch
-import torch.nn.functional as F
-from datasets import load_dataset
-from transformers import BitsAndBytesConfig
-from peft import get_peft_model, LoraConfig
-from transformers import PaliGemmaForConditionalGeneration
-import torch
-from datasets import load_dataset
-from transformers import AutoProcessor
-import bitsandbytes as bnb
-from transformers import Trainer, TrainingArguments
-from functools import partial
 import json
-from transformers import AutoProcessor
-from peft import prepare_model_for_kbit_training
+from functools import partial
+
+import bitsandbytes as bnb
+import torch
 from accelerate import Accelerator
+from datasets import load_dataset
+from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
+from transformers import (
+    AutoProcessor,
+    BitsAndBytesConfig,
+    PaliGemmaForConditionalGeneration,
+    Trainer,
+    TrainingArguments,
+)
 
-
-model_id = "google/paligemma-3b-pt-224"
+model_id = "google/paligemma-3b-pt-448"
 processor = AutoProcessor.from_pretrained(model_id)
+
 
 # TODO: should remove that
 def collate_fn(processor: AutoProcessor, examples):
@@ -38,6 +37,7 @@ def collate_fn(processor: AutoProcessor, examples):
         tokenize_newline_separately=False,
     )
     return tokens
+
 
 collate = partial(collate_fn, processor)
 
@@ -64,10 +64,10 @@ lora_config = LoraConfig(
     task_type="CAUSAL_LM",
 )
 model = PaliGemmaForConditionalGeneration.from_pretrained(
-    model_id, 
-    quantization_config=bnb_config, 
+    model_id,
+    quantization_config=bnb_config,
     # device_map={'':torch.cuda.current_device()}
-    device_map={"":Accelerator().process_index}
+    device_map={"": Accelerator().process_index},
 )
 model.gradient_checkpointing_enable()
 model.enable_input_require_grads()
@@ -101,7 +101,6 @@ args = TrainingArguments(
     # Torch compile fails for now
     # torch_compile=True,
     # torch_compile_backend='inductor'
-
 )
 
 trainer = Trainer(
@@ -113,5 +112,5 @@ trainer = Trainer(
 )
 print(trainer.is_model_parallel)
 
-with torch.autocast("cuda"): 
+with torch.autocast("cuda"):
     trainer.train()

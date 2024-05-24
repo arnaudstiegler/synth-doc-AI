@@ -1,7 +1,8 @@
 import requests
+import torch
 from PIL import Image
 from transformers import AutoProcessor, Pix2StructVisionModel
-import torch
+
 from utils import get_num_trainable_params
 
 image_processor = AutoProcessor.from_pretrained("google/pix2struct-docvqa-large")

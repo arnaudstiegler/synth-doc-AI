@@ -1,13 +1,16 @@
+import os
+from datetime import datetime
+
+import click
 import torch
 from transformers import (
+    DonutProcessor,
     Trainer,
     TrainingArguments,
+    VisionEncoderDecoderModel,
 )
-from datetime import datetime
-from transformers import DonutProcessor, VisionEncoderDecoderModel
-import click
-import os
-from segmentation_dataset import SegmentationDataset, Y_COORDS_TOKENS, X_COORDS_TOKENS
+
+from segmentation_dataset import X_COORDS_TOKENS, Y_COORDS_TOKENS, SegmentationDataset
 
 MISSING_TOKEN = "</Missing>"
 MAX_STEPS = int(1e6)
