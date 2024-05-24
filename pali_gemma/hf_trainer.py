@@ -14,6 +14,45 @@ from transformers import (
     TrainingArguments,
 )
 
+
+# Have to declare before model initialization because of deepspeed
+args = TrainingArguments(
+    output_dir="/home/ubuntu/out/",
+    num_train_epochs=2,
+    remove_unused_columns=False,
+    per_device_train_batch_size=1,
+    per_device_eval_batch_size=1,
+    gradient_accumulation_steps=1,
+    warmup_steps=2,
+    learning_rate=1e-4,
+    weight_decay=1e-6,
+    adam_beta2=0.999,
+    logging_steps=1,
+    optim="adamw_bnb_8bit",
+    save_strategy="steps",
+    save_steps=1000,
+    push_to_hub=False,
+    save_total_limit=1,
+    bf16=True,
+    deepspeed = {
+    "zero_optimization": {
+        "stage": 2,
+        "contiguous_gradients": True,
+        "overlap_comm": True,
+        "reduce_scatter": True,
+        "reduce_bucket_size": 5e8,
+        "allgather_bucket_size": 5e8
+    }
+    },
+    # report_to=["tensorboard"],
+    dataloader_pin_memory=False,
+    # FSDP arguments
+    # fsdp='full_shard',
+    # Torch compile fails for now
+    # torch_compile=True,
+    # torch_compile_backend='inductor'
+)
+
 model_id = "google/paligemma-3b-pt-448"
 processor = AutoProcessor.from_pretrained(model_id)
 
@@ -75,33 +114,6 @@ model = get_peft_model(model, lora_config)
 prepare_model_for_kbit_training(model)
 print(model.print_trainable_parameters())
 optimizer = bnb.optim.Adam8bit(model.parameters(), lr=1e-4)
-
-args = TrainingArguments(
-    output_dir="/home/ubuntu/out/",
-    num_train_epochs=2,
-    remove_unused_columns=False,
-    per_device_train_batch_size=1,
-    per_device_eval_batch_size=1,
-    gradient_accumulation_steps=1,
-    warmup_steps=2,
-    learning_rate=1e-4,
-    weight_decay=1e-6,
-    adam_beta2=0.999,
-    logging_steps=1,
-    optim="adamw_bnb_8bit",
-    save_strategy="steps",
-    save_steps=1000,
-    push_to_hub=False,
-    save_total_limit=1,
-    bf16=True,
-    # report_to=["tensorboard"],
-    dataloader_pin_memory=False,
-    # FSDP arguments
-    # fsdp='full_shard',
-    # Torch compile fails for now
-    # torch_compile=True,
-    # torch_compile_backend='inductor'
-)
 
 trainer = Trainer(
     model=model,
