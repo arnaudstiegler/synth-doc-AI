@@ -12,6 +12,8 @@ from transformers import Trainer, TrainingArguments
 from pali_gemma.utils import collate_fn
 from functools import partial
 
+import sys
+sys.path.append('./synth-doc-AI')
 
 model_id = "google/paligemma-3b-pt-224"
 processor = AutoProcessor.from_pretrained(model_id)
@@ -42,7 +44,7 @@ lora_config = LoraConfig(
 model = PaliGemmaForConditionalGeneration.from_pretrained(
     model_id, 
     quantization_config=bnb_config, 
-    device_map="auto"
+    # device_map="auto"
 )
 model.gradient_checkpointing_enable()
 model.enable_input_require_grads()
