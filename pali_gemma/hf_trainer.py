@@ -40,24 +40,15 @@ lora_config = LoraConfig(
     task_type="CAUSAL_LM",
 )
 model = PaliGemmaForConditionalGeneration.from_pretrained(
-    model_id, quantization_config=bnb_config, device_map={"": "cuda:0"}
+    model_id, 
+    quantization_config=bnb_config, 
+    device_map="auto"
 )
 model.gradient_checkpointing_enable()
+model.enable_input_require_grads()
 model = get_peft_model(model, lora_config)
-
+print(model.print_trainable_parameters())
 optimizer = bnb.optim.Adam8bit(model.parameters(), lr=1e-4)
-
-data = torch.utils.data.DataLoader(
-    dataset["train"], shuffle=True, collate_fn=collate_fn, batch_size=1
-)
-
-train_data = torch.utils.data.DataLoader(
-    dataset["train"], shuffle=True, collate_fn=collate_fn, batch_size=2
-)
-test_data = torch.utils.data.DataLoader(
-    dataset["test"], shuffle=False, collate_fn=collate_fn, batch_size=4
-)
-
 
 args = TrainingArguments(
     output_dir="/home/ubuntu/out/",
@@ -70,28 +61,30 @@ args = TrainingArguments(
     learning_rate=1e-4,
     weight_decay=1e-6,
     adam_beta2=0.999,
-    logging_steps=100,
+    logging_steps=1,
     optim="adamw_bnb_8bit",
     save_strategy="steps",
     save_steps=1000,
     push_to_hub=False,
     save_total_limit=1,
     bf16=True,
-    report_to=["tensorboard"],
+    # report_to=["tensorboard"],
     dataloader_pin_memory=False,
     # FSDP arguments
-    fsdp='full_shard',
-    torch_compile=True,
-    torch_compile_backend='inductor'
+    # fsdp='full_shard',
+    # Torch compile fails for now
+    # torch_compile=True,
+    # torch_compile_backend='inductor'
 
 )
-
 
 trainer = Trainer(
     model=model,
     train_dataset=dataset["train"],
     eval_dataset=dataset["test"],
-    data_collator=collate_fn,
+    data_collator=collate,
     args=args,
 )
+print(trainer.is_model_parallel)
+
 trainer.train()
