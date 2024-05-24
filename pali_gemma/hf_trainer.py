@@ -34,16 +34,7 @@ args = TrainingArguments(
     push_to_hub=False,
     save_total_limit=1,
     bf16=True,
-    deepspeed = {
-    "zero_optimization": {
-        "stage": 2,
-        "contiguous_gradients": True,
-        "overlap_comm": True,
-        "reduce_scatter": True,
-        "reduce_bucket_size": 5e8,
-        "allgather_bucket_size": 5e8
-    }
-    },
+    deepspeed = 'pali_gemma/deepspeed_config.json',
     # report_to=["tensorboard"],
     dataloader_pin_memory=False,
     # FSDP arguments
