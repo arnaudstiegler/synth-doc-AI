@@ -78,20 +78,25 @@ processor.max_length = 128
 
 
 bnb_config = BitsAndBytesConfig(
-    load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.bfloat16
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.bfloat16,
+    bnb_4bit_use_double_quant=True,
+    bnb_4bit_quant_storage=torch.bfloat16,
 )
 
 lora_config = LoraConfig(
     r=8,
-    target_modules=[
-        "q_proj",
-        "o_proj",
-        "k_proj",
-        "v_proj",
-        "gate_proj",
-        "up_proj",
-        "down_proj",
-    ],
+    # target_modules=[
+    #     "q_proj",
+    #     "o_proj",
+    #     "k_proj",
+    #     "v_proj",
+    #     "gate_proj",
+    #     "up_proj",
+    #     "down_proj",
+    # ],
+    target_modules="all-linear",
     task_type="CAUSAL_LM",
 )
 model = PaliGemmaForConditionalGeneration.from_pretrained(
