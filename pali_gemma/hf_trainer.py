@@ -100,7 +100,7 @@ model = PaliGemmaForConditionalGeneration.from_pretrained(
     # device_map={'':torch.cuda.current_device()}
     # device_map={"": Accelerator().process_index},
     # For using DeepSpeed
-    device_map = {"": os.environ.get('LOCAL_RANK', '0')}
+    # device_map = {"": os.environ.get('LOCAL_RANK', '0')}
 )
 model.gradient_checkpointing_enable()
 model.enable_input_require_grads()
