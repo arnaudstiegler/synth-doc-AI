@@ -12,6 +12,7 @@ from transformers import Trainer, TrainingArguments
 from functools import partial
 import json
 from transformers import AutoProcessor
+from peft import prepare_model_for_kbit_training
 
 
 model_id = "google/paligemma-3b-pt-224"
@@ -69,6 +70,7 @@ model = PaliGemmaForConditionalGeneration.from_pretrained(
 model.gradient_checkpointing_enable()
 model.enable_input_require_grads()
 model = get_peft_model(model, lora_config)
+prepare_model_for_kbit_training(model)
 print(model.print_trainable_parameters())
 optimizer = bnb.optim.Adam8bit(model.parameters(), lr=1e-4)
 
