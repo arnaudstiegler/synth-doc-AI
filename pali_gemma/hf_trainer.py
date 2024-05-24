@@ -97,7 +97,7 @@ args = TrainingArguments(
     # report_to=["tensorboard"],
     dataloader_pin_memory=False,
     # FSDP arguments
-    # fsdp='full_shard',
+    fsdp='full_shard',
     # Torch compile fails for now
     # torch_compile=True,
     # torch_compile_backend='inductor'
