@@ -120,7 +120,7 @@ model = PaliGemmaForConditionalGeneration.from_pretrained(
 model.gradient_checkpointing_enable()
 model.enable_input_require_grads()
 model = get_peft_model(model, lora_config)
-prepare_model_for_kbit_training(model)
+# prepare_model_for_kbit_training(model)
 print(model.print_trainable_parameters())
 optimizer = bnb.optim.Adam8bit(model.parameters(), lr=1e-4)
 
