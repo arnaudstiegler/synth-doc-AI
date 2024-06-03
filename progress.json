@@ -1,0 +1,185 @@
+{
+    "index": 28,
+    "annotations": [
+        {
+            "image": "52F81B98-D92A-4B4B-924F-4BCFBC6A4B64_1_105_c.jpeg",
+            "question": "what is the price of the 2003 COTE-ROTIE?",
+            "answer": "665",
+            "pii_sensitive": false
+        },
+        {
+            "image": "41BC2C64-F1BB-4C11-8201-F10EC13993E0_1_105_c.jpeg",
+            "question": "what is the url for exchange policy?",
+            "answer": "https://uniqlo.us/storereturns",
+            "pii_sensitive": false
+        },
+        {
+            "image": "1972AF12-A496-4B29-B7A2-A36468A8FABF_1_105_c.jpeg",
+            "question": "what is written below the pin?",
+            "answer": "Joy Rider",
+            "pii_sensitive": false
+        },
+        {
+            "image": "EDF1C94C-C7CB-4783-9BF1-825112EBD54F_1_105_c.jpeg",
+            "question": "how much tax?",
+            "answer": "$1.26",
+            "pii_sensitive": true
+        },
+        {
+            "image": "A20E3D77-FB6D-43CE-BFE5-ACAEC1BB16A0_1_105_c.jpeg",
+            "question": "how many people were dining at table A1?",
+            "answer": "3",
+            "pii_sensitive": false
+        },
+        {
+            "image": "648E591C-908B-4279-B7C8-1094F9E72614_1_105_c.jpeg",
+            "question": "What is written on the board?",
+            "answer": "Sunday Funday\\n nothing is impossible... the word itself says \"I'm possible\".",
+            "pii_sensitive": false
+        },
+        {
+            "image": "9D252E7D-5214-44F3-8ADC-EAB9E4D47B6E_1_105_c.jpeg",
+            "question": "what is the expiration date?",
+            "answer": "FEB2726C",
+            "pii_sensitive": false
+        },
+        {
+            "image": "987A94FF-0000-4029-8195-DA2FEEBC68FB_1_105_c.jpeg",
+            "question": "what is the price per lb for the tomatoes?",
+            "answer": "$4.79",
+            "pii_sensitive": false
+        },
+        {
+            "image": "436498DD-644A-482B-94BF-F8C9F0BEA1C6_1_105_c.jpeg",
+            "question": "none",
+            "answer": "none",
+            "pii_sensitive": true
+        },
+        {
+            "image": "436498DD-644A-482B-94BF-F8C9F0BEA1C6_1_105_c.jpeg",
+            "question": "none",
+            "answer": "none",
+            "pii_sensitive": true
+        },
+        {
+            "image": "DB58A9E8-F183-42AB-9D75-316F8E7FBE4E_1_105_c.jpeg",
+            "question": "how much is the GAN?",
+            "answer": "12.00",
+            "pii_sensitive": false
+        },
+        {
+            "image": "CFBF08AE-2BB6-49B9-9B48-1D22FAD9C910_1_105_c.jpeg",
+            "question": "What is the ALU for the item bought?",
+            "answer": "GA2140RE-1A\\n GA-2140RE-1ACR",
+            "pii_sensitive": true
+        },
+        {
+            "image": "41A2FA47-4188-46B7-9BCB-737704FC0B70_1_105_c.jpeg",
+            "question": "what is the lodge phone number for the Arenal Observatory Lodge?",
+            "answer": "2479-1070",
+            "pii_sensitive": false
+        },
+        {
+            "image": "F52A249B-A932-4B22-B8A3-51F6CA890DF1_1_105_c.jpeg",
+            "question": "Transcribe the address of the business on the receipt",
+            "answer": "225 Liberty St\\n New York, NY 10281",
+            "pii_sensitive": true
+        },
+        {
+            "image": "68C41048-1EE1-4D09-BB64-9034E6C1E8F9_1_105_c.jpeg",
+            "question": "how much is the private lesson (return the price per month per person)",
+            "answer": "$305",
+            "pii_sensitive": false
+        },
+        {
+            "image": "926B83AB-D3FB-4261-BAEE-1AC500FBE95F_1_105_c.jpeg",
+            "question": "what is the total after tip?",
+            "answer": "135.00",
+            "pii_sensitive": true
+        },
+        {
+            "image": "89F999B4-2A24-416F-A334-E59C7023C555_1_105_c.jpeg",
+            "question": "none",
+            "answer": "none",
+            "pii_sensitive": true
+        },
+        {
+            "image": "31E879BD-7077-48CE-8F9E-A0A7B9BDD0D4_1_105_c.jpeg",
+            "question": "how much was the wine bottle?",
+            "answer": "$72.00",
+            "pii_sensitive": false
+        },
+        {
+            "image": "86BFE5F0-A557-4211-AA07-9024335C7CFE_1_105_c.jpeg",
+            "question": "how much milliliters in the lens cleaner bottle?",
+            "answer": "237",
+            "pii_sensitive": false
+        },
+        {
+            "image": "06569A68-CC3D-4D2D-987F-58AEDDEAF44E_1_105_c.jpeg",
+            "question": "how many kilometers has this car done so far?",
+            "answer": "19448",
+            "pii_sensitive": false
+        },
+        {
+            "image": "D3033340-AEB0-4576-98BF-9DEE3C7A2D69_1_105_c.jpeg",
+            "question": "what is the origin of the plant?",
+            "answer": "Costa Rica",
+            "pii_sensitive": false
+        },
+        {
+            "image": "9DEC8F96-7710-4A97-A5A6-0E0BA63DB200_1_105_c.jpeg",
+            "question": "transcribe the proverb",
+            "answer": "Les animaux sont des amis tellement agr\u00e9ables - ils ne posent jamais de questions, ils ne font aucune critique",
+            "pii_sensitive": false
+        },
+        {
+            "image": "DDB05894-0113-469C-A818-20F518A52ECA_1_105_c.jpeg",
+            "question": "what is the expiration date?",
+            "answer": "JUN 04 24",
+            "pii_sensitive": false
+        },
+        {
+            "image": "B7C962AD-34C5-41BA-8DCA-316F3A44F3C1_1_105_c.jpeg",
+            "question": "when is this receipt dated?",
+            "answer": "03/30/2023",
+            "pii_sensitive": true
+        },
+        {
+            "image": "823DAEC4-C956-416F-8FC3-7649FAAB02B2_1_105_c.jpeg",
+            "question": "what is the total?",
+            "answer": "$15.46",
+            "pii_sensitive": true
+        },
+        {
+            "image": "36CC08DA-479E-42EB-A544-3953493635D4_1_105_c.jpeg",
+            "question": "none",
+            "answer": "none",
+            "pii_sensitive": true
+        },
+        {
+            "image": "F4DDA3FC-145A-4CB6-9E27-EA1E4C99E4AF_1_105_c.jpeg",
+            "question": "how long is the laundry cycle going to take? (return as HH:MM)",
+            "answer": "02:02",
+            "pii_sensitive": false
+        },
+        {
+            "image": "15A002C9-2D9B-4CD9-AEAD-1E45BC11A44F_1_105_c.jpeg",
+            "question": "none",
+            "answer": "none",
+            "pii_sensitive": true
+        },
+        {
+            "image": "2F4958CC-A210-43F1-833C-B6895405298D_1_105_c.jpeg",
+            "question": "transcribe the italian saying on this page",
+            "answer": "Bisogna campar",
+            "pii_sensitive": false
+        },
+        {
+            "image": "0CF38768-E5EE-4902-979B-65CA4FA18CC1_1_105_c.jpeg",
+            "question": "how many donut do you get for the doughnut date? return a number",
+            "answer": "6",
+            "pii_sensitive": false
+        }
+    ]
+}
