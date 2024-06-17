@@ -15,16 +15,14 @@ from tqdm import tqdm
 from html_based_synthetic.augraphy_pipeline import AUG_PIPE
 from template_based_synthetic.utils import custom_metatype_fill, format_date
 
-random_seed = 42
-np.random.seed(random_seed)
-random.seed(random_seed)
+# random_seed = 42
+# np.random.seed(random_seed)
+# random.seed(random_seed)
 
 
 template_info = json.load(open("template_based_synthetic/assets/metadata.json"))
 
-# Used to get background images
-# Have to shuffle to prevent picking up the same image (each q for a given image are in subsequent samples)
-docvqa_dataset = load_dataset("pixparse/docvqa-single-page-questions", split="train", streaming=True).shuffle(seed=20240617)
+
 
 templates = [
     "template_based_synthetic/assets/622897914_cleanup.jpg",
@@ -54,7 +52,7 @@ def create_grey_background(width, height):
     return image
 
 
-def paste_on_random_background(image: Image):
+def paste_on_random_background(image: Image, sample_idx:int):
     if random.random() > 0.0:
         # Select a random background image
         if random.random() > 0.5:
@@ -62,6 +60,9 @@ def paste_on_random_background(image: Image):
             height = random.randint(700, 1500)
             background_image = create_grey_background(width, height)
         else:
+            # Used to get background images
+            # Have to shuffle to prevent picking up the same image (each q for a given image are in subsequent samples)
+            docvqa_dataset = load_dataset("pixparse/docvqa-single-page-questions", split="train", streaming=True).shuffle(seed=sample_idx)
             background_sample = next(iter(docvqa_dataset))
             background_image = background_sample['image'].convert("RGBA")
 
@@ -98,7 +99,7 @@ def paste_on_random_background(image: Image):
         return image
 
 
-def paste_faker_data(image_path: str, template_metadata: Dict[str, Any]):
+def paste_faker_data(sample_idx: int, image_path: str, template_metadata: Dict[str, Any]):
     """
     Takes an image and a list of tuples (bbox, faker metatype) and pastes faker generated values into the bounding boxes on the image.
 
@@ -113,7 +114,8 @@ def paste_faker_data(image_path: str, template_metadata: Dict[str, Any]):
     if image is None:
         raise FileNotFoundError(f"Image at {image_path} not found.")
 
-    fake = Faker()
+    # Use the sample_idx as the seed to ensure that even with multiproc, we don't reuse similar Faker generators
+    fake = Faker(seed=sample_idx)
 
     font = ImageFont.load_default()
     draw = ImageDraw.Draw(image)
@@ -152,10 +154,12 @@ def paste_faker_data(image_path: str, template_metadata: Dict[str, Any]):
 
 
 def process_image(sample_idx: int):
+    np.random.seed(sample_idx)
+    random.seed(sample_idx)
     template_path = random.choice(templates)
     template_metadata = template_info[os.path.basename(template_path)]
-    result_image, sample_metadata = paste_faker_data(template_path, template_metadata)
-    image = paste_on_random_background(result_image)
+    result_image, sample_metadata = paste_faker_data(sample_idx, template_path, template_metadata)
+    image = paste_on_random_background(result_image, sample_idx)
     image.save(f"test_run/sample_{sample_idx}.png")
     json.dump(sample_metadata, open(f"test_run/sample_{sample_idx}_metadata.json", "w"))
     return sample_metadata
@@ -171,16 +175,15 @@ def augment_image(sample_idx: str) -> None:
 @click.command()
 @click.option("--num_samples", required=True, type=int)
 @click.option("--run_augraphy", is_flag=True, show_default=True, default=False)
-def run_generation(num_samples: int, run_augraphy: bool):
-    metadata = []
-    # Not multiprocessing so that we don't get duplicated Faker values
-    for sample_idx in tqdm(range(num_samples)):
-        sample_metadata = process_image(sample_idx)
-        metadata.append(sample_metadata)
+def run_generation(num_samples: int, run_augraphy: bool):    
+    num_processes = os.cpu_count() - 1
+    with Pool(processes=num_processes) as pool:
+        metadata = list(
+            tqdm(pool.imap(process_image, range(num_samples)), total=num_samples)
+        )
     json.dump(metadata, open("test_run/metadata.json", "w"))
 
     if run_augraphy:
-        num_processes = os.cpu_count() - 1
         with Pool(processes=num_processes) as pool:
             _ = list(
                 tqdm(pool.imap(augment_image, range(num_samples)), total=num_samples)

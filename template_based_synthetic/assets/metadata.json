@@ -15,8 +15,8 @@
           },
           "Code": {
               "metatype": {
-                  "source": "faker",
-                  "value": "random_letter"
+                  "source": "custom",
+                  "value": "fixed_usa"
               },
               "bbox": {
                   "x": 276,
@@ -187,8 +187,8 @@
           },
           "Code": {
               "metatype": {
-                  "source": "faker",
-                  "value": "random_letter"
+                  "source": "custom",
+                  "value": "fixed_usa"
               },
               "bbox": {
                   "x": 289,
