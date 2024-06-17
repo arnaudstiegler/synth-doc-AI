@@ -125,7 +125,7 @@ def paste_faker_data(
 
         if metatype["source"] == "faker":
             if hasattr(fake, metatype["value"]):
-                fake_data = getattr(fake.unique, metatype["value"])()
+                fake_data = getattr(fake, metatype["value"])()
             else:
                 raise AttributeError(f"Faker has no attribute '{metatype['value']}'.")
 
@@ -182,7 +182,8 @@ def augment_image(sample_idx: str) -> None:
 @click.option("--num_samples", required=True, type=int)
 @click.option("--run_augraphy", is_flag=True, show_default=True, default=False)
 def run_generation(num_samples: int, run_augraphy: bool):
-    with Pool(processes=os.cpu_count() // 2) as pool:
+    # Forcing a single proc because of duplicated Faker values
+    with Pool(processes=1) as pool:
         metadata = list(
             tqdm(pool.imap(process_image, range(num_samples)), total=num_samples)
         )
