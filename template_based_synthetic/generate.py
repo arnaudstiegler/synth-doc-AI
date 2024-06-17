@@ -5,12 +5,11 @@ from multiprocessing import Pool
 from typing import Any, Dict
 import gc
 import click
-from datasets import load_dataset, disable_caching
+from datasets import load_dataset
 import numpy as np
 from augraphy import default_augraphy_pipeline
 from faker import Faker
 from PIL import Image, ImageDraw, ImageFont, ImageOps
-from regex import F
 from tqdm import tqdm
 
 from html_based_synthetic.augraphy_pipeline import AUG_PIPE
@@ -20,9 +19,7 @@ from template_based_synthetic.utils import custom_metatype_fill, format_date
 with open("template_based_synthetic/assets/metadata.json") as f:
     template_info = json.load(f)
 
-docvqa_dataset = load_dataset("pixparse/docvqa-single-page-questions", split="train", streaming=True)
-
-disable_caching()
+docvqa_dataset = load_dataset("pixparse/docvqa-single-page-questions", split="train")
 
 templates = [
     "template_based_synthetic/assets/622897914_cleanup.jpg",
@@ -62,7 +59,7 @@ def paste_on_random_background(image: Image, sample_idx:int):
         else:
             # Used to get background images
             # Have to shuffle to prevent picking up the same image (each q for a given image are in subsequent samples)
-            background_sample = next(iter(docvqa_dataset.shuffle(seed=sample_idx)))
+            background_sample = docvqa_dataset['train'][np.random(0, len(docvqa_dataset['train']))]
             background_image = background_sample['image'].convert("RGBA")
 
         new_width = int(
