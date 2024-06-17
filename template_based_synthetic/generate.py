@@ -60,8 +60,8 @@ def paste_on_random_background(image: Image, background_images: list):
     if random.random() > 0.0:
         # Select a random background image
         if random.random() > 0.7:
-            width = random.randint(1000, 2500)
-            height = random.randint(1000, 2500)
+            width = random.randint(700, 1500)
+            height = random.randint(700, 1500)
             background_image = create_grey_background(width, height)
         else:
             background_image_path = random.choice(background_images)
@@ -79,7 +79,7 @@ def paste_on_random_background(image: Image, background_images: list):
         y_offset = random.randint(0, background_image.height - image_resized.height)
 
         # Random rotation without cropping
-        angle = random.uniform(-180, 180)
+        angle = random.uniform(-45, 45)
         rotated_image = image_resized.rotate(angle, expand=True)
 
         # Ensure the background is large enough to fit the resized and rotated image
