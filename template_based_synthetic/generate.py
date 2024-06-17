@@ -19,7 +19,7 @@ from template_based_synthetic.utils import custom_metatype_fill, format_date
 with open("template_based_synthetic/assets/metadata.json") as f:
     template_info = json.load(f)
 
-docvqa_dataset = load_dataset("pixparse/docvqa-single-page-questions", split="train")
+docvqa_dataset = load_dataset("pixparse/docvqa-single-page-questions")
 
 templates = [
     "template_based_synthetic/assets/622897914_cleanup.jpg",
