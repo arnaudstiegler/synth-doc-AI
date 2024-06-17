@@ -176,15 +176,14 @@ def augment_image(sample_idx: str) -> None:
 @click.option("--num_samples", required=True, type=int)
 @click.option("--run_augraphy", is_flag=True, show_default=True, default=False)
 def run_generation(num_samples: int, run_augraphy: bool):    
-    num_processes = os.cpu_count() - 1
-    with Pool(processes=num_processes) as pool:
+    with Pool(processes=os.cpu_count() // 2) as pool:
         metadata = list(
             tqdm(pool.imap(process_image, range(num_samples)), total=num_samples)
         )
     json.dump(metadata, open("test_run/metadata.json", "w"))
 
     if run_augraphy:
-        with Pool(processes=num_processes) as pool:
+        with Pool(processes=os.cpu_count() - 1) as pool:
             _ = list(
                 tqdm(pool.imap(augment_image, range(num_samples)), total=num_samples)
             )
