@@ -49,7 +49,7 @@ def create_grey_background(width, height):
     return image
 
 
-def paste_on_random_background(image: Image, sample_idx:int):
+def paste_on_random_background(image: Image, sample_idx: int):
     if random.random() > 0.0:
         # Select a random background image
         if random.random() > 0.5:
@@ -59,8 +59,10 @@ def paste_on_random_background(image: Image, sample_idx:int):
         else:
             # Used to get background images
             # Have to shuffle to prevent picking up the same image (each q for a given image are in subsequent samples)
-            background_sample = docvqa_dataset['train'][np.random.randint(0, len(docvqa_dataset['train']))]
-            background_image = background_sample['image'].convert("RGBA")
+            background_sample = docvqa_dataset["train"][
+                np.random.randint(0, len(docvqa_dataset["train"]))
+            ]
+            background_image = background_sample["image"].convert("RGBA")
 
         new_width = int(
             random.uniform(background_image.width / 3, (3 / 4) * background_image.width)
@@ -95,7 +97,9 @@ def paste_on_random_background(image: Image, sample_idx:int):
         return image
 
 
-def paste_faker_data(sample_idx: int, image_path: str, template_metadata: Dict[str, Any]):
+def paste_faker_data(
+    sample_idx: int, image_path: str, template_metadata: Dict[str, Any]
+):
     """
     Takes an image and a list of tuples (bbox, faker metatype) and pastes faker generated values into the bounding boxes on the image.
 
@@ -153,7 +157,9 @@ def process_image(sample_idx: int):
     random.seed(sample_idx)
     template_path = random.choice(templates)
     template_metadata = template_info[os.path.basename(template_path)]
-    result_image, sample_metadata = paste_faker_data(sample_idx, template_path, template_metadata)
+    result_image, sample_metadata = paste_faker_data(
+        sample_idx, template_path, template_metadata
+    )
     image = paste_on_random_background(result_image, sample_idx)
     image.save(f"test_run/sample_{sample_idx}.png")
 
@@ -176,12 +182,12 @@ def augment_image(sample_idx: str) -> None:
 @click.command()
 @click.option("--num_samples", required=True, type=int)
 @click.option("--run_augraphy", is_flag=True, show_default=True, default=False)
-def run_generation(num_samples: int, run_augraphy: bool):    
-    with Pool(processes=4) as pool:
+def run_generation(num_samples: int, run_augraphy: bool):
+    with Pool(processes=os.cpu_count() // 2) as pool:
         metadata = list(
             tqdm(pool.imap(process_image, range(num_samples)), total=num_samples)
         )
-    
+
     with open("test_run/metadata.json", "w") as f:
         json.dump(metadata, f)
 

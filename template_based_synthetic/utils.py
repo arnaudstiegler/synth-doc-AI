@@ -11,8 +11,8 @@ def custom_metatype_fill(metatype: str) -> str:
         return "".join([str(random.randint(0, 9)) for _ in range(9)])
     elif metatype == "sex":
         return random.choice(["M", "F"])
-    elif metatype == 'fixed_usa':
-        return 'USA'
+    elif metatype == "fixed_usa":
+        return "USA"
     else:
         raise ValueError(f"Custom metatype {metatype} not supported")
 
