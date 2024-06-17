@@ -111,7 +111,6 @@ def paste_faker_data(sample_idx: int, image_path: str, template_metadata: Dict[s
 
     # Use the sample_idx as the seed to ensure that even with multiproc, we don't reuse similar Faker generators
     fake = Faker(seed=sample_idx)
-
     font = ImageFont.load_default()
     draw = ImageDraw.Draw(image)
 
@@ -171,7 +170,7 @@ def augment_image(sample_idx: str) -> None:
 @click.option("--num_samples", required=True, type=int)
 @click.option("--run_augraphy", is_flag=True, show_default=True, default=False)
 def run_generation(num_samples: int, run_augraphy: bool):    
-    with Pool(processes=os.cpu_count() // 2) as pool:
+    with Pool(processes=4) as pool:
         metadata = list(
             tqdm(pool.imap(process_image, range(num_samples)), total=num_samples)
         )
