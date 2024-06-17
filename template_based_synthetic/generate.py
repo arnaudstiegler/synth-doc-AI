@@ -59,7 +59,7 @@ def paste_on_random_background(image: Image, sample_idx:int):
         else:
             # Used to get background images
             # Have to shuffle to prevent picking up the same image (each q for a given image are in subsequent samples)
-            background_sample = docvqa_dataset['train'][np.random(0, len(docvqa_dataset['train']))]
+            background_sample = docvqa_dataset['train'][np.random.randint(0, len(docvqa_dataset['train']))]
             background_image = background_sample['image'].convert("RGBA")
 
         new_width = int(
