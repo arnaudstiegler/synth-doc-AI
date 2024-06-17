@@ -2,10 +2,10 @@ import json
 import os
 import random
 from multiprocessing import Pool
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 import click
-import cv2
+from datasets import load_dataset
 import numpy as np
 from augraphy import default_augraphy_pipeline
 from faker import Faker
@@ -22,11 +22,9 @@ random.seed(random_seed)
 
 template_info = json.load(open("template_based_synthetic/assets/metadata.json"))
 
-background_image_folder_path = "template_based_synthetic/assets/background_images/"
-background_images = [
-    os.path.join(background_image_folder_path, file)
-    for file in os.listdir(background_image_folder_path)
-]
+# Used to get background images
+# Have to shuffle to prevent picking up the same image (each q for a given image are in subsequent samples)
+docvqa_dataset = load_dataset("pixparse/docvqa-single-page-questions", split="train", streaming=True).shuffle(seed=20240617)
 
 templates = [
     "template_based_synthetic/assets/622897914_cleanup.jpg",
@@ -56,16 +54,16 @@ def create_grey_background(width, height):
     return image
 
 
-def paste_on_random_background(image: Image, background_images: list):
+def paste_on_random_background(image: Image):
     if random.random() > 0.0:
         # Select a random background image
-        if random.random() > 0.7:
+        if random.random() > 0.5:
             width = random.randint(700, 1500)
             height = random.randint(700, 1500)
             background_image = create_grey_background(width, height)
         else:
-            background_image_path = random.choice(background_images)
-            background_image = Image.open(background_image_path).convert("RGBA")
+            background_sample = next(iter(docvqa_dataset))
+            background_image = background_sample['image'].convert("RGBA")
 
         new_width = int(
             random.uniform(background_image.width / 3, (3 / 4) * background_image.width)
@@ -157,7 +155,7 @@ def process_image(sample_idx: int):
     template_path = random.choice(templates)
     template_metadata = template_info[os.path.basename(template_path)]
     result_image, sample_metadata = paste_faker_data(template_path, template_metadata)
-    image = paste_on_random_background(result_image, background_images)
+    image = paste_on_random_background(result_image)
     image.save(f"test_run/sample_{sample_idx}.png")
     json.dump(sample_metadata, open(f"test_run/sample_{sample_idx}_metadata.json", "w"))
     return sample_metadata
