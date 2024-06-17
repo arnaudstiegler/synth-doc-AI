@@ -25,7 +25,7 @@ templates = [
     "template_based_synthetic/assets/622897914_cleanup.jpg",
     "template_based_synthetic/assets/template_1_cleanup.jpeg",
 ]
-
+fake = Faker(seed=20240617)
 pipeline = default_augraphy_pipeline()
 
 
@@ -98,7 +98,7 @@ def paste_on_random_background(image: Image, sample_idx: int):
 
 
 def paste_faker_data(
-    sample_idx: int, image_path: str, template_metadata: Dict[str, Any]
+    image_path: str, template_metadata: Dict[str, Any]
 ):
     """
     Takes an image and a list of tuples (bbox, faker metatype) and pastes faker generated values into the bounding boxes on the image.
@@ -115,7 +115,6 @@ def paste_faker_data(
         raise FileNotFoundError(f"Image at {image_path} not found.")
 
     # Use the sample_idx as the seed to ensure that even with multiproc, we don't reuse similar Faker generators
-    fake = Faker(seed=sample_idx)
     font = ImageFont.load_default()
     draw = ImageDraw.Draw(image)
 
@@ -158,7 +157,7 @@ def process_image(sample_idx: int):
     template_path = random.choice(templates)
     template_metadata = template_info[os.path.basename(template_path)]
     result_image, sample_metadata = paste_faker_data(
-        sample_idx, template_path, template_metadata
+        template_path, template_metadata
     )
     image = paste_on_random_background(result_image, sample_idx)
     image.save(f"test_run/sample_{sample_idx}.png")
