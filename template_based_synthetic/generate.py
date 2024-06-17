@@ -3,20 +3,23 @@ import os
 import random
 from multiprocessing import Pool
 from typing import Any, Dict
-
+import gc
 import click
 from datasets import load_dataset, disable_caching
 import numpy as np
 from augraphy import default_augraphy_pipeline
 from faker import Faker
 from PIL import Image, ImageDraw, ImageFont, ImageOps
+from regex import F
 from tqdm import tqdm
 
 from html_based_synthetic.augraphy_pipeline import AUG_PIPE
 from template_based_synthetic.utils import custom_metatype_fill, format_date
 
 
-template_info = json.load(open("template_based_synthetic/assets/metadata.json"))
+with open("template_based_synthetic/assets/metadata.json") as f:
+    template_info = json.load(f)
+
 docvqa_dataset = load_dataset("pixparse/docvqa-single-page-questions", split="train", streaming=True)
 
 disable_caching()
@@ -156,7 +159,13 @@ def process_image(sample_idx: int):
     result_image, sample_metadata = paste_faker_data(sample_idx, template_path, template_metadata)
     image = paste_on_random_background(result_image, sample_idx)
     image.save(f"test_run/sample_{sample_idx}.png")
-    json.dump(sample_metadata, open(f"test_run/sample_{sample_idx}_metadata.json", "w"))
+
+    with open(f"test_run/sample_{sample_idx}_metadata.json", "w") as f:
+        json.dump(sample_metadata, f)
+
+    del result_image, image  # Explicitly delete large objects
+    gc.collect()  # Force garbage collection
+
     return sample_metadata
 
 
@@ -175,7 +184,9 @@ def run_generation(num_samples: int, run_augraphy: bool):
         metadata = list(
             tqdm(pool.imap(process_image, range(num_samples)), total=num_samples)
         )
-    json.dump(metadata, open("test_run/metadata.json", "w"))
+    
+    with open("test_run/metadata.json", "w") as f:
+        json.dump(metadata, f)
 
     if run_augraphy:
         with Pool(processes=os.cpu_count() - 1) as pool:
