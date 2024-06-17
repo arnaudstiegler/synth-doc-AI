@@ -15,13 +15,9 @@ from tqdm import tqdm
 from html_based_synthetic.augraphy_pipeline import AUG_PIPE
 from template_based_synthetic.utils import custom_metatype_fill, format_date
 
-# random_seed = 42
-# np.random.seed(random_seed)
-# random.seed(random_seed)
-
 
 template_info = json.load(open("template_based_synthetic/assets/metadata.json"))
-
+docvqa_dataset = load_dataset("pixparse/docvqa-single-page-questions", split="train", streaming=True)
 
 
 templates = [
@@ -62,8 +58,7 @@ def paste_on_random_background(image: Image, sample_idx:int):
         else:
             # Used to get background images
             # Have to shuffle to prevent picking up the same image (each q for a given image are in subsequent samples)
-            docvqa_dataset = load_dataset("pixparse/docvqa-single-page-questions", split="train", streaming=True).shuffle(seed=sample_idx)
-            background_sample = next(iter(docvqa_dataset))
+            background_sample = next(iter(docvqa_dataset.shuffle(seed=sample_idx)))
             background_image = background_sample['image'].convert("RGBA")
 
         new_width = int(
