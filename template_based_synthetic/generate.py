@@ -5,7 +5,7 @@ from multiprocessing import Pool
 from typing import Any, Dict
 
 import click
-from datasets import load_dataset
+from datasets import load_dataset, disable_caching
 import numpy as np
 from augraphy import default_augraphy_pipeline
 from faker import Faker
@@ -19,6 +19,7 @@ from template_based_synthetic.utils import custom_metatype_fill, format_date
 template_info = json.load(open("template_based_synthetic/assets/metadata.json"))
 docvqa_dataset = load_dataset("pixparse/docvqa-single-page-questions", split="train", streaming=True)
 
+disable_caching()
 
 templates = [
     "template_based_synthetic/assets/622897914_cleanup.jpg",
