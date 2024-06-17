@@ -125,7 +125,7 @@ def paste_faker_data(
 
         if metatype["source"] == "faker":
             if hasattr(fake, metatype["value"]):
-                fake_data = getattr(fake, metatype["value"])()
+                fake_data = getattr(fake.unique, metatype["value"])()
             else:
                 raise AttributeError(f"Faker has no attribute '{metatype['value']}'.")
 
