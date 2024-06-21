@@ -97,9 +97,7 @@ def paste_on_random_background(image: Image, sample_idx: int):
         return image
 
 
-def paste_faker_data(
-    image_path: str, template_metadata: Dict[str, Any]
-):
+def paste_faker_data(image_path: str, template_metadata: Dict[str, Any]):
     """
     Takes an image and a list of tuples (bbox, faker metatype) and pastes faker generated values into the bounding boxes on the image.
 
@@ -156,9 +154,7 @@ def process_image(sample_idx: int):
     random.seed(sample_idx)
     template_path = random.choice(templates)
     template_metadata = template_info[os.path.basename(template_path)]
-    result_image, sample_metadata = paste_faker_data(
-        template_path, template_metadata
-    )
+    result_image, sample_metadata = paste_faker_data(template_path, template_metadata)
     image = paste_on_random_background(result_image, sample_idx)
     image.save(f"test_run/sample_{sample_idx}.png")
 

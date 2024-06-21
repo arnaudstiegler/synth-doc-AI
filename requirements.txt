@@ -25,3 +25,4 @@ augraphy
 PyPDF2
 pymupdf
 jupyterlab
+praw
