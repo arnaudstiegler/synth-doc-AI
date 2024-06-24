@@ -7,9 +7,9 @@ import json
 from tqdm import tqdm
 
 reddit = praw.Reddit(
-    client_id="",
-    client_secret="",
-    user_agent="",
+    """
+Add creds here
+"""
 )
 
 dest_folder = "test_run/"
