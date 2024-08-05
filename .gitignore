@@ -167,5 +167,6 @@ augraphy_cache/
 synth_data_gen/samples/
 test_run/
 template_based_synthetic/assets/background_images/
+/reddit_handwritten/
 
 .DS_Store

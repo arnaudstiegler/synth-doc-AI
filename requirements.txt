@@ -26,3 +26,4 @@ PyPDF2
 pymupdf
 jupyterlab
 praw
+loguru

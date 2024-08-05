@@ -5,6 +5,8 @@ import requests
 import json
 from tqdm import tqdm
 import os
+from loguru import logger
+
 
 reddit = praw.Reddit(
     user_agent="dev",
@@ -12,7 +14,7 @@ reddit = praw.Reddit(
     client_secret=os.getenv("PRAW_CLIENT_SECRET"),
 )
 
-dest_folder = "test_run/"
+dest_folder = "reddit_handwritten/"
 
 
 def query_and_save(url: str, img_index: int):
@@ -35,8 +37,10 @@ for submission in tqdm(reddit.subreddit("Handwriting").new(limit=10000)):
         for val in submission.media_metadata.values():
             url = val["s"]["u"]
             if url in meta:
-                print("passing the url, already done")
+                logger.info("passing the url, already done")
                 break
+            elif requests.get(url).status_code == 429:
+                logger.info(f'{url} returning {requests.get(url).status_code}')
             img_name = f"img_{img_index}.png"
             meta[url] = img_name
             query_and_save(url, img_index)
@@ -44,13 +48,16 @@ for submission in tqdm(reddit.subreddit("Handwriting").new(limit=10000)):
     elif submission.url.endswith(("png", "jpeg", "jpg")):
         url = submission.url
         if url in meta:
-            print("passing the url, already done")
+            logger.info("passing the url, already done")
+            continue
+        elif requests.get(url).status_code == 429:
+            logger.info(f'{url} returning {requests.get(url).status_code}')
             continue
         img_name = f"img_{img_index}.png"
         meta[url] = img_name
         query_and_save(url, img_index)
         img_index += 1
     else:
-        print(f"cannot process {submission.url}")
+        logger.info(f"cannot process {submission.url}")
 
     json.dump(meta, open(os.path.join(dest_folder, "metadata.json"), "w"))
