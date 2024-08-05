@@ -2,11 +2,14 @@ import praw
 from io import BytesIO
 from PIL import Image
 import requests
-import os
 import json
 from tqdm import tqdm
+import os
 
 reddit = praw.Reddit(
+    user_agent="dev",
+    client_id=os.getenv("PRAW_CLIENT_ID"),
+    client_secret=os.getenv("PRAW_CLIENT_SECRET"),
 )
 
 dest_folder = "test_run/"
